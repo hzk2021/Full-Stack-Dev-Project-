@@ -16,6 +16,8 @@ Server.engine('handlebars', ExpHandlebars({
 Server.set('views',       'templates');
 Server.set('view engine', 'handlebars');
 
+Server.use(Express.static(Path.join(__dirname, 'public')));
+
 Server.use(BodyParser.urlencoded({
     extended: false
 }));
