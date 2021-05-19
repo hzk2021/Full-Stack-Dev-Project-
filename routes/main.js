@@ -11,11 +11,11 @@ Router.get('/', (req,res) => {
 })
 
 Router.get('/showLogin', (req,res) => {
-    res.render('user/login');
+    res.render('authentication/login');
 });
 
 Router.get('/showRegister', (req,res) => {
-    res.render('user/register');
+    res.render('authentication/register');
 });
 
 module.exports = Router;

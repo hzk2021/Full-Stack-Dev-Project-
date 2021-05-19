@@ -2,9 +2,10 @@ const Express = require('express');
 const ExpHandlebars = require('express-handlebars');
 const BodyParser = require('body-parser');
 const Path = require('path');
-const MainRoutes = require('./routes/main');
 const sqlDB = require('./configs/dbConnection');
 const sqlSession = require('./configs/dbSession');
+const MainRoutes = require('./routes/main');
+const AuthRoutes = require('./routes/auth');
 
 const Server = Express();
 const Port = process.env.PORT || 5000;
@@ -26,6 +27,7 @@ Server.use(BodyParser.json());
 Server.use(sqlSession);
 
 Server.use('/', MainRoutes); // Main
+Server.use('/auth', AuthRoutes); // Auth
 
 sqlDB.InitializeDB(false);
 
