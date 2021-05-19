@@ -13,16 +13,6 @@ const User = Database.sequelize.define('user', {
         primaryKey: true,
         defaultValue: Sequelize.DataTypes.UUIDV4
     },
-    dateCreated: {
-        type: Sequelize.DATE(),
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-    },
-    dateUpdated: {
-        type: Sequelize.DATE(),
-        allowNull: false,
-        defaultValue: Sequelize.NOW
-    },
     name: {
         type: Sequelize.STRING(64),
         allowNull: false
@@ -39,6 +29,16 @@ const User = Database.sequelize.define('user', {
     password: {
         type: Sequelize.STRING(64),
         allowNull: false
+    },
+    dateCreated: {
+        type: Sequelize.DATE(),
+        allowNull: false,
+        defaultValue: Sequelize.NOW
+    },
+    dateUpdated: {
+        type: Sequelize.DATE(),
+        allowNull: false,
+        defaultValue: Sequelize.NOW
     }
 });
 
