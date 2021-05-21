@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const Database = require('../configs/database');
 const uuid = require('uuid');
 
-const daysAllowed = [[5,10,15,20,25,30,35,40,45,50,55,60]]
+const daysAllowed = [5,10,15,20,25,30,35,40,45,50,55,60]
 
 const RewardsList = Database.sequelize.define('rewards_list', {
     day_no: {
@@ -11,7 +11,7 @@ const RewardsList = Database.sequelize.define('rewards_list', {
         unique: true,
         allowNull: false,
         validate: {
-            isIn: daysAllowed
+            isIn: [daysAllowed]
         }
     },
     food_primary: {
