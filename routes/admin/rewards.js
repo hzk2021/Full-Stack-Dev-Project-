@@ -38,9 +38,9 @@ Router.get('/editRewards/:day_no', async function(req,res) {
 Router.get('/adminRewardsList', async function(req,res) {
     console.log("Admin rewards page accessed");
     return res.render('rewards/rewardsAdmin', {
-        prizes_list: ["Coca-cola", "Beef Chili Cheese Fries", "Chargrilled Chicken Club", "Battered Cod Fish", 
-        "(Not specified)", "(Not specified)", "(Not specified)", "(Not specified)",
-        "(Not specified)", "(Not specified)", "(Not specified)", "(Not specified)"]
+        prizes_list: [["Coca-cola", "Beef Chili Cheese Fries", "Chargrilled Chicken Club", "Battered Cod Fish"], 
+                        [null, null, null, null],
+                        [null, null, null, null]]
     });
 });
 

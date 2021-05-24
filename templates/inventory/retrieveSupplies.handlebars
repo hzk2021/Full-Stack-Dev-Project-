@@ -73,7 +73,7 @@
 <div id="supplies">
   <h2>Supplies Information</h2>
   <div class="row" style="margin-left:0.5%;">
-    <a class="btn btn-warning btn-lg" href="/createSupply"><i class="fas fa-plus-circle"></i>  Add supply</a>
+    <a class="btn btn-warning btn-lg" href="createSupply"><i class="fas fa-plus-circle"></i> Add supply</a>
     <div class="col float-right" id="search-supply">
       <input class="supplies-search" id="suppliesSearch" type="text" placeholder="⌕ Filter by name" size="30px">
       <button class="btn btn-secondary col-xs-6" style="height:35px;margin-top:5px;" onclick="filter()">⌕</button>
@@ -98,52 +98,56 @@
         <td>{{this.name}}</td>
         <td>{{this.type}}</td>
         <td>{{this.qty}}</td>
-        <td><!--{% if value_changes.get(supply.get_name()) != None and value_changes != {} %}
+        <td>
+          <!--{% if value_changes.get(supply.get_name()) != None and value_changes != {} %}
             {% if value_changes[supply.get_name()] > 0 %}-->
-            <span class="text-success">20%</span>
-            <!--{% elif value_changes[supply.get_name()] <= 0 %}
+          <span class="next-val-cell">{{this.valChange}}</span>
+          <!--{% elif value_changes[supply.get_name()] <= 0 %}
             <span class="text-danger"></span>
             {% endif %}
             {% else %}
             <span class="text-secondary">Not generated</span>
-            {% endif %}--></td>
-        <td><!--{% if value_changes.get(supply.get_name()) != None and next_value_dict != {} %}-->
-            3000
-            <!--{% else %}
+            {% endif %}-->
+        </td>
+        <td>
+          <!--{% if value_changes.get(supply.get_name()) != None and next_value_dict != {} %}-->
+          {{this.nextVal}}
+          <!--{% else %}
             <span class="text-secondary">Not generated</span>
             {% endif %}-->
         </td>
         <td class="row" style="padding-left:20px;">
-          <a href="updateSupply/{{this.name}}" class="btn btn-warning col-xs-6 supplies-update" style="margin-right:10px;">Edit</a>
+          <a href="updateSupply/{{this.name}}" class="btn btn-warning col-xs-6 supplies-update"
+            style="margin-right:10px;">Edit</a>
           <form action="/" method="POST">
-              <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal_{{id_name}}">
-                  Delete
-              </button>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal_{{id_name}}">
+              Delete
+            </button>
 
-              <!-- The Modal -->
-              <div class="modal" id="myModal_{{id_name}}">
-                <div class="modal-dialog">
-              <div class="modal-content">
+            <!-- The Modal -->
+            <div class="modal" id="myModal_{{id_name}}">
+              <div class="modal-dialog">
+                <div class="modal-content">
 
-              <!-- Modal Header -->
-              <div class="modal-header">
-                <h4 class="modal-title">Delete Confirmation</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-              </div>
+                  <!-- Modal Header -->
+                  <div class="modal-header">
+                    <h4 class="modal-title">Delete Confirmation</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  </div>
 
-              <!-- Modal body -->
-              <div class="modal-body">
-                Are you sure you want to delete {{ name }}?
-              </div>
+                  <!-- Modal body -->
+                  <div class="modal-body">
+                    Are you sure you want to delete {{ name }}?
+                  </div>
 
-              <!-- Modal footer -->
-              <div class="modal-footer">
-                <input type="submit" value="Delete" class="btn btn-danger">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <!-- Modal footer -->
+                  <div class="modal-footer">
+                    <input type="submit" value="Delete" class="btn btn-danger">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  </div>
+                </div>
               </div>
             </div>
-           </div>
-          </div>
           </form>
         </td>
       </tr>
@@ -152,93 +156,121 @@
   </table>
   <a href="/submittedSupplies" class="btn btn-success float-right">Submit Order List</a>
   <div id="finishWeek">
-      <a href="#" class="btn btn-warning float-right" data-toggle="modal" data-target="#myModal_Finish" style="margin-right:15px;">Finish Week</a>
-      <!-- The Modal -->
-      <div class="modal" id="myModal_Finish">
-        <div class="modal-dialog">
-      <div class="modal-content">
+    <a href="#" class="btn btn-warning float-right" data-toggle="modal" data-target="#myModal_Finish"
+      style="margin-right:15px;">Finish Week</a>
+    <!-- The Modal -->
+    <div class="modal" id="myModal_Finish">
+      <div class="modal-dialog">
+        <div class="modal-content">
 
-      <!-- Modal Header -->
-      <div class="modal-header">
-        <h4 class="modal-title">Delete Confirmation</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
+          <!-- Modal Header -->
+          <div class="modal-header">
+            <h4 class="modal-title">Delete Confirmation</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
 
-      <!-- Modal body -->
-      <div class="modal-body">
-        Are you sure you want to finish the week?
-        <p class="text-danger">By clicking 'Confirm' all weeks data will be updated</p>
-      </div>
+          <!-- Modal body -->
+          <div class="modal-body">
+            Are you sure you want to finish the week?
+            <p class="text-danger">By clicking 'Confirm' all weeks data will be updated</p>
+          </div>
 
-      <!-- Modal footer -->
-      <div class="modal-footer">
-        <a href="/finishWeek" class="btn btn-primary">Confirm</a>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <!-- Modal footer -->
+          <div class="modal-footer">
+            <a href="/finishWeek" class="btn btn-primary">Confirm</a>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
       </div>
+    </div>
   </div>
-  </div>
-</div>
-</div>
-<br>
-<script>
-      function generate_graph(all_data, view_item) {
-        var name_bar = "bar";
-        var full_height = parseFloat(document.getElementById('graph-axis').clientHeight);
-        var size_ratio = full_height / 12000;
+  <br>
+  <script>
+    //Function to generate bar graph from the data of past records
+    function generate_graph(all_data, view_item) {
+      var name_bar = "bar";
+      var full_height = parseFloat(document.getElementById('graph-axis').clientHeight);
+      var size_ratio = full_height / 12000;
 
-        for (i in all_data) {
-          var orders = all_data[i][view_item];
-          if (i == "5th Week") {
-            var id = "bar1";
-          } else if (i == "4th Week") {
-            var id = "bar2";
-          } else if (i == "3rd Week") {
-            var id = "bar3";
-          } else if (i == "2nd Week") {
-            var id = "bar4";
-          } else {
-            var id = "bar5";
-          }
-
-          var bar_height = orders*size_ratio;
-          document.getElementById(id).style.height = bar_height+"px";
-          document.getElementById(id).style.top = (full_height - bar_height)+"px";
-          document.getElementById(id).innerText = orders;
+      for (i in all_data) {
+        var orders = all_data[i][view_item];
+        if (i == "5th Week") {
+          var id = "bar1";
+        } else if (i == "4th Week") {
+          var id = "bar2";
+        } else if (i == "3rd Week") {
+          var id = "bar3";
+        } else if (i == "2nd Week") {
+          var id = "bar4";
+        } else {
+          var id = "bar5";
         }
+
+        var bar_height = orders * size_ratio;
+        document.getElementById(id).style.height = bar_height + "px";
+        document.getElementById(id).style.top = (full_height - bar_height) + "px";
+        document.getElementById(id).innerText = orders;
       }
-      
-      var all_data = {"Supplies":{"Bun":4012, "Chicken":4134, "Beef":2987, "Lettuce":3412}, 
-                    "5th Week":{"Bun":3964, "Chicken":4456, "Beef":3600, "Lettuce":3912},
-                    "4th Week":{"Bun":4215, "Chicken":4742, "Beef":3461, "Lettuce":4132},
-                    "3rd Week":{"Bun":4002, "Chicken":4514, "Beef":3265, "Lettuce":3712},
-                    "2nd Week":{"Bun":3814, "Chicken":4223, "Beef":2871, "Lettuce":3402}
-                   };
-      var view_item = "Chicken";
-      window.onload = generate_graph(all_data, view_item);
+    }
 
-</script>
-<script>
-  function filter() {
-    word = document.getElementById('suppliesSearch').value;
-    allRows = document.getElementsByTagName('tr');
+    //Search function for supplies list
+    function filter() {
+      word = document.getElementById('suppliesSearch').value;
+      allRows = document.getElementsByTagName('tr');
 
-    for (tag in allRows) {
-      allRows[tag].style.display = null;
-      if (word != "") {
-        id = allRows[tag].id.toLowerCase();
-        if (!(id.includes(word))) {
-          allRows[tag].style.display = "none";
+      for (tag in allRows) {
+        allRows[tag].style.display = null;
+        if (word != "") {
+          id = allRows[tag].id.toLowerCase();
+          if (!(id.includes(word))) {
+            allRows[tag].style.display = "none";
+          }
         }
       }
     }
-  }
-</script>
-<script>
+
+    //Function to indicate row number for tables
     function assign_num() {
-        var rows = document.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-        for (i=0; i<rows.length; i++) {
-            rows[i].getElementsByTagName('th')[0].innerText = i+1;
-          } 
+      var rows = document.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+      for (i = 0; i < rows.length; i++) {
+        rows[i].getElementsByTagName('th')[0].innerText = i + 1;
       }
-  assign_num();
-</script>
+    }
+
+    //Function to put format the text colour and leave the percentage change value in 2 decimal places
+    function decimalFixed() {
+      var next_orders = document.getElementsByClassName('next-val-cell');
+      for (i = 0; i < next_orders.length; i++) {
+        var val = next_orders[i].innerText;
+        //Assign colour from value
+        var op = "";
+        if (parseFloat(val) > 0) {
+          op = "+";
+          next_orders[i].classList.add("text-success");
+        }
+        else if (parseFloat(val) < 0) {
+          next_orders[i].classList.add("text-danger");
+        }
+        else {
+          next_orders[i].classList.add("text-secondary");
+        }
+        //Convert to 2dp
+        var newVal = parseFloat(val).toFixed(2);
+        next_orders[i].innerText = op + newVal + " %";
+      }
+
+    }
+
+    var all_data = {
+      "Supplies": { "Bun": 4012, "Chicken": 4134, "Beef": 2987, "Lettuce": 3412 },
+      "5th Week": { "Bun": 3964, "Chicken": 4456, "Beef": 3600, "Lettuce": 3912 },
+      "4th Week": { "Bun": 4215, "Chicken": 4742, "Beef": 3461, "Lettuce": 4132 },
+      "3rd Week": { "Bun": 4002, "Chicken": 4514, "Beef": 3265, "Lettuce": 3712 },
+      "2nd Week": { "Bun": 3814, "Chicken": 4223, "Beef": 2871, "Lettuce": 3402 }
+    };
+    var view_item = "Chicken";
+    generate_graph(all_data, view_item);
+    assign_num();
+    decimalFixed();
+
+  </script>

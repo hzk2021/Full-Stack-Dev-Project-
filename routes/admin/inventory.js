@@ -44,14 +44,12 @@ Router.get('/dashboard', async function(req, res) {
                     "3rd Week":{Bun:4002, Chicken:2514, Beef:3265, Lettuce:3712},
                     "2nd Week":{Bun:3814, Chicken:2223, Beef:2871, Lettuce:3402}
                    },
-        supplies_dict: [{name:"Bun", type:"Others", qty:4012, valChange:5.19}, 
-                        {name:"Chicken", type:"Meat", qty:2132, valChange:-4.00}, 
-                        {name:"Beef", type:"Meat", qty:2987, valChange:4.04},
-                        {name:"Lettuce", type:"Vegetables", qty:3412, valChange:0.35,}
+        supplies_dict: [{name:"Bun", type:"Others", qty:4012, valChange:5.19, nextVal:4136}, 
+                        {name:"Chicken", type:"Meat", qty:2132, valChange:-4.00, nextVal:2019}, 
+                        {name:"Beef", type:"Meat", qty:2987, valChange:4.04, nextVal:2900},
+                        {name:"Lettuce", type:"Vegetables", qty:3412, valChange:0.35, nextVal:3328}
                         ],
-        view_item: "Chicken",
-        next_value_dict: {Bun:4136, Chicken:2019, Beef:2900, Lettuce:3328},
-        value_changes: {Bun:4012, Chicken:2134, Beef:2987, Lettuce:3412}
+        view_item: "Chicken"
     });
 });
 

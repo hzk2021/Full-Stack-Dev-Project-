@@ -26,96 +26,86 @@
       {{/for}}
     </tr>
  -->
+    <tr class="rewards-row">
+      {{#each prizes_list.[0]}}
+      {{#if this}}
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day </h3>
+        <h4>{{ this }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/">Edit Reward</a>
+        </div>
+      </td>
+      {{else}}
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day </h3>
+        <h4 class="text-danger">(Item(s) not specified)</h4>
+        <a class="btn btn-secondary admin-edit" href="editRewards/">Edit Reward</a>
+        </div>
+      </td>
+      {{/if}}
+      {{/each}}
+    </tr>
+    <tr class="rewards-row">
+      {{#each prizes_list.[1]}}
+      {{#if this}}
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day </h3>
+        <h4>{{ this }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/">Edit Reward</a>
+        </div>
+      </td>
+      {{else}}
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day </h3>
+        <h4 class="text-danger">(Item(s) not specified)</h4>
+        <a class="btn btn-secondary admin-edit" href="editRewards/">Edit Reward</a>
+        </div>
+      </td>
+      {{/if}}
+       {{/each}}
+    </tr>
+    <tr class="rewards-row">
+      {{#each prizes_list.[2]}}
+      {{#if this}}
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day </h3>
+        <h4>{{ this }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/">Edit Reward</a>
+        </div>
+      </td>
+      {{else}}
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day </h3>
+        <h4 class="text-danger">(Item(s) not specified)</h4>
+        <a class="btn btn-secondary admin-edit" href="editRewards/">Edit Reward</a>
+        </div>
+      </td>
+      {{/if}}
+      {{/each}}
+    </tr>
 
-    <tr>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 5</h3>
-        <h4>{{ prizes_list.[0] }}</h4>
-        <a class="btn btn-secondary admin-edit" href="editRewards/5">Edit Reward</a>
-        </div>
-      </td>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 10</h3>
-        <h4>{{ prizes_list.[1] }}</h4>
-        <a class="btn btn-secondary admin-edit" href="editRewards/10">Edit Reward</a>
-        </div>
-      </td>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 15</h3>
-        <h4>{{ prizes_list.[2] }}</h4>
-        <a class="btn btn-secondary admin-edit" href="editRewards/15">Edit Reward</a>
-        </div>
-      </td>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 20</h3>
-        <h4>{{ prizes_list.[3] }}</h4>
-        <a class="btn btn-secondary admin-edit" href="editRewards/20">Edit Reward</a>
-        </div>
-      </td>
-    <tr>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 25</h3>
-        <h4>{{ prizes_list.[4] }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/25">Add Reward</a>
-        </div>
-      </td>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 30</h3>
-        <h4>{{ prizes_list.[5] }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/30">Add Reward</a>
-        </div>
-      </td>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 35</h3>
-        <h4>{{ prizes_list.[6] }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/35">Add Reward</a>
-        </div>
-      </td>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 40</h3>
-        <h4>{{ prizes_list.[7] }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/40">Add Reward</a>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 45</h3>
-        <h4>{{ prizes_list.[8] }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/45">Add Reward</a>
-        </div>
-      </td>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 50</h3>
-        <h4>{{ prizes_list.[9] }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/50">Add Reward</a>
-        </div>
-      </td>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 55</h3>
-        <h4>{{ prizes_list.[10] }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/55">Add Reward</a>
-        </div>
-      </td>
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day 60</h3>
-        <h4>{{ prizes_list.[11] }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/60">Add Reward</a>
-        </div>
-      </td>
-    </tr>
   </table>
 </div>
 
+<script>
+  function assignval() {
+    var count = 5;
+    var tr = document.getElementsByClassName('rewards-row');
+    for (i=0; i<3; i++) {
+      var td = tr[i].getElementsByTagName('td');
+      for (j=0; j<4; j++) {
+        var tdDiv = td[j].getElementsByClassName('normal')[0];
+        tdDiv.getElementsByTagName('h3')[0].innerText += " "+count;
+        tdDiv.getElementsByTagName('a')[0].href += count;
+        count += 5
+      }
+    }
+  }
+  assignval();
+</script>
