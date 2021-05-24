@@ -2,6 +2,7 @@ const Express = require('express');
 const ExpHandlebars = require('express-handlebars');
 const Path = require('path');
 const Flash = require('connect-flash');
+const PassportSetup = require('./configs/passportSetup');
 const sqlDB = require('./configs/dbConnection');
 const sqlSession = require('./configs/dbSession');
 const MainRoutes = require('./routes/main');
@@ -26,10 +27,10 @@ Server.use(Express.urlencoded({
 Server.use(Express.json());
 Server.use(sqlSession);
 Server.use(Flash());
+PassportSetup.InitializePassport(Server);
+sqlDB.InitializeDB(false);
 
 Server.use('/', MainRoutes); // Main
 Server.use('/auth', AuthRoutes); // Auth
-
-sqlDB.InitializeDB(false);
 
 Server.listen(Port, () => console.log(`Server started and is now listening on port ${Port}`))

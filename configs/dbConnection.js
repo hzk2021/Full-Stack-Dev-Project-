@@ -6,6 +6,7 @@ const UserRewards = require('../models/UserRewards');
 const Supplies = require('../models/Supplies');
 const Ingredients = require('../models/Ingredients')
 
+/* Initialize Database using ORM(Sequelize) */
 const InitializeDB = async function(drop){
     await DB.sequelize.authenticate();
     await console.log("Database Connected!");

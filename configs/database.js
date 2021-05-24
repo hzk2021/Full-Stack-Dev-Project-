@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 
+/* Database Configuration */
 const dbConfig = {
     host: 'localhost',
     database: 'project2021',
@@ -8,6 +9,7 @@ const dbConfig = {
     port: 3306
 }
 
+/* Define Sequelize DB */
 const sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, {
     host: dbConfig.host,
     port: dbConfig.port,

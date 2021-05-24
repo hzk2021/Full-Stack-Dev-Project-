@@ -2,6 +2,7 @@ const session = require('express-session');
 const sqlSessionStore = require('express-mysql-session');
 const DB = require("./database");
 
+/* Export function => Setup session and store it in mySQL */
 module.exports = session({
     key: 'project_session',
     secret: 'session_secret',
