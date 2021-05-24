@@ -1,7 +1,7 @@
 const Express = require('express');
 const ExpHandlebars = require('express-handlebars');
-const BodyParser = require('body-parser');
 const Path = require('path');
+const Flash = require('connect-flash');
 const sqlDB = require('./configs/dbConnection');
 const sqlSession = require('./configs/dbSession');
 const MainRoutes = require('./routes/main');
@@ -26,12 +26,13 @@ Server.set('view engine', 'handlebars');
 
 Server.use(Express.static(Path.join(__dirname, 'public')));
 
-Server.use(BodyParser.urlencoded({
+Server.use(Express.urlencoded({
     extended: false
 }));
 
-Server.use(BodyParser.json());
+Server.use(Express.json());
 Server.use(sqlSession);
+Server.use(Flash());
 
 Server.use('/', [MainRoutes, UserOrder, UserRewards]); // Main
  // User Order
