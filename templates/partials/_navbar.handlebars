@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-3">
+<nav class="navbar navbar-expand-sm navbar-dark bg-warning mb-3">
 	<div class="container">
-		<a class="navbar-brand" href="/">Project</a>
+		<a class="navbar-brand" href="/">Carl's Jr</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
 				  aria-expanded="false"
 				  aria-label="Toggle navigation">
@@ -11,11 +11,32 @@
 				<li class="nav-item">
 					<a class="nav-link" href="/">Home</a>
 				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbardropSupplies" data-toggle="dropdown">Supplies</a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" href="../supplies/createSupply">Create New Supply</a>
+						<a class="dropdown-item" href="../supplies/dashboard">View Supplies Dashboard and List</a>
+						<a class="dropdown-item" href="../supplies/viewSuppliesOrder">View Supplies Order</a>
+					</div>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbardropRewards" data-toggle="dropdown">Rewards</a>
+					<div class="dropdown-menu">
+						<a class="dropdown-item" href="../viewRewards">User View Rewards</a>
+						<a class="dropdown-item" href="../rewards/adminRewardsList">View Rewards List</a>
+					</div>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="../onlineMenu">Menu</a>
+				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/about">About</a>
 				</li>
 			</ul>
 			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="../cart">Cart</a>
+				</li>
 				{{#if user}}
 					<li class="nav-item dropdown">
 						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Video

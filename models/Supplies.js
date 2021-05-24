@@ -12,6 +12,10 @@ const Supplies = Database.sequelize.define('supplies', {
         type: Sequelize.STRING(40),
         allowNull: false
     },
+    category: {
+        type: Sequelize.STRING(),
+        allowNull: false,
+    },
     current_stock_lvl: {
         type: Sequelize.BIGINT(5),
         default: 0

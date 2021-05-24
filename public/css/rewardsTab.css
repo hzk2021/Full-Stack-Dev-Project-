@@ -1,0 +1,30 @@
+div.rewards-tab {
+    position: relative;
+    bottom: 45px;
+}
+
+div.rewards-container {
+    box-shadow: 0px 0px 5px 0px lightgrey;
+    border-radius:5px;
+    padding:15px;
+    width:225%;
+    max-height:360px;
+    overflow:auto;
+}
+
+.rewards-list {
+    width:100%;
+}
+
+table.rewards-list tr {
+    border-bottom:1px solid lightgrey;
+}
+
+table.rewards-list tr td a, table.rewards-list tr td p {
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+.button-close {
+    margin-top:10px;
+}

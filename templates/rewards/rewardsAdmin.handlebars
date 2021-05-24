@@ -1,0 +1,121 @@
+<h1 class="display-4">Rewards List</h1>
+<br>
+
+<div class="row rewards-table-container" style="width:85%;">
+  <table class="container-fluid">
+    <!--<tr>
+      {{#for 1 6}}
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+          <h3>Day j*10+i*5</h3>
+          {% if prizes_list.get(j*10+i*5) != None  %}
+          {}
+          <h4>{ prizes_list[j*10+i*5].get_item_name() }</h4>
+          <p>Food ID:{ prizes_list[j*10+i*5].get_menu_id() }</p>
+          <p>Supplies Required: { prizes_list[j*10+i*5].get_description() }</p>
+          <a class="btn btn-secondary admin-edit" href="/rewardsAdmin/{j*10+i*5}">Edit Reward</a>
+          <br>
+          {% else %}
+          <h4 class="text-danger">(Item not specified)</h4>
+          <p>Food ID: None</p>
+          <p>Supplies Required: None</p>
+          <a class="btn btn-warning admin-edit" href="/rewardsAdmin/{j*10+i*5}">Add Reward</a>
+          {% endif %}
+        </div>
+      </td>
+      {{/for}}
+    </tr>
+ -->
+
+    <tr>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 5</h3>
+        <h4>{{ prizes_list.[0] }}</h4>
+        <a class="btn btn-secondary admin-edit" href="editRewards/5">Edit Reward</a>
+        </div>
+      </td>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 10</h3>
+        <h4>{{ prizes_list.[1] }}</h4>
+        <a class="btn btn-secondary admin-edit" href="editRewards/10">Edit Reward</a>
+        </div>
+      </td>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 15</h3>
+        <h4>{{ prizes_list.[2] }}</h4>
+        <a class="btn btn-secondary admin-edit" href="editRewards/15">Edit Reward</a>
+        </div>
+      </td>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 20</h3>
+        <h4>{{ prizes_list.[3] }}</h4>
+        <a class="btn btn-secondary admin-edit" href="editRewards/20">Edit Reward</a>
+        </div>
+      </td>
+    <tr>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 25</h3>
+        <h4>{{ prizes_list.[4] }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/25">Add Reward</a>
+        </div>
+      </td>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 30</h3>
+        <h4>{{ prizes_list.[5] }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/30">Add Reward</a>
+        </div>
+      </td>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 35</h3>
+        <h4>{{ prizes_list.[6] }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/35">Add Reward</a>
+        </div>
+      </td>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 40</h3>
+        <h4>{{ prizes_list.[7] }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/40">Add Reward</a>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 45</h3>
+        <h4>{{ prizes_list.[8] }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/45">Add Reward</a>
+        </div>
+      </td>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 50</h3>
+        <h4>{{ prizes_list.[9] }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/50">Add Reward</a>
+        </div>
+      </td>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 55</h3>
+        <h4>{{ prizes_list.[10] }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/55">Add Reward</a>
+        </div>
+      </td>
+      <td>
+        <div class="normal normal-day-cell" style="height:220px;">
+        <h3>Day 60</h3>
+        <h4>{{ prizes_list.[11] }}</h4>
+        <a class="btn btn-warning admin-edit" href="editRewards/60">Add Reward</a>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>
+

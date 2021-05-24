@@ -1,0 +1,20 @@
+<h1 class="display-4">Menu</h1>
+<br>
+
+<!-- Prizes Menu -->
+<div class="rewards-tab nav-item dropdown float-right">
+    <a class="btn btn-primary nav-link dropdown-toggle float-right" href="#" id="rewardsTab" data-toggle="dropdown">Claim Rewards</a>
+    <div class="dropdown-menu dropdown-menu-right rewards-container rewards-container" id="rewardsTab" style="clear:right;">
+        <h3>Your Rewards</h3>
+        <p>Click on claim to add your reward to cart</p>
+        <table class="rewards-list">
+            {{#each prizes_list}}
+            <tr>
+              <td>{{ this }}</td>
+              <td><a class="btn btn-success" style="margin-left:15px;" href="">Claim</a></td>
+            </tr>
+            {{/each}}
+        </table>
+        <a class="btn btn-secondary button-close" href="#" id="rewardsTab2" data-toggle="collapse">Close Tab</a>
+    </div>
+</div>
