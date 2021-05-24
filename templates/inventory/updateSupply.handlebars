@@ -1,0 +1,31 @@
+<div class="form-sm">
+<h1 class="display-4">Update Supply</h1>
+<br>
+
+<form method="POST" action="">
+    <div class="form-group">
+        <label for="name">Item Name</label>
+        <input type="text" name="name" class="form-control">
+    </div>
+    <div class="form-group" style="width:40%">
+        <label for="type">Supply Type</label>
+        <select name="type" id="type" class="form-control">
+            <option class="disabled-option" disabled selected value>Select category</option>
+            <option value="Meat">Meat</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Others">Others</option>
+        </select>
+    </div>
+    <div class="form-group" style="width:40%">
+        <label for="quantity">Quantity</label>
+        {{#if next_orders}}
+        <input type="number" name="quantity" class="form-control" value="{{next_orders}}">
+        {{else}}
+        <input type="number" name="quantity" class="form-control" value="0" disabled>
+        {{/if}}
+    </div>
+    <br>
+    <a href="/retrieveSupplies" class="btn btn-danger">Discard Changes</a>
+    <input type="submit" value="Submit Changes" class="btn btn-success">
+</form>
+</div>

@@ -1,0 +1,42 @@
+<h1 class="display-4">Orders For Next Weeks</h1>
+<br>
+
+{{#unless next_value_dict}}
+<h4>The admin has yet to submit their following week supplies order.</h4>
+<h4>Check back soon!</h4>
+<br>
+<a class="btn btn-primary" href="/">Back to Home</a>
+{{else}}
+{{set count '=' 1}}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Product Name</th>
+      <th>Quantity</th>
+    </tr>
+  </thead>
+  <tbody> 
+    {{#each next_value_dict}}
+    <tr class="submitted-items">
+      <th></th>
+      <td>{{ @key }}</td>
+      <td>{{ this }}</td>
+      {{set count "+=" 1}}
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+<a href="/retrieveSupplies" class="btn btn-secondary btn-long">Go Back</a>
+<a href="/" class="btn btn-primary float-right btn-long">Home</a>
+{{/unless}}
+
+<script>
+  function assign_num() {
+    var rows = document.getElementsByClassName('submitted-items');
+    for (i=0; i<rows.length; i++) {
+      rows[i].getElementsByTagName('th')[0].innerText = i+1;
+    }
+  }
+  assign_num();
+</script>
