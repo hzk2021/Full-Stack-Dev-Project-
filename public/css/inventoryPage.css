@@ -1,0 +1,109 @@
+div#supplies h2 {
+    clear: both;
+}
+
+.graph-container {
+    width: 75%;
+    min-width: 1200px;
+}
+
+ul#y-axis {
+    list-style-type: none;
+    position: relative;
+    float: left;
+    bottom:10px;
+    right:30px;
+}
+
+ul#y-axis li {
+    text-align: right;
+    margin-bottom:3.35em;
+}
+
+ul#x-axis {
+    list-style-type: none;
+    position: relative;
+    left:20px;
+    top:10px;
+}
+
+ul#x-axis li {
+    display:inline;
+    margin-right: 80px;
+    text-align: center;
+}
+
+#graph-axis {
+    border-left: 2px solid black;
+    border-bottom: 2px solid black;
+    height: 470px;
+    width:850px;
+    margin-right:0;
+    position: relative;
+    left:60px;
+}
+
+.graph-bar {
+    height:2px;
+    width: 50px;
+    text-align: center;
+    color:white;
+    position: relative;
+    float:left;
+    right:80px;
+    margin:0px 50px;
+}
+
+#graph-controls {
+    position: absolute;
+    top: 175px;
+    right:200px;
+    float:right;
+}
+
+h4, h5 {
+    font-weight: normal;
+}
+
+ul.li-striped {
+    border:1px solid #B7B7B7;
+    border-radius: 5px;
+    list-style-type: none;
+    padding-left:0px;
+    margin:0px;
+    margin-bottom: 20px;
+    max-height:260px;
+    overflow: auto;
+}
+
+ul.li-striped li {
+    border-bottom:1px solid #DDDDDD;
+    padding: 6px;
+}
+
+ul.li-striped li a {
+    color: #606060;
+    font-size: 16.5px;
+    padding-left:5px;
+}
+
+ul.li-striped li a:hover {
+    text-decoration: none;
+    color: #0d6efd;
+}
+
+ul.li-striped > li:nth-child(odd) {
+    background-color:#F9F9F9;
+}
+
+input.supplies-search {
+    margin:7.5px 5px 0px 15px;
+    font-size:15px;
+    height:30px;
+    padding:7.5px;
+}
+
+.btn-long {
+    padding-left:25px;
+    padding-right:25px;
+}

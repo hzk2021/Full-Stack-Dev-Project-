@@ -1,0 +1,11 @@
+.nav-item > a:hover {
+    color:grey !important;
+}
+
+li.nav-item.active {
+    background-color: black;
+}
+
+li.nav-item.active a {
+    color: white !important;
+}

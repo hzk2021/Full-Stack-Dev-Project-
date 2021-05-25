@@ -1,0 +1,28 @@
+<div class="form-sm">
+<h1 class="display-4">Create Supply</h1>
+<br>
+
+<form method="POST" action="">
+    <div class="form-group">
+        <label for="name">Item Name:</label>
+        <input type="text" name="name" class="form-control" required>
+    </div>
+    <div class="form-group" style="width:40%;">
+        <label for="type">Supply type:</label>
+        <input type="text" name="type" class="form-control" required>
+    </div>
+    <br>
+    <input type="submit" value="Add to supplies" class="btn btn-success">
+    <a href="/supplies/dashboard" class="btn btn-primary" style="margin-left:1%;">View list and performance</a>
+</form>
+<br>
+
+<div>
+    <h3>Your Supply List</h3>
+    <ol>
+        {{#each supplies_dict}}
+        <li>{{ this }}</li>
+        {{/each}}
+    </ol>
+</div>
+</div>
