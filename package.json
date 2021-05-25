@@ -1,0 +1,26 @@
+{
+  "name": "website-barebone",
+  "version": "1.0.0",
+  "description": "Full Stack Development Website",
+  "main": "server.js",
+  "scripts": {
+    "devMode": "nodemon server.js"
+  },
+  "author": "Zhenkai, Yantat, Nigel",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "connect-flash": "^0.1.1",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.3.2",
+    "express-mysql-session": "^2.1.6",
+    "express-session": "^1.17.1",
+    "flash-messenger": "^1.1.1",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.6.2",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
