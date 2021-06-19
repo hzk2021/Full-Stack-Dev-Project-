@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize');
+const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
 const uuid = require('uuid');
 
@@ -7,7 +7,20 @@ const UserRole = {
     User: "user"
 };
 
-const User = Database.sequelize.define('user', {
+class User extends Model{
+    get uuid() { return String(this.getDataValue("uuid")); }
+    get name() { return String(this.getDataValue("name")); }
+    get role(){ return String(this.getDataValue("role")); }
+    get email() { return String(this.getDataValue("email")); }
+    get dateCreated() { return new Date(this.getDataValue("dateCreated")); }
+    get dateUpdated() { return new Date(this.getDataValue("dateUpdated")); }
+
+    set uuid(uuid) { this.setDataValue("uuid", uuid); }
+    set name(name) { this.setDataValue("name", name); }
+    set email(email) { this.setDataValue("email", email)}
+    
+}
+User.init({
     uuid: {
         type: Sequelize.CHAR(36),
         primaryKey: true,
@@ -15,7 +28,7 @@ const User = Database.sequelize.define('user', {
     },
     name: {
         type: Sequelize.STRING(64),
-        allowNull: false
+        allowNull: false,
     },
     email: {
         type: Sequelize.STRING(128),
@@ -40,6 +53,9 @@ const User = Database.sequelize.define('user', {
         allowNull: false,
         defaultValue: Sequelize.NOW
     }
+}, {
+    sequelize: Database.sequelize,
+    modelName: 'User'
 });
 
-module.exports = User;
+module.exports = {User, UserRole};
