@@ -1,6 +1,7 @@
 const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
 const uuid = require('uuid');
+const Hash = require('hash.js');
 
 const UserRole = {
     Admin: "admin",
@@ -57,5 +58,35 @@ User.init({
     sequelize: Database.sequelize,
     modelName: 'User'
 });
+
+User.addHook("afterBulkSync", generate_root_account.name, generate_root_account());
+
+async function generate_root_account(){
+    User.removeHook("afterBulkSync", generate_root_account.name);
+    
+    try {
+        console.log("Generating root administrator account");
+        const root_parameters = {
+            uuid    : "00000000-0000-0000-000000000000",
+            name    : "root",
+            email   : "root@mail.com",
+            role    : UserRole.Admin,
+            password: Hash.sha256().update("P@ssw0rd").digest("hex")
+        };
+
+        var account = await User.findOne( {where: {"uuid": root_parameters.uuid }});
+        account = await ((account) ? account.update(root_parameters): User.create(root_parameters))
+
+        console.log("== Generated root account ==");
+        console.log(account.toJSON());
+        console.log("============================");
+        return Promise.resolve();
+    }
+    catch (err){
+        console.error("Failed to generate root administrator user account");
+        console.error(err);
+        return Promise.reject(err);
+    }
+}
 
 module.exports = {User, UserRole};
