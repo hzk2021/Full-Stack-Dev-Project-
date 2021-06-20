@@ -6,12 +6,6 @@ const PassportSetup = require('./configs/passportSetup');
 const sqlDB = require('./configs/dbConnection');
 const sqlSession = require('./configs/dbSession');
 const MainRoutes = require('./routes/main');
-const AuthRoutes = require('./routes/auth');
-//The routes
-const AdminInventory = require('./routes/admin/inventory');
-const AdminRewards = require('./routes/admin/rewards');
-const UserOrder = require('./routes/user/order');
-const UserRewards = require('./routes/user/rewards');
 
 const Server = Express();
 const Port = process.env.PORT || 5000;
@@ -37,12 +31,7 @@ Server.use(Flash());
 PassportSetup.InitializePassport(Server);
 sqlDB.InitializeDB(false);
 
-Server.use('/', [MainRoutes, UserOrder, UserRewards]); // Main
- // User Order
-Server.use('/auth', AuthRoutes); // Auth
-Server.use('/supplies', AdminInventory); // Admin Supplies
-Server.use('/rewards', AdminRewards); // Admins Rewards
-
+Server.use('/', MainRoutes); // Main
 
 // Custom handlebars 
 Hbs.handlebars.registerHelper('for', function(from, to, block) {

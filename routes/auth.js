@@ -3,6 +3,7 @@ const Router = Express.Router();
 const {User, UserRole} = require('../models/User');
 const Hash = require('hash.js');
 const Passport = require('passport');
+const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../utilities/account_checker');
 
 /* GET Login */
 Router.get('/login', (req,res) => {
@@ -23,8 +24,8 @@ Router.get('/register', (req,res) =>{
 });
 
 /* POST Login & Register */
-Router.post('/login', login_process);
-Router.post('/register', register_process);
+Router.post('/login', isNotLoggedIn, login_process);
+Router.post('/register', isNotLoggedIn, register_process);
 
 
 /* Regex Validation Patterns */
