@@ -5,6 +5,7 @@ const Flash = require('connect-flash');
 const PassportSetup = require('./configs/passportSetup');
 const sqlDB = require('./configs/dbConnection');
 const sqlSession = require('./configs/dbSession');
+const LocalsMiddleware = require('./utilities/locals_object');
 const MainRoutes = require('./routes/main');
 
 const Server = Express();
@@ -30,6 +31,7 @@ Server.use(sqlSession);
 Server.use(Flash());
 PassportSetup.InitializePassport(Server);
 sqlDB.InitializeDB(false);
+Server.use(LocalsMiddleware);
 
 Server.use('/', MainRoutes); // Main
 

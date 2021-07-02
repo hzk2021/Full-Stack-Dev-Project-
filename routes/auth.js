@@ -6,7 +6,7 @@ const Passport = require('passport');
 const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../utilities/account_checker');
 
 /* GET Login */
-Router.get('/login', (req,res) => {
+Router.get('/login', isNotLoggedIn, (req,res) => {
     res.render('authentication/login', {
         success_msg: req.flash('success_msg'),
         error: req.flash('error'),
@@ -15,13 +15,19 @@ Router.get('/login', (req,res) => {
 });
 
 /* GET Register */
-Router.get('/register', (req,res) =>{
+Router.get('/register', isNotLoggedIn, (req,res) =>{
     res.render('authentication/register', {
         success_msg: req.flash('success_msg'),
         error: req.flash('error'),
         errors: req.flash('errors')
     });
 });
+
+Router.get('/logout', (req,res) => {
+    req.logout();
+    return res.redirect('/');
+})
+
 
 /* POST Login & Register */
 Router.post('/login', isNotLoggedIn, login_process);

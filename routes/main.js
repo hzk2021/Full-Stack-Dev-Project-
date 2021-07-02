@@ -13,8 +13,8 @@ Router.use('/user', UserRoutes);
 Router.get('/', (req,res) => {
     res.render('index', {
         author: 'zk, yantat, nigel',
-        success_msg: "Hello World!!", // example success
-        error_msg: "Error !!" // example error
+        success_msg: req.flash('success_msg'), // example success
+        error_msg: req.flash('error_msg') // example error
     });
 })
 

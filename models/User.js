@@ -56,8 +56,15 @@ User.init({
     }
 }, {
     sequelize: Database.sequelize,
-    modelName: 'User'
+    modelName: 'User',
+    hooks: {
+        afterUpdate: auto_update_timestamp
+    }
 });
+
+function auto_update_timestamp(user, options){
+    user.dateUpdated = Sequelize.literal('CURRENT_TIMESTAMP');
+}
 
 User.addHook("afterBulkSync", generate_root_account.name, generate_root_account());
 

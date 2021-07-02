@@ -38,16 +38,13 @@
 				</li>
 				{{#if user}}
 					<li class="nav-item dropdown">
-						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Video
-							Jots</a>
+						<a class="nav-link dropdown-toggle" href="#" id="navbardropRewards" data-toggle="dropdown">My Account</a>
 						<div class="dropdown-menu">
-							<a href="" class="dropdown-item">Videos</a>
-							<a href="" class="dropdown-item">Add Video</a>
+							<a class="dropdown-item" href="/user/profile/edit">Edit Profile</a>
+							<a class="dropdown-item" href="/auth/logout">Sign Out</a>
 						</div>
 					</li>
-					<li class="nav-item">
-						<a href="/auth/logout" class="nav-link">Logout</a>
-					</li>
+
 				{{else}}
 					<li class="nav-item">
 						<a href="/auth/login" class="nav-link">Login</a>
