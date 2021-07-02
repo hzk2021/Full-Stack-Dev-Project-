@@ -36,6 +36,11 @@ Server.use(LocalsMiddleware);
 Server.use('/', MainRoutes); // Main
 
 // Custom handlebars 
+Hbs.handlebars.registerHelper('with', function(context, options){
+    return options.fn(context);
+});
+
+
 Hbs.handlebars.registerHelper('for', function(from, to, block) {
     var accum = '';
     for(var i = from; i < to; ++i)

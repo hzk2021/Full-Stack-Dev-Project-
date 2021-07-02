@@ -1,0 +1,25 @@
+<link href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css" rel="stylesheet">
+
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+
+<h1>Account Database</h1>
+<table
+  id="table"
+  data-toggle="table"
+  data-search="true"
+  data-url="/admin/accounts/list-data"
+  data-pagination= "true"
+  data-side-pagination= "server"
+  data-filter-control="true">
+  <thead>
+    <tr>
+      <th data-field="uuid" data-filter-control="input">UUID</th>
+      <th data-field="email" data-filter-control="input">Email</th>
+      <th data-field="name" data-filter-control="input">Name</th>
+      <th data-field="role" data-filter-control="input">Role</th>
+      <th data-field="dateCreated" data-filter-control="input">CreatedAt</th>
+      <th data-field="dateUpdated" data-filter-control="input">UpdatedAt</th>
+    </tr>
+  </thead>
+
+</table>
