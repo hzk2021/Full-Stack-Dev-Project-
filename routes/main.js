@@ -16,6 +16,12 @@ Router.get('/', (req,res) => {
         success_msg: req.flash('success_msg'), // example success
         error_msg: req.flash('error_msg') // example error
     });
-})
+});
+
+Router.get('*', (req,res,next) =>{
+    let err = new Error('URL not found!');
+    res.statusCode = 404;
+    next(err);
+});
 
 module.exports = Router;

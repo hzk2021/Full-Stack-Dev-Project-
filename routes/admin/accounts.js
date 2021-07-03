@@ -11,11 +11,11 @@ const regexName = /^[a-zA-Z][a-zA-Z]{2,}$/;
 const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 
-Router.get('/list', AccountChecker.isLoggedIn, async function(req,res) {
+Router.get('/list', AccountChecker.isLoggedIn, AccountChecker.isAdmin , async function(req,res) {
     return res.render('accounts/showAccounts');
 });
 
-Router.get('/list-data', AccountChecker.isLoggedIn, async function(req,res) {
+Router.get('/list-data', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async function(req,res) {
     console.log(req.query);
     const filterSearch = req.query.search;
 
@@ -51,7 +51,7 @@ Router.get('/list-data', AccountChecker.isLoggedIn, async function(req,res) {
     });
 });
 
-Router.get('/create', AccountChecker.isLoggedIn, async function(req,res){
+Router.get('/create', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async function(req,res){
     res.render('accounts/createAccount', {
         success_msg: req.flash('success_msg'),
         error: req.flash('error'),
@@ -59,7 +59,7 @@ Router.get('/create', AccountChecker.isLoggedIn, async function(req,res){
     });
 });
 
-Router.post('/create', AccountChecker.isLoggedIn, async function(req,res) {
+Router.post('/create', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async function(req,res) {
     let errors = [];
     
     try {
@@ -109,7 +109,7 @@ Router.post('/create', AccountChecker.isLoggedIn, async function(req,res) {
     }
 });
 
-Router.post('/delete/:id/:role', AccountChecker.isLoggedIn, async function(req,res) {
+Router.post('/delete/:id/:role', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async function(req,res) {
     const user_uuid = req.params.id;
     const user_role = req.params.role;
 
