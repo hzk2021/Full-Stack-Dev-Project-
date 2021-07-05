@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 const {Sequelize, Model} = require('sequelize');
+=======
+const Sequelize = require('sequelize');
+>>>>>>> origin/main
 const Database = require('../configs/database');
 const uuid = require('uuid');
 
 const daysAllowed = [5,10,15,20,25,30,35,40,45,50,55,60]
 
+<<<<<<< HEAD
 class RewardsList extends Model {
     get day_no() { return Int8Array(this.getDataValue("day_no")); }
     get food_primary() { return String(this.getDataValue("food_primary")); }
@@ -14,6 +19,9 @@ class RewardsList extends Model {
 }
 
 RewardsList.init({
+=======
+const RewardsList = Database.sequelize.define('rewards_list', {
+>>>>>>> origin/main
     day_no: {
         type: Sequelize.SMALLINT(2),
         primaryKey: true,
@@ -31,6 +39,7 @@ RewardsList.init({
         type: Sequelize.STRING(50),
         allowNull: true
     }
+<<<<<<< HEAD
 }, {
     sequelize: Database.sequelize,
     modelName: 'rewards_list',
@@ -44,3 +53,8 @@ function auto_update_timestamp(user, options){
 }
 
 module.exports = { RewardsList };
+=======
+})
+
+module.exports = RewardsList;
+>>>>>>> origin/main

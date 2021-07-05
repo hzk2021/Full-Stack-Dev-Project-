@@ -1,32 +1,18 @@
 <!--Progress Table-->
 <h1 class="display-4">Reward Progress</h1>
-<<<<<<< HEAD
 {{#unless user}}
-=======
-{{#if false}}
->>>>>>> origin/main
 <div class="norewards-container">
     <div>
         <p class="no-rewards">You need a member account to partake and view rewards</p>
         <div class="sign-in">
             <h4>Login or sign up for membership</h4>
-<<<<<<< HEAD
-            <a class="btn btn-primary sign" href="/auth/login">Login</a>
-            <br>
-            <a class="btn btn-outline-secondary sign" href="/auth/createUser">Sign up for membership</a>
-        </div>
-    </div>
-</div>
-{{/unless}}
-=======
             <a class="btn btn-primary sign" href="/login">Login</a>
             <br>
             <a class="btn btn-outline-secondary sign" href="/createUser">Sign up for membership</a>
         </div>
     </div>
 </div>
-{{else}}
->>>>>>> origin/main
+{{/unless}}
 <div>
     <p style="font-size:20px;">You have made <strong>{{ total_orders }}</strong> orders in total.</p>
 </div>
@@ -42,18 +28,13 @@
             <td>
                 <div class="normal normal-day-cell">
                     <h3>Day </h3>
-<<<<<<< HEAD
                     <img class="completed-icon" src="img/DayCompleted.png/" alt="">
-=======
-                    <img class="completed-icon" src="img/DayCompleted.png" alt="">
->>>>>>> origin/main
                 </div>
             </td>
             {{/for}}
             <td>
                 <a href="/menuPublic"><div class="normal reward reward-day-cell">
                     <h3>Day </h3>
-<<<<<<< HEAD
                     {{#if this.food_primary}}
                     <h4>{{ this.food_primary }}</h4>
                     {{else}}
@@ -68,11 +49,6 @@
                     
                     <img class="completed-icon" src="img/DayCompleted.png" alt="">
                     {{#if this.claimed}}
-=======
-                    <h4>{{ @key }}</h4>
-                    <img class="completed-icon" src="img/DayCompleted.png" alt="">
-                    {{#if this}}
->>>>>>> origin/main
                     <p>Click to order and claim it!</p>
                     {{else}}
                     <p>Prize claimed</p>
@@ -81,11 +57,7 @@
             </td>
         </tr>
     {{/each}}
-<<<<<<< HEAD
         <!-- Final row with reached days -->
-=======
-        <!-- Row that has reached & unreached parts -->
->>>>>>> origin/main
         <tr>
             <!-- Reached cells -->
             {{#for 0 leftover.Reached}}
@@ -107,7 +79,6 @@
             <td>
                 <div class="reward locked-reward-day-cell">
                     <h3>Day </h3>
-<<<<<<< HEAD
                     {{#if middle.food_primary}}
                     <h4>{{ middle.food_primary }}</h4>
                     {{else}}
@@ -119,17 +90,11 @@
                     {{else}}
                     <h4> </h4>
                     {{/if}}
-=======
-                    <h4>{{ middle }}</h4>
->>>>>>> origin/main
                     <p>Not claimable yet</p>
                 </div>
             </td>
         </tr>
-<<<<<<< HEAD
 
-=======
->>>>>>> origin/main
         <!-- Rows that do not covers all cells in the row -->
         {{#each not_reached}}
         <tr>
@@ -143,7 +108,6 @@
             <td>
                 <div class="reward locked-reward-day-cell">
                     <h3>Day </h3>
-<<<<<<< HEAD
                     {{#if this.food_primary}}
                     <h4>{{ this.food_primary }}</h4>
                     {{else}}
@@ -155,9 +119,6 @@
                     {{else}}
                     <h4> </h4>
                     {{/if}}
-=======
-                    <h4>{{ this }}</h4>
->>>>>>> origin/main
                     <p>Not claimable yet</p>
                 </div>
             </td>
@@ -166,10 +127,6 @@
         </tbody>
     </table>
 </div>
-<<<<<<< HEAD
-=======
-{{/if}}
->>>>>>> origin/main
 <script>
     function assignDay() {
         for (i=0; i<60; i++) {

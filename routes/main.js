@@ -18,7 +18,11 @@ Router.get('/', (req,res) => {
     });
 });
 
+<<<<<<< HEAD
 Router.get('', (req,res,next) =>{
+=======
+Router.get('*', (req,res,next) =>{
+>>>>>>> origin/main
     let err = new Error('URL not found!');
     res.statusCode = 404;
     next(err);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
 const uuid = require('uuid');
@@ -12,6 +13,14 @@ class Ingredients extends Model {
 
 Ingredients.init({
     item_name: {
+=======
+const Sequelize = require('sequelize');
+const Database = require('../configs/database');
+const uuid = require('uuid');
+
+const Ingredients = Database.sequelize.define('ingredients', {
+    food_name: {
+>>>>>>> origin/main
         type: Sequelize.STRING(50),
         allowNull: false,
     },
@@ -19,6 +28,7 @@ Ingredients.init({
         type: Sequelize.STRING(200),
         allowNull: false,
     }
+<<<<<<< HEAD
 }, {
     sequelize: Database.sequelize,
     modelName: 'ingredients',
@@ -32,3 +42,6 @@ function auto_update_timestamp(user, options){
 }
 
 module.exports = { Ingredients };
+=======
+})
+>>>>>>> origin/main

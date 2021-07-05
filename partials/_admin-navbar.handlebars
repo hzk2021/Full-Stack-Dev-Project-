@@ -1,0 +1,42 @@
+<nav class="navbar navbar-expand-sm navbar-dark bg-warning mb-3">
+	<div class="container">
+		<a class="navbar-brand" href="/">Carl's Jr</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
+				  aria-expanded="false"
+				  aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarNav">
+			<ul class="navbar-nav">
+				<li class="nav-item">
+					<a class="nav-link" href="/admin/accounts/list">Account Database</a>
+				</li>
+			</ul>
+			<ul class="navbar-nav ml-auto">
+				{{#if user}}
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbardropRewards" data-toggle="dropdown">
+							{{#with user}} 
+
+							{{#with dataValues}}Hi {{name}} (My Account) {{/with}} 
+
+							{{/with}}
+						</a>
+						<div class="dropdown-menu">
+							<a class="dropdown-item" href="/user/profile/edit">Edit Profile</a>
+							<a class="dropdown-item" href="/auth/logout">Sign Out</a>
+						</div>
+					</li>
+
+				{{else}}
+					<li class="nav-item">
+						<a href="/auth/login" class="nav-link">Login</a>
+					</li>
+					<li class="nav-item">
+						<a href="/auth/register" class="nav-link">Register</a>
+					</li>
+				{{/if}}
+			</ul>
+		</div>
+	</div>
+</nav>
