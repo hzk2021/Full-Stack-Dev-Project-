@@ -1,13 +1,20 @@
+<<<<<<< HEAD
 const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
 const uuid = require('uuid');
 const Hash = require('hash.js');
+=======
+const Sequelize = require('sequelize');
+const Database = require('../configs/database');
+const uuid = require('uuid');
+>>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
 
 const UserRole = {
     Admin: "admin",
     User: "user"
 };
 
+<<<<<<< HEAD
 class User extends Model{
     get uuid() { return String(this.getDataValue("uuid")); }
     get name() { return String(this.getDataValue("name")); }
@@ -22,14 +29,33 @@ class User extends Model{
     
 }
 User.init({
+=======
+const User = Database.sequelize.define('user', {
+>>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
     uuid: {
         type: Sequelize.CHAR(36),
         primaryKey: true,
         defaultValue: Sequelize.DataTypes.UUIDV4
     },
+<<<<<<< HEAD
     name: {
         type: Sequelize.STRING(64),
         allowNull: false,
+=======
+    dateCreated: {
+        type: Sequelize.DATE(),
+        allowNull: false,
+        defaultValue: Sequelize.NOW
+    },
+    dateUpdated: {
+        type: Sequelize.DATE(),
+        allowNull: false,
+        defaultValue: Sequelize.NOW
+    },
+    name: {
+        type: Sequelize.STRING(64),
+        allowNull: false
+>>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
     },
     email: {
         type: Sequelize.STRING(128),
@@ -43,6 +69,7 @@ User.init({
     password: {
         type: Sequelize.STRING(64),
         allowNull: false
+<<<<<<< HEAD
     },
     dateCreated: {
         type: Sequelize.DATE(),
@@ -97,3 +124,9 @@ async function generate_root_account(){
 }
 
 module.exports = {User, UserRole};
+=======
+    }
+});
+
+module.exports = User;
+>>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7

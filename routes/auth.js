@@ -1,5 +1,6 @@
 const Express = require('express');
 const Router = Express.Router();
+<<<<<<< HEAD
 const {User, UserRole} = require('../models/User');
 const Hash = require('hash.js');
 const Passport = require('passport');
@@ -129,5 +130,7 @@ async function register_process(req,res){
         return res.status(500).end();
     }
 }
+=======
+>>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
 
 module.exports = Router;

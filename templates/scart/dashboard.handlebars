@@ -1,0 +1,30 @@
+<p>There is 1 orders.</p>
+
+
+    <h1 class="display-4">Incoming Orders</h1>
+
+<div>
+  <table class="table ">
+
+    <tbody>
+      {{#each order_dict}}
+        <thead class="thead-dark">
+          <tr>
+            <th>Order Id</th>
+            <th>Items</th>
+
+          </tr>
+        </thead>
+
+        <tr>
+          <th>{{@index}}</th>
+          <th>{{this}}</th>
+        </tr>
+        <a class="btn btn-danger" href="">Order Complete</a>
+      
+      {{/each}}
+    </tbody>
+  </table>
+</div>
+
+
