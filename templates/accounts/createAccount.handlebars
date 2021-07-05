@@ -1,0 +1,33 @@
+<div class="row">
+	<div class="col-md-6 mx-auto">
+		<div class="card card-body">
+			<img class="logo" src="/img/logo.png">
+			<h3 class="text-center">Create Account</h3>
+			<form action="/admin/accounts/create" method="POST">
+				<div class="form-group">
+					<label for="name">Name</label>
+					<input type="text" class="form-control" name="name" value="" required>
+				</div>
+				<div class="form-group">
+					<label for="email">Email</label>
+					<input type="email" name="email" class="form-control" value="" required>
+				</div>
+				<div class="form-group">
+					<label for="user">User</label>
+					<input type="radio" name="role" class="form-control" value="user" required>
+					<label for="admin">Admin</label>
+					<input type="radio" name="role" class="form-control" value="admin" required>
+				</div>
+				<div class="form-group">
+					<label for="password">Password</label>
+					<input type="password" name="password" class="form-control" value="" required>
+				</div>
+				<div class="form-group">
+					<label for="password2">Confirm Password</label>
+					<input type="password" name="password2" class="form-control" value="" required>
+				</div>
+				<button type="submit" class="btn btn-primary">Create</button>
+			</form>
+		</div>
+	</div>
+</div>

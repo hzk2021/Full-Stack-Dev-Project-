@@ -1,11 +1,12 @@
 const Express = require('express');
 const Router = Express.Router();
-const User = require('../models/User');
+const {User, UserRole} = require('../models/User');
 const Hash = require('hash.js');
 const Passport = require('passport');
+const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../utilities/account_checker');
 
 /* GET Login */
-Router.get('/login', (req,res) => {
+Router.get('/login', isNotLoggedIn, (req,res) => {
     res.render('authentication/login', {
         success_msg: req.flash('success_msg'),
         error: req.flash('error'),
@@ -14,7 +15,7 @@ Router.get('/login', (req,res) => {
 });
 
 /* GET Register */
-Router.get('/register', (req,res) =>{
+Router.get('/register', isNotLoggedIn, (req,res) =>{
     res.render('authentication/register', {
         success_msg: req.flash('success_msg'),
         error: req.flash('error'),
@@ -22,9 +23,15 @@ Router.get('/register', (req,res) =>{
     });
 });
 
+Router.get('/logout', (req,res) => {
+    req.logout();
+    return res.redirect('/');
+})
+
+
 /* POST Login & Register */
-Router.post('/login', login_process);
-Router.post('/register', register_process);
+Router.post('/login', isNotLoggedIn, login_process);
+Router.post('/register', isNotLoggedIn, register_process);
 
 
 /* Regex Validation Patterns */

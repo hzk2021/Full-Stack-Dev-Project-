@@ -10,6 +10,9 @@
 		  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<link rel="stylesheet" href="/css/style.css">
 
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css">
+
 	<!--For Bootstrap datepicker-->
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
 		integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous">
@@ -42,7 +45,12 @@
 	<title>Main Page</title>
 </head>
 <body>
-	{{> _navbar }}
+	{{#ifc userRole '==' 'admin'}} 
+		{{> _admin-navbar }}
+		{{else}}
+		{{> _navbar }}
+	{{/ifc}}
+
 	<div class="container">
 		{{> _msg}}
 		{{> _errors}}

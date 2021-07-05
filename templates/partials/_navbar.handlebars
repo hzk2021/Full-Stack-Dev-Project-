@@ -14,33 +14,19 @@
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbardropSupplies" data-toggle="dropdown">Supplies</a>
 					<div class="dropdown-menu">
-						<a class="dropdown-item" href="../supplies/dashboard">View Supplies Dashboard and List</a>
-						<a class="dropdown-item" href="../supplies/viewSuppliesOrder">View Supplies Order</a>
+						<a class="dropdown-item" href="/admin/inventory/dashboard">View Supplies Dashboard and List</a>
+						<a class="dropdown-item" href="/admin/inventory/viewSuppliesOrder">View Supplies Order</a>
 					</div>
 				</li>
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbardropRewards" data-toggle="dropdown">Rewards</a>
 					<div class="dropdown-menu">
-						<a class="dropdown-item" href="../viewRewards">User View Rewards</a>
-						<a class="dropdown-item" href="../rewards/adminRewardsList">View Rewards List</a>
+						<a class="dropdown-item" href="/user/rewards/viewRewards">User View Rewards</a>
+						<a class="dropdown-item" href="/admin/rewards/rewardsList">View Rewards List</a>
 					</div>
 				</li>
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbardropdowncart" data-toggle="dropdown">Orders</a>
-					<div class="dropdown-menu">
-					<a class="dropdown-item" href="/confirmOrder">Confirm Order</a>
-					<a class="dropdown-item" href="/orderComplete">Order Complete</a>
-					<a class="dropdown-item" href="/order/dashboard">Dashboard</a>
-					</div>
-				</li>
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbardropdownmenu" data-toggle="dropdown">Menu</a>
-					<div class="dropdown-menu">
-					<a class="dropdown-item" href="/menuPublic">Menu</a>
-					<a class="dropdown-item" href="/menu/createMenu">Create Menu</a>
-					<a class="dropdown-item" href="/menu/retrieveMenu">Retrieve Menu</a>
-					<a class="dropdown-item" href="/menu/editMenu">Edit Menu</a>
-					</div>
+				<li class="nav-item">
+					<a class="nav-link" href="/user/menu/menuPublic">Menu</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/about">About</a>
@@ -48,20 +34,23 @@
 			</ul>
 			<ul class="navbar-nav ml-auto">
 				<li class="nav-item">
-					<a class="nav-link" href="/cart">Cart</a>
+					<a class="nav-link" href="/user/cart">Cart</a>
 				</li>
 				{{#if user}}
 					<li class="nav-item dropdown">
-						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Video
-							Jots</a>
+						<a class="nav-link dropdown-toggle" href="#" id="navbardropRewards" data-toggle="dropdown">
+							{{#with user}} 
+
+							{{#with dataValues}}Hi {{name}} (My Account) {{/with}} 
+
+							{{/with}}
+						</a>
 						<div class="dropdown-menu">
-							<a href="" class="dropdown-item">Videos</a>
-							<a href="" class="dropdown-item">Add Video</a>
+							<a class="dropdown-item" href="/user/profile/edit">Edit Profile</a>
+							<a class="dropdown-item" href="/auth/logout">Sign Out</a>
 						</div>
 					</li>
-					<li class="nav-item">
-						<a href="/auth/logout" class="nav-link">Logout</a>
-					</li>
+
 				{{else}}
 					<li class="nav-item">
 						<a href="/auth/login" class="nav-link">Login</a>

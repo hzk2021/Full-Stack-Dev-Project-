@@ -1,6 +1,6 @@
 const Passport = require('passport');
 const {Strategy} = require('passport-local');
-const User = require('../models/User');
+const {User, UserRole} = require('../models/User');
 const Hash = require('hash.js');
 
 /* Initialize Passport Function */

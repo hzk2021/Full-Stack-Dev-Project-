@@ -14,8 +14,13 @@
     {{#each order_rewards_list}}
     <li>
         <div>
-            <h3>{{this}}</h3>
+            <h3>Reward Item</h3>
+            <h3>{{this.food_primary}}</h3>
+            {{#if this.food_secondary}}
+            <h3>{{this.food_secondary}}</h3>
+            {{/if}}
             <p>FREE</p>
+            <a class="btn btn-danger" href="/user/rewards/remove-rewards-from-cart/{{this.day_no}}">Delete</a>
         </div>
     </li>
     {{/each}}
@@ -25,5 +30,5 @@
         <p>Delivery fee: ${{delivery_price}}</p>
         <p>Total: ${{total}}</p>
     </div>
-    <a class="btn btn-success" href="/confirmOrder">Checkout</a>
+    <a class="btn btn-success" href="/user/cart/confirmOrder">Checkout</a>
 </ol>

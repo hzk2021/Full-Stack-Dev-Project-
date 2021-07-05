@@ -1,6 +1,12 @@
 const Express = require('express');
 const Router = Express.Router();
 
+Router.get('/onlineMenu', async function(req, res) {
+    return res.render('orders/menu', {
+        prizes_list: ["Coca-cola", "Beef Chili Cheese Fries"]
+    })
+})
+
 Router.get('/cart', async function(req, res) {
     var subtotal = 0
     let order_list = [{food:"Chargrilled Chicken Club", price:11.90}]

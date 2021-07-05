@@ -5,15 +5,16 @@ const uuid = require('uuid');
 const Order = Database.sequelize.define('order',{
     uuid:  {
         type: Sequelize.CHAR(36),
-        primaryKey: true,
         default: Sequelize.DataTypes.UUIDV4
     },
     order_id: {
         type: Sequelize.CHAR(6),
+        primaryKey: true,
         allowNull: false
     },
     order_item: {
         type: Sequelize.STRING(64),
+        primaryKey: true,
         allowNull: false
     },
     order_price: {
@@ -37,4 +38,6 @@ const Order = Database.sequelize.define('order',{
         allowNull: false,
         defaultValue: Sequelize.NOW
     },
-})
+});
+
+module.exports = Order;

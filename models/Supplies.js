@@ -25,25 +25,12 @@ const Supplies = Database.sequelize.define('supplies', {
         allowNull: false,
         default: Sequelize.NOW
     },
-    current_stock_used: {
+    stock_used: {
         type: Sequelize.BIGINT(5),
         default: 0
     },
-    wk2_stock_used: {
-        type: Sequelize.BIGINT(5),
-        default: 0
-    },
-    wk3_stock_used: {
-        type: Sequelize.BIGINT(5),
-        default: 0
-    },
-    wk4_stock_used: {
-        type: Sequelize.BIGINT(5),
-        default: 0
-    },
-    wk5_stock_used: {
-        type: Sequelize.BIGINT(5),
-        default: 0
+    week_no: {
+        type: Sequelize.INTEGER(1),
     }
 });
 

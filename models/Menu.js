@@ -25,3 +25,5 @@ const Menu = Database.sequelize.define('menu',{
         allowNull: false
     },
 })
+
+module.exports = Menu;

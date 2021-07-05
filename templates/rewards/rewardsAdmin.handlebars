@@ -27,85 +27,84 @@
     </tr>
  -->
     <tr class="rewards-row">
-      {{#each prizes_list.[0]}}
-      {{#if this}}
+    {{#each prizes_list.[0]}}
+      {{#if this.food_primary}}
       <td>
         <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day </h3>
-        <h4>{{ this }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/">Edit Reward</a>
+        <h3>Day {{this.day_no}}</h3>
+        <h4>{{ this.food_primary }}</h4>
+        {{#if this.food_secondary}} <h4>{{ this.food_secondary }}</h4> {{else}}<h4> </h4>{{/if}}
+        <a class="btn btn-warning admin-edit" href="edit/"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
         </div>
       </td>
       {{else}}
       <td>
         <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day </h3>
+        <h3>Day {{this.day_no}}</h3>
         <h4 class="text-danger">(Item(s) not specified)</h4>
-        <a class="btn btn-secondary admin-edit" href="editRewards/">Edit Reward</a>
+        <h4> </h4>
+        <a class="btn btn-success admin-edit" href="edit/"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
         </div>
       </td>
       {{/if}}
-      {{/each}}
+    {{/each}}
     </tr>
     <tr class="rewards-row">
-      {{#each prizes_list.[1]}}
-      {{#if this}}
+    {{#each prizes_list.[1]}}
+      {{#if this.food_primary}}
       <td>
         <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day </h3>
-        <h4>{{ this }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/">Edit Reward</a>
+        <h3>Day {{this.day_no}}</h3>
+        <h4>{{ this.food_primary }}</h4>
+        {{#if this.food_secondary}} <h4>{{ this.food_secondary }}</h4> {{else}}<h4> </h4>{{/if}}
+        <a class="btn btn-warning admin-edit" href="edit/"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
         </div>
       </td>
       {{else}}
       <td>
         <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day </h3>
+        <h3>Day {{this.day_no}}</h3>
         <h4 class="text-danger">(Item(s) not specified)</h4>
-        <a class="btn btn-secondary admin-edit" href="editRewards/">Edit Reward</a>
+        <h4> </h4>
+        <a class="btn btn-success admin-edit" href="edit/"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
         </div>
       </td>
       {{/if}}
-       {{/each}}
+    {{/each}}
     </tr>
     <tr class="rewards-row">
-      {{#each prizes_list.[2]}}
-      {{#if this}}
+    {{#each prizes_list.[2]}}
+      {{#if this.food_primary}}
       <td>
         <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day </h3>
-        <h4>{{ this }}</h4>
-        <a class="btn btn-warning admin-edit" href="editRewards/">Edit Reward</a>
+        <h3>Day {{this.day_no}}</h3>
+        <h4>{{ this.food_primary }}</h4>
+        {{#if this.food_secondary}} <h4>{{ this.food_secondary }}</h4> {{else}}<h4> </h4>{{/if}}
+        <a class="btn btn-warning admin-edit" href="edit/"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
         </div>
       </td>
       {{else}}
       <td>
         <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day </h3>
+        <h3>Day {{this.day_no}}</h3>
         <h4 class="text-danger">(Item(s) not specified)</h4>
-        <a class="btn btn-secondary admin-edit" href="editRewards/">Edit Reward</a>
+        <h4> </h4>
+        <a class="btn btn-success admin-edit" href="edit/"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
         </div>
       </td>
       {{/if}}
-      {{/each}}
+    {{/each}}
     </tr>
 
   </table>
 </div>
 
 <script>
-  function assignval() {
-    var count = 5;
-    var tr = document.getElementsByClassName('rewards-row');
-    for (i=0; i<3; i++) {
-      var td = tr[i].getElementsByTagName('td');
-      for (j=0; j<4; j++) {
-        var tdDiv = td[j].getElementsByClassName('normal')[0];
-        tdDiv.getElementsByTagName('h3')[0].innerText += " "+count;
-        tdDiv.getElementsByTagName('a')[0].href += count;
-        count += 5
-      }
+  function assignLink() {
+    var hrefs = document.getElementsByClassName("admin-edit");
+    for (i=0; i<12; i++) {
+      hrefs[i].href += (i+1)*5;
     }
   }
-  assignval();
+  assignLink();
 </script>

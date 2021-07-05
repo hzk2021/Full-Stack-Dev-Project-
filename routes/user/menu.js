@@ -1,5 +1,6 @@
 const Express = require('express');
 const Router = Express.Router();
+const {UserRewards} = require('../../models/UserRewards');
 
 //Retrieve
 Router.get('/menuPublic', async function(req, res){
@@ -22,10 +23,24 @@ Router.get('/menuPublic', async function(req, res){
             img:'img/GuacBacon.jpg'
         }
     ]
+    // Below is for rewards
+    // Get user rewards
+    const rewards = null;
+    try {
+        rewards = await UserRewards.findAll({
+            where:{uuid:req.user.uuid, claimed:false},
+            order: [['day_no', 'ASC']],
+            raw: true
+        });
+    }
+    catch (TypeError) {
+        console.log("User is not signed in");
+    }
+
 	res.render('menu/menuPublic', {
         beefb: beefb,
         pab: pab,
-        prizes_list: ["Coca-cola", "Beef Chili Cheese Fries"]
+        prizes_list: rewards
 	})
 });
 
