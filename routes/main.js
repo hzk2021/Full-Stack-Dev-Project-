@@ -18,10 +18,11 @@ Router.get('/', (req,res) => {
     });
 });
 
-Router.get('*', (req,res,next) => {
-    let err = new Error('URL not found!');
-    res.statusCode = 404;
-    next(err);
+Router.get('*', (req,res) => {
+    // let err = new Error('URL not found!');
+    // res.statusCode = 404;
+
+    return res.redirect('/');
 });
 
 module.exports = Router;
