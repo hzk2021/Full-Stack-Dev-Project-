@@ -24,10 +24,6 @@ const Menu = Database.sequelize.define('menu',{
         type: Sequelize.STRING(128),
         allowNull: false
     },
-<<<<<<< HEAD
-})
+});
 
 module.exports = Menu;
-=======
-})
->>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7

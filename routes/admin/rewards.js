@@ -1,10 +1,10 @@
 const Express = require('express');
 const Router = Express.Router();
-<<<<<<< HEAD
 const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const Menu = require('../../models/Menu');
 const Cart = require('../../models/Order');
+const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../utilities/account_checker');
 
 // /**
 //  * 
@@ -14,24 +14,11 @@ const Cart = require('../../models/Order');
 // function something(req, res) { req}
 
 // Accessing edit rewards page
-Router.get('/edit/:day_no', async function (req, res) {
+Router.get('/edit/:day_no', isLoggedIn, isAdmin, async function (req, res) {
     console.log("Admin edit rewards page accessed");
     try {
         const reward = await RewardsList.findOne({ where: { day_no: req.params.day_no } });
         // Returning the original rewards if it has already been added
-=======
-const Rewards = require('../../models/RewardsList');
-const User = require('../../models/User');
-
-/**
- * 
- * @param {Express.Request} req Express Request handle
- * @param {Express.Response} res Express Response handle
- */
-Router.get('/editRewards/:day_no', async function(req,res) {
-    /*try {
-        const reward = await Rewards.findOne({where: {name:req.params.day_no}});
->>>>>>> origin/main
         if (reward != null) {
             return res.render('rewards/manageRewards', {
                 day_no: req.params.day_no,
@@ -39,7 +26,6 @@ Router.get('/editRewards/:day_no', async function(req,res) {
                 name2: reward.food_secondary
             })
         }
-<<<<<<< HEAD
         // Else return with empty input
         else {
             return res.render('rewards/manageRewards', {
@@ -54,7 +40,7 @@ Router.get('/editRewards/:day_no', async function(req,res) {
 });
 
 // Post when changes are submitted
-Router.post('/edit/:day_no', async function (req, res) {
+Router.post('/edit/:day_no', isLoggedIn, isAdmin, async function (req, res) {
     let errors = [];
     // Change RewardsList to Menu model when Menu model is ready
     // Checks if food exists in menu
@@ -121,7 +107,7 @@ Router.post('/edit/:day_no', async function (req, res) {
 });
 
 // Accessing admin rewards page
-Router.get('/rewardsList', async function (req, res) {
+Router.get('/rewardsList', isLoggedIn, isAdmin, async function (req, res) {
     console.log("Admin rewards page accessed");
     // Get all prizes
     const prizes = await RewardsList.findAll({
@@ -155,62 +141,5 @@ Router.get('/rewardsList', async function (req, res) {
         prizes_list: prizes_list
     });
 });
-=======
-        else {
-            return res.render('rewards/manageRewards', {
-                day_no: req.params.day_no
-            })
-        }
-    }
-    catch (error) {
-        console.log("There are errors fetching data of day "+req.params.day_no);
-        console.log(error);
-    }*/
-    res.render('rewards/manageRewards', {
-        day_no: req.params.day_no,
-        reward1: "Coca-cola",
-        reward2: null
-    })
-});
-
-Router.get('/adminRewardsList', async function(req,res) {
-    console.log("Admin rewards page accessed");
-    return res.render('rewards/rewardsAdmin', {
-        prizes_list: [["Coca-cola", "Beef Chili Cheese Fries", "Chargrilled Chicken Club", "Battered Cod Fish"], 
-                        [null, null, null, null],
-                        [null, null, null, null]]
-    });
-});
-
-Router.post('/editRewards', async function(req, res) {
-    let errors = [];
-
-    // Change Rewards to Menu model when Menu model is ready
-    try {
-        const food_primary = await Rewards.findOne({where: {name1:req.body.name1}});
-        if (food_primary == null) {
-            errors.push({text: "1st Item: Food item not found in menu"})
-        }
-        const food_secondary = await Rewards.findOne({where: {name2:req.body.name2}});
-        if (food_secondary == null) {
-            errors.push({text: "2nd Item: Food item not found in menu"})
-        }
-    }
-    catch(error) {
-        console.error("Error updating reward item(s)")
-        return res.render('rewards/manageRewards')
-    }
-
-    try {
-        const reward = await Rewards.update({
-            food_primary: req.body.name1,
-            food_secondary: req.body.name2
-        })
-    }
-    catch(error) {
-
-    }
-})
->>>>>>> origin/main
 
 module.exports = Router;

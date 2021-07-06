@@ -1,10 +1,6 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-warning mb-3">
 	<div class="container">
-<<<<<<< HEAD
 		<a class="navbar-brand" href="/">Carl's Jr</a>
-=======
-		<a class="navbar-brand" href="/">Project</a>
->>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav"
 				  aria-expanded="false"
 				  aria-label="Toggle navigation">
@@ -15,7 +11,6 @@
 				<li class="nav-item">
 					<a class="nav-link" href="/">Home</a>
 				</li>
-<<<<<<< HEAD
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbardropSupplies" data-toggle="dropdown">Supplies</a>
 					<div class="dropdown-menu">
@@ -26,20 +21,12 @@
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbardropRewards" data-toggle="dropdown">Rewards</a>
 					<div class="dropdown-menu">
-						<a class="dropdown-item" href="/user/rewards/viewRewards">User View Rewards</a>
-<<<<<<< HEAD
+						<a class="dropdown-item" href="/user/rewards">User View Rewards</a>
 						<a class="dropdown-item" href="/admin/rewards/rewardsList">View Rewards List</a>
 					</div>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/user/menu/menuPublic">Menu</a>
-=======
-						<a class="dropdown-item" href="/admin/rewards/adminRewardsList">View Rewards List</a>
-					</div>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" href="/user/order/onlineMenu">Menu</a>
->>>>>>> origin/main
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/about">About</a>
@@ -47,11 +34,7 @@
 			</ul>
 			<ul class="navbar-nav ml-auto">
 				<li class="nav-item">
-<<<<<<< HEAD
 					<a class="nav-link" href="/user/cart">Cart</a>
-=======
-					<a class="nav-link" href="/user/order/cart">Cart</a>
->>>>>>> origin/main
 				</li>
 				{{#if user}}
 					<li class="nav-item dropdown">
@@ -74,49 +57,6 @@
 					</li>
 					<li class="nav-item">
 						<a href="/auth/register" class="nav-link">Register</a>
-=======
-				<li class="nav-item">
-					<a class="nav-link" href="/about">About</a>
-				</li>
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbardropdowncart" data-toggle="dropdown">Cart</a>
-					<div class="dropdown-menu">
-					<a class="dropdown-item" href="/cart">Cart</a>
-					<a class="dropdown-item" href="/confirmOrder">Confirm Order</a>
-					<a class="dropdown-item" href="/orderComplete">Order Complete</a>
-					<a class="dropdown-item" href="/dashboard">Dashboard</a>
-					</div>
-				</li>
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbardropdownmenu" data-toggle="dropdown">Menu</a>
-					<div class="dropdown-menu">
-					<a class="dropdown-item" href="/menuPublic">Menu</a>
-					<a class="dropdown-item" href="/createMenu">Create Menu</a>
-					<a class="dropdown-item" href="/retrieveMenu">Retrieve Menu</a>
-					<a class="dropdown-item" href="/editMenu">Edit Menu</a>
-					</div>
-				</li>
-			</ul>
-			<ul class="navbar-nav ml-auto">
-				{{#if user}}
-					<li class="nav-item dropdown">
-						<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" id="navbarDropdownMenuLink">Video
-							Jots</a>
-						<div class="dropdown-menu">
-							<a href="" class="dropdown-item">Videos</a>
-							<a href="" class="dropdown-item">Add Video</a>
-						</div>
-					</li>
-					<li class="nav-item">
-						<a href="/logout" class="nav-link">Logout</a>
-					</li>
-				{{else}}
-					<li class="nav-item">
-						<a href="/showLogin" class="nav-link">Login</a>
-					</li>
-					<li class="nav-item">
-						<a href="/showRegister" class="nav-link">Register</a>
->>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
 					</li>
 				{{/if}}
 			</ul>

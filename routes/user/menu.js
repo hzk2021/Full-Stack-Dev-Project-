@@ -1,9 +1,6 @@
 const Express = require('express');
 const Router = Express.Router();
-<<<<<<< HEAD
 const {UserRewards} = require('../../models/UserRewards');
-=======
->>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
 
 //Retrieve
 Router.get('/menuPublic', async function(req, res){
@@ -11,27 +8,18 @@ Router.get('/menuPublic', async function(req, res){
         {
             item:'Guacamole Bacon Cheeseburger',
             price:'11.90',
-<<<<<<< HEAD
             img:'img/GuacBacon.jpg'
-=======
-            img:'img/<GuacBacon.jpg>'
->>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
         },
         {
             item:'Chili Cheeseburger',
             price:'13.90',
-<<<<<<< HEAD
             img:'img/GuacBacon.jpg'
-=======
-            img:'GuacBacon.jpg'
->>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
         }
     ]
     var pab = [
         {
             item:'Original Angus Beef Burger',
             price:'12.90',
-<<<<<<< HEAD
             img:'img/GuacBacon.jpg'
         }
     ]
@@ -52,16 +40,9 @@ Router.get('/menuPublic', async function(req, res){
 	res.render('menu/menuPublic', {
         beefb: beefb,
         pab: pab,
-        prizes_list: rewards
-=======
-            img:'GuacBacon.jpg'
-        }
-    ]
-	res.render('menu/menuPublic', {
-        beefb: beefb,
-        pab: pab
->>>>>>> 5b0384f595249e75eb917ceca5583bf00613e5a7
-	})
-});
+        prizes_list: rewards,
+        img:'GuacBacon.jpg'
+        })
+    });
 
 module.exports = Router;

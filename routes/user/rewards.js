@@ -1,6 +1,5 @@
 const Express = require('express');
 const Router = Express.Router();
-<<<<<<< HEAD
 const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const Order = require('../../models/Order');
@@ -8,7 +7,7 @@ const Cart = require('../../models/Cart');
 const { Op } = require('sequelize');
 const e = require('connect-flash');
 
-Router.get('/viewRewards', async function (req, res) {
+Router.get('', async function (req, res) {
     console.log("Rewards page viewed");
     let errors = [];
     var total_orders = 0
@@ -21,7 +20,7 @@ Router.get('/viewRewards', async function (req, res) {
     catch (TypeError) {
         console.log("User accessed with no account");
     }
-    const full_rows = Math.ceil(total_orders / 5);
+    const full_rows = Math.floor(total_orders / 5);
     const leftover = { Reached: total_orders - full_rows * 5, Unreached: 4 - (total_orders - full_rows * 5) };
     // Retrieve full prizes list with length of 12(Null values filled in for unregistered prize days)
     const prizes_list = await RewardsList.findAll({
@@ -53,7 +52,8 @@ Router.get('/viewRewards', async function (req, res) {
             }],
             attributes: ['claimed'],
             where: { uuid: req.user.uuid },
-            order: [['day_no', 'ASC']]
+            order: [['day_no', 'ASC']],
+            raw: true
         });
     }
     catch (error) {
@@ -108,32 +108,4 @@ Router.get('/remove-reward-from-cart/:day_no', async function (req, res) {
     return res.redirect('/user/cart');
 })
 
-=======
-const RewardsList = require('../../models/RewardsList');
-const UserRewards = require('../../models/UserRewards');
-
-Router.get('/viewRewards', async function(req,res) {
-    console.log("Rewards page viewed");
-    var total_orders = 12;
-    var full_rows = Math.floor(total_orders/5);
-    var leftover = {Reached:total_orders-full_rows*5, Unreached:4-(total_orders-full_rows*5)};
-    var prizes_list = ["Coca-cola", "Beef Chili Cheese Fries", "Chargrilled Chicken Club", "Battered Cod Fish", 
-                        "(Not specified)", "(Not specified)", "(Not specified)", "(Not specified)",
-                        "(Not specified)", "(Not specified)", "(Not specified)", "(Not specified)"]
-    var middle = prizes_list[leftover.Reached];
-    var not_reached = [];
-    for (i=leftover.Reached+1; i<12; i++) {
-        not_reached.push(prizes_list[i]);
-    }
-    return res.render('rewards/rewardsPage', {
-        total_orders: 12,
-        leftover: leftover,
-        middle: middle,
-        user_prizes: {"Coca-cola":true, "Beef Chili Cheese Fries":false},
-        not_reached: not_reached,
-        covered_rows: full_rows+1
-    });
-});
-
->>>>>>> origin/main
 module.exports = Router;
