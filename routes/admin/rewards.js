@@ -4,7 +4,7 @@ const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const Menu = require('../../models/Menu');
 const Cart = require('../../models/Order');
-const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../utilities/account_checker');
+const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../../utilities/account_checker');
 
 // /**
 //  * 
