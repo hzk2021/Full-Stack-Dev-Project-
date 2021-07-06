@@ -1,7 +1,9 @@
 const Express = require('express');
 const Router = Express.Router();
+const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../../utilities/account_checker');
 
-Router.get('/dashboard', async function(req, res){
+
+Router.get('/dashboard', isLoggedIn, isAdmin, async function(req, res){
 	res.render('cart/dashboard', {
 		order_dict:{
 			1: ["Chargrilled Chicken Club", "Coca-Cola"],
