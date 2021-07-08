@@ -108,9 +108,8 @@ Router.post('/create', async function(req,res) {
     }
 });
 
-Router.post('/delete/:id/:role', async function(req,res) {
+Router.post('/delete/:id/', async function(req,res) {
     const user_uuid = req.params.id;
-    const user_role = req.params.role;
 
     if (user_uuid == "00000000-0000-0000-000000000000"){
         return res.send("cannot delete root account")
@@ -119,7 +118,8 @@ Router.post('/delete/:id/:role', async function(req,res) {
     const currentAccountIsGod = (req.user.uuid == "00000000-0000-0000-000000000000");
     
     try{
-        const user = await User.findByPk(user_uuid)
+        const user = await User.findByPk(user_uuid);
+        const user_role = user.role;
 
         if (user) {
             if (currentAccountIsGod){
