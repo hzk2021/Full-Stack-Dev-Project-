@@ -1,15 +1,13 @@
 const Express = require('express');
 const Router = Express.Router();
 const Menu = require('../../models/Menu');
-const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../../utilities/account_checker');
-
 
 //Create Menu items
-Router.get('/create', isLoggedIn, isAdmin, async function(req, res){
+Router.get('/create', async function(req, res){
 	res.render('menu/createMenu', {})
 });
 
-Router.post('/create', isLoggedIn, isAdmin, async function(req, res){
+Router.post('/create', async function(req, res){
     console.log("Create Menu page accessed");
     try {
         
@@ -47,7 +45,7 @@ Router.post('/create', isLoggedIn, isAdmin, async function(req, res){
 });
 
 //Retrieve Admin Menu
-Router.get('/', isLoggedIn, isAdmin, async function (req, res) {
+Router.get('/', async function (req, res) {
     console.log("Admin menu page accessed");
     try {
         // Get all menu items
@@ -71,7 +69,7 @@ Router.get('/', isLoggedIn, isAdmin, async function (req, res) {
 });
 
 //Update
-Router.get('/update/:item_name', isLoggedIn, isAdmin, async function(req, res){
+Router.get('/update/:item_name', async function(req, res){
     console.log("Update admin menu page accessed");
 	try {
         const menu = await Menu.findOne({ where: { item_name: req.params.item_name } });
@@ -89,7 +87,7 @@ Router.get('/update/:item_name', isLoggedIn, isAdmin, async function(req, res){
     }
 });
 
-Router.post('/update/:item_name', isLoggedIn, isAdmin, async function (req, res) {    
+Router.post('/update/:item_name', async function (req, res) {    
     try {
         let errors = []
         if (isNaN(req.body.item_price)){
@@ -124,7 +122,7 @@ Router.post('/update/:item_name', isLoggedIn, isAdmin, async function (req, res)
 });
 
 // Delete
-Router.get('/delete/:item_name', isLoggedIn, isAdmin, async function(req, res){
+Router.get('/delete/:item_name', async function(req, res){
     console.log("Delete admin menu page accessed");
 	try {
         const menu = await Menu.findOne({ where: { item_name: req.params.item_name } });
@@ -142,7 +140,7 @@ Router.get('/delete/:item_name', isLoggedIn, isAdmin, async function(req, res){
     }
 });
 
-Router.post('/delete/:item_name', isLoggedIn, isAdmin, async function (req, res) {    
+Router.post('/delete/:item_name', async function (req, res) {    
     try {
         const deleteMenu = await Menu.destroy({
              where:{ uuid: req.body.uuid}
