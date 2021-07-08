@@ -36,7 +36,7 @@
 
 <script>
   function Delete(value, row) {
-    return`<form action="/admin/accounts/delete/${row.uuid}/${row.role}" method="POST">
+    return`<form action="/admin/accounts/delete/${row.uuid}" method="POST">
             <input type="submit" value="Delete" class="btn btn-danger">
           </form>`  }
 </script>
