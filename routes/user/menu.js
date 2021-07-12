@@ -25,16 +25,6 @@ Router.get('/', async function(req, res){
     // Below is for rewards
     // Get user rewards
     const rewards = null;
-    try {
-        rewards = await UserRewards.findAll({
-            where:{uuid:req.user.uuid, claimed:false},
-            order: [['day_no', 'ASC']],
-            raw: true
-        });
-    }
-    catch (TypeError) {
-        console.log("User is not signed in");
-    }
 
 	res.render('menu/menuPublic', {
         items: items,

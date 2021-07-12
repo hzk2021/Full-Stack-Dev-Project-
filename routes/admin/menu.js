@@ -1,8 +1,6 @@
 const Express = require('express');
 const Router = Express.Router();
 const Menu = require('../../models/Menu');
-const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../../utilities/account_checker');
-
 
 //Create Menu items
 Router.get('/create', async function(req, res){

@@ -13,14 +13,11 @@ const Menu = require('../models/Menu');
 const InitializeDB = async function(drop){
     await DB.sequelize.authenticate();
     await console.log("Database Connected!");
-    //UserModel.User.hasMany(Feedback);
-    //UserModel.User.hasMany(UserRewards);
-    //RewardsList.hasMany(UserRewards);
+    UserModel.User.hasMany(Feedback);
+    UserModel.User.hasMany(UserRewards);
+    RewardsList.hasMany(UserRewards);
+    //Change line below accordingly to ur menu name if needed, uncomment it & delete this comment afterwards
     //Menu.hasMany(Ingredients);
-    Feedback.belongsTo(UserModel.User, {foreignKey: "uuid"});
-    UserRewards.belongsTo(UserModel.User, {foreignKey: "uuid"});
-    UserRewards.belongsTo(RewardsList, {foreignKey: "day_no"});
-    Ingredients.belongsTo(Menu, {foreignKey: "item_name"});
     
     await DB.sequelize.sync({
         force: drop

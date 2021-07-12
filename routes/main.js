@@ -18,10 +18,10 @@ Router.get('/', (req,res) => {
     });
 });
 
-Router.get('*', (req,res) => {
+Router.get('*', (req,res,next) => {
     // let err = new Error('URL not found!');
     // res.statusCode = 404;
-
+    // next(err);
     return res.redirect('/');
 });
 
