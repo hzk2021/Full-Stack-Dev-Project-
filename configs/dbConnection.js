@@ -6,6 +6,8 @@ const {UserRewards} = require('../models/UserRewards');
 const Supplies = require('../models/Supplies');
 const {Ingredients} = require('../models/Ingredients');
 const Cart = require('../models/Cart');
+const Order = require('../models/Order');
+const Menu = require('../models/Menu');
 
 /* Initialize Database using ORM(Sequelize) */
 const InitializeDB = async function(drop){

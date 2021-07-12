@@ -1,46 +1,39 @@
 const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
-const uuid = require('uuid');
 
 const daysAllowed = [5,10,15,20,25,30,35,40,45,50,55,60]
 
 class RewardsList extends Model {
     get day_no() { return Int8Array(this.getDataValue("day_no")); }
-    get food_primary() { return String(this.getDataValue("food_primary")); }
-    get food_primary() { return String(this.getDataValue("food_secondary")); }
+    get food_name() { return String(this.getDataValue("food_name")); }
+    get food_no() { return String(this.getDataValue("food_no")); }
 
-    set food_primary(food) { this.setDataValue("food_primary", food); }
-    set food_secondary(food) { this.setDataValue("food_secondary", food); }
+    set food_name(food) { this.setDataValue("food_name", food); }
+    set food_no(food) { this.setDataValue("food_no", food); }
 }
 
 RewardsList.init({
     day_no: {
         type: Sequelize.SMALLINT(2),
         primaryKey: true,
-        unique: true,
         allowNull: false,
         validate: {
             isIn: [daysAllowed]
         }
     },
-    food_primary: {
+    food_name: {
         type: Sequelize.STRING(50),
         allowNull: true
     },
-    food_secondary: {
-        type: Sequelize.STRING(50),
-        allowNull: true
+    food_no: {
+        type: Sequelize.TINYINT(1),
+        primaryKey: true,
+        min: 1, max: 4,
+        allowNull: false
     }
 }, {
     sequelize: Database.sequelize,
     modelName: 'rewards_list',
-    hooks: {
-        afterUpdate: auto_update_timestamp
-    }
 });
-
-function auto_update_timestamp(user, options){
-    user.dateUpdated = Sequelize.literal('CURRENT_TIMESTAMP');
-}
 
 module.exports = { RewardsList };

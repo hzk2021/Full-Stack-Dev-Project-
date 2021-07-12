@@ -18,7 +18,7 @@
 </div>
 <br>
 
-<div class="rewards-table-container" style="width: 100%;">
+<div id="rewardsUser" class="rewards-table-container" style="width: 100%;">
 <table>
     <!-- Rows that user has progressed -->
     <tbody>
@@ -28,26 +28,18 @@
             <td>
                 <div class="normal normal-day-cell">
                     <h3>Day </h3>
-                    <img class="completed-icon" src="img/DayCompleted.png/" alt="">
+                    <img class="completed-icon" src="DayCompleted.png" alt="Completed">
                 </div>
             </td>
             {{/for}}
             <td>
-                <a href="/menuPublic"><div class="normal reward reward-day-cell">
+                <a href="/user/menu/menuPublic"><div class="normal reward reward-day-cell">
                     <h3>Day </h3>
-                    {{#if this.food_primary}}
-                    <h4>{{ this.food_primary }}</h4>
-                    {{else}}
-                    <h4>(Not specified yet)</h4>
-                    {{/if}}
-
-                    {{#if this.food_secondary}}
-                    <h4>{{ this.food_secondary }}</h4>
-                    {{else}}
-                    <h4> </h4>
-                    {{/if}}
-                    
-                    <img class="completed-icon" src="img/DayCompleted.png" alt="">
+                    <h5>{{ this.food_name }}</h5>
+                    <h5>{{ this.food_name2 }}</h5>
+                    <h5>{{ this.food_name3 }}</h5>
+                    <h5>{{ this.food_name4 }}</h5>
+                    <img class="completed-icon" src="DayCompleted.png" alt="Completed">
                     {{#if this.claimed}}
                     <p>Click to order and claim it!</p>
                     {{else}}
@@ -64,7 +56,7 @@
             <td>
                 <div class="normal normal-day-cell">
                     <h3>Day </h3>
-                    <img class="completed-icon" src="img/DayCompleted.png" alt="">
+                    <img class="completed-icon" src="DayCompleted.png" alt="">
                 </div>
             </td>
             {{/for}}
@@ -79,16 +71,13 @@
             <td>
                 <div class="reward locked-reward-day-cell">
                     <h3>Day </h3>
-                    {{#if middle.food_primary}}
-                    <h4>{{ middle.food_primary }}</h4>
+                    {{#if middle.food_name}}
+                    <h5>{{ middle.food_name }}</h5>
+                    <h5>{{ middle.food_name2 }}</h5>
+                    <h5>{{ middle.food_name3 }}</h5>
+                    <h5>{{ middle.food_name4 }}</h5>
                     {{else}}
                     <h4>(Not specified yet)</h4>
-                    {{/if}}
-
-                    {{#if middle.food_secondary}}
-                    <h4>{{ middle.food_secondary }}</h4>
-                    {{else}}
-                    <h4> </h4>
                     {{/if}}
                     <p>Not claimable yet</p>
                 </div>
@@ -108,16 +97,13 @@
             <td>
                 <div class="reward locked-reward-day-cell">
                     <h3>Day </h3>
-                    {{#if this.food_primary}}
-                    <h4>{{ this.food_primary }}</h4>
+                    {{#if this.food_name}}
+                    <h5>{{ this.food_name }}</h5>
+                    <h5>{{ this.food_name2 }}</h5>
+                    <h5>{{ this.food_name3 }}</h5>
+                    <h5>{{ this.food_name4 }}</h5>
                     {{else}}
                     <h4>(Not specified yet)</h4>
-                    {{/if}}
-
-                    {{#if this.food_secondary}}
-                    <h4>{{ this.food_secondary }}</h4>
-                    {{else}}
-                    <h4> </h4>
                     {{/if}}
                     <p>Not claimable yet</p>
                 </div>

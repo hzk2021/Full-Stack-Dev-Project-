@@ -3,84 +3,48 @@
 
 <div class="row rewards-table-container" style="width:85%;">
   <table class="container-fluid">
+    {{#each prizes_list}}
     <tr class="rewards-row">
-    {{#each prizes_list.[0]}}
-      {{#if this.food_primary}}
+    {{#each this}}
+      {{#if this.food_name}}
       <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day {{this.day_no}}</h3>
-        <h4>{{ this.food_primary }}</h4>
-        {{#if this.food_secondary}} <h4>{{ this.food_secondary }}</h4> {{else}}<h4> </h4>{{/if}}
-        <a class="btn btn-warning admin-edit" href="edit/"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
+        <div class="normal normal-day-cell" style="height:240px;">
+          <div style="text-align: center;">
+            <h3>Day {{this.day_no}}</h3>
+            <h5>{{ this.food_name }}</h5>
+            <h5>{{ this.food_name2 }}</h5> 
+            <h5>{{ this.food_name3 }}</h5>
+            <h5>{{ this.food_name4 }}</h5>
+          </div>  
+          
+          <div class="row d-flex justify-content-center">
+            <div style="margin-right:2.5%;" class="col-xs-4"><a class="btn btn-warning re-edit" href="/admin/rewards/edit/"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a></div>
+            <div class="col-xs-4"><a class="btn btn-danger del-all" href="/admin/rewards/delete-all/"><i class="fa fa-trash" aria-hidden="true"></i> Clear</a></div>
+          </div>
         </div>
       </td>
       {{else}}
       <td>
-        <div class="normal normal-day-cell" style="height:220px;">
+        <div class="normal normal-day-cell" style="height:240px;">
         <h3>Day {{this.day_no}}</h3>
         <h4 class="text-danger">(Item(s) not specified)</h4>
-        <h4> </h4>
-        <a class="btn btn-success admin-edit" href="edit/"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
+        <a class="btn btn-success re-edit admin-edit" href="/admin/rewards/edit/"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
         </div>
       </td>
       {{/if}}
     {{/each}}
     </tr>
-    <tr class="rewards-row">
-    {{#each prizes_list.[1]}}
-      {{#if this.food_primary}}
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day {{this.day_no}}</h3>
-        <h4>{{ this.food_primary }}</h4>
-        {{#if this.food_secondary}} <h4>{{ this.food_secondary }}</h4> {{else}}<h4> </h4>{{/if}}
-        <a class="btn btn-warning admin-edit" href="edit/"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
-        </div>
-      </td>
-      {{else}}
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day {{this.day_no}}</h3>
-        <h4 class="text-danger">(Item(s) not specified)</h4>
-        <h4> </h4>
-        <a class="btn btn-success admin-edit" href="edit/"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
-        </div>
-      </td>
-      {{/if}}
     {{/each}}
-    </tr>
-    <tr class="rewards-row">
-    {{#each prizes_list.[2]}}
-      {{#if this.food_primary}}
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day {{this.day_no}}</h3>
-        <h4>{{ this.food_primary }}</h4>
-        {{#if this.food_secondary}} <h4>{{ this.food_secondary }}</h4> {{else}}<h4> </h4>{{/if}}
-        <a class="btn btn-warning admin-edit" href="edit/"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
-        </div>
-      </td>
-      {{else}}
-      <td>
-        <div class="normal normal-day-cell" style="height:220px;">
-        <h3>Day {{this.day_no}}</h3>
-        <h4 class="text-danger">(Item(s) not specified)</h4>
-        <h4> </h4>
-        <a class="btn btn-success admin-edit" href="edit/"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
-        </div>
-      </td>
-      {{/if}}
-    {{/each}}
-    </tr>
-
   </table>
 </div>
 
 <script>
   function assignLink() {
-    var hrefs = document.getElementsByClassName("admin-edit");
+    var hrefs = document.getElementsByClassName("re-edit");
+    var hrefs_del = document.getElementsByClassName("del-all");
     for (i=0; i<12; i++) {
       hrefs[i].href += (i+1)*5;
+      hrefs_del[i].href += (i+1)*5;
     }
   }
   assignLink();

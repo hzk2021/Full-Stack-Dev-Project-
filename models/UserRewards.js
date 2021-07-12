@@ -1,6 +1,5 @@
 const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
-const uuid = require('uuid');
 
 const daysAllowed = [5,10,15,20,25,30,35,40,45,50,55,60]
 
@@ -15,10 +14,11 @@ class UserRewards extends Model {
 UserRewards.init({
     uuid: {
         type: Sequelize.CHAR(36),
-        defaultValue: Sequelize.DataTypes.UUIDV4
+        primaryKey: true
     },
     day_no: {
         type: Sequelize.SMALLINT(2),
+        primaryKey: true,
         unique: true,
         allowNull: false,
         validate: {
@@ -33,13 +33,6 @@ UserRewards.init({
 }, {
     sequelize: Database.sequelize,
     modelName: 'user_rewards',
-    hooks: {
-        afterUpdate: auto_update_timestamp
-    }
 });
-
-function auto_update_timestamp(user, options){
-    user.dateUpdated = Sequelize.literal('CURRENT_TIMESTAMP');
-}
 
 module.exports = { UserRewards };

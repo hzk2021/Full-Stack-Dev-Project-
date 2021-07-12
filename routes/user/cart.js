@@ -49,6 +49,7 @@ Router.get('/orderComplete', async function(req, res){
     console.log("===================");
 	const dtime = 30;
 	var etime = dtime + 10
+
     // Rewards Operations below
     if (req.user.uuid != null) {
         // Marking rewards claimed
@@ -61,7 +62,7 @@ Router.get('/orderComplete', async function(req, res){
                 claimed: true
             }, {where: {
                 uuid: req.user.uuid,
-                [Op.in]: rewards_days
+                day_no :{[Op.in]: rewards_days}
             }});
         
         // Adding reward if user has hit checkpoint
@@ -78,11 +79,12 @@ Router.get('/orderComplete', async function(req, res){
         console.log("Total orders:"+total_orders);
         if (total_orders % 5 == 0) {
             try {
-                total_orders = await RewardsList.findOne({where:{day_no:total_orders}});
+                const rewards = await RewardsList.findAll({where:{day_no:total_orders}});
                 const add_reward = await UserRewards.create({
                     uuid: req.user.uuid,
                     day_no: total_orders.day_no
                 });
+                
                 
                 console.log(`Successfully added reward to user:${req.user.uuid}'s rewards list`);
             }

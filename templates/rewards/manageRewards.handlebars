@@ -1,17 +1,89 @@
-<div class="form-sm">
-    <h1 class="display-4">Edit Reward - Day {{ day_no }}</h1>
-    <p>Field with <span class="text-danger">*</span> is compulsory</p>
+<div class="card card-body form-sm">
+    <h1 class="display-4">Edit Reward - Day {{#if day_no}}{{ day_no }}{{else}}{{ reward_1st.day_no }}{{/if}}</h1>
+    <p>Fields with <span class="text-danger">*</span> is compulsory</p>
+    <p style="font-weight: bold;">Maximum allowed: 4</p>
     <br>
 
     <form method="POST" action="">
-        <div class="form-group">
-            <label for="name">Item Name 1<span class="text-danger">*</span></label>
-            <input type="text" name="name1" class="form-control" value="{{#if name1}}{{name1}}{{/if}}" required>
-        </div>
-            <label for="name2">Item Name 2</label>
-            <input type="text" name="name2" class="form-control" value="{{#if name2}}{{name2}}{{/if}}">
+        {{#if day_no}}
+            <div class="form-group active">
+                <label>Item 1<span class="text-danger">*</span></label>
+                <input type="text" name="name1" class="form-control" value="" required>
+                <br>
+            </div>
+            {{#for 2 4}}
+            <div class="form-group r-hidden">
+                <label>Item {{this}}</label>
+                <input type="text" name="name{{this}}" class="form-control" value="">
+                <br>
+            </div>
+            {{/for}}
+            <div class="form-group r-hidden" id="lastFormDiv">
+                <label>Item 4</label>
+                <input type="text" name="name4" class="form-control" value="">
+                <br>
+            </div>
+        {{else}}
+            <div class="form-group active">
+                <label>Item 1<span class="text-danger">*</span></label>
+                <input type="text" name="name1" class="form-control" value="{{reward_1st.food_name}}">
+                <br>
+            </div>
+            {{#each rewards_mid}}
+            {{#unless this.food_name}}<div class="form-group r-hidden">{{else}}<div class="form-group active">{{/unless}}
+                <label>Item {{this.food_no}}</label>
+                <input type="text" name="name{{this.food_no}}" class="form-control" value="{{this.food_name}}">
+                <br>
+            </div>
+            {{/each}}
+            {{#unless reward_last.food_name}}<div class="form-group r-hidden">{{else}}<div class="form-group active" id="lastFormDiv">{{/unless}}
+                <label>Item 4</label>
+                <input type="text" name="name4" class="form-control" value="{{reward_last.food_name}}">
+                <br>
+            </div>
+        {{/if}}
+        <script>
+            genButton();
+        </script>
         <br>
         <a href="/rewards/rewardsList" class="btn btn-danger">Back to list</a>   
         <input type="submit" value="Save" class="btn btn-success float-right" style="padding:6px 25px;">
     </form>
 </div>
+
+<script>
+    var buttIndex = 0;
+    var buttonGen;
+    window.addEventListener('load', structButton);
+    window.addEventListener('load', genButton);
+
+    function structButton() {
+        buttonGen = document.createElement('button');
+        buttonGen.setAttribute('id', "AddMore");
+        buttonGen.setAttribute('onclick', "genMoreInputs(); return false;");
+        buttonGen.innerText = "+ Add more items";
+        buttonGen.className = "btn btn-light btn-outline-secondary";
+        document.getElementById('AddMore')
+    }
+
+    function genButton() {
+        const totalActive = document.getElementsByClassName("form-group active");
+        if (totalActive.length != 4) {
+            const nextDiv = totalActive[totalActive.length-1];
+            nextDiv.appendChild(buttonGen);
+        }
+    }
+
+    function genMoreInputs() {
+        // Remove button from 1st
+        const button = document.getElementById('AddMore');
+        button.remove();
+
+        // Open up the next input
+        const hiddens = document.querySelector(".r-hidden");
+        hiddens.classList.remove('r-hidden');
+        hiddens.classList.add("active");
+        // Add button on 2nd  
+        genButton();
+    }
+</script>

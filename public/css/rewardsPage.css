@@ -1,5 +1,5 @@
 .navbar.navbar-expand-lg.bg-warning.navbar-dark li a {
-    color:black;
+    color:black; 
 }
 
 div.rewards-table-container {
@@ -7,6 +7,7 @@ div.rewards-table-container {
     margin:0 auto;
     padding: 2%;
     width: 85%;
+    text-align: center;
 }
 
 div.rewards-table-container table td {
@@ -20,6 +21,10 @@ div.rewards-table-container table td div {
     height:180px;
     border-radius:10px;
     margin-bottom:5%;
+}
+
+div#rewardsUser div {
+    height:240px;
 }
 
 div.reward h4 {
@@ -41,10 +46,6 @@ a[href="onlineOrder"] {
 a[href="onlineOrder"]:hover {
     color:#679CBF;
     text-decoration: none;
-}
-
-div.rewards-table-container h3, div.rewards-table-container h4, div.rewards-table-container p {
-    text-align: center;
 }
 
 div.normal-day-cell{
@@ -97,7 +98,7 @@ div.ad-cell {
 div.norewards-container {
     position:absolute;
     width:106%;
-    height:350%;
+    height:450%;
     overflow:hidden;
     right:0;
     top:71px;
@@ -146,4 +147,6 @@ div.normal a.admin-edit {
     left:35%;
 }
 
-
+div.r-hidden {
+    display: none;
+}

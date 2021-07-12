@@ -5,7 +5,9 @@ const {UserRewards} = require('../../models/UserRewards');
 const Order = require('../../models/Order');
 const Cart = require('../../models/Cart');
 const { Op } = require('sequelize');
-const e = require('connect-flash');
+
+const rewardsArranger = require('../../utilities/rewards_arranger');
+
 
 Router.get('', async function (req, res) {
     console.log("Rewards page viewed");
@@ -22,33 +24,23 @@ Router.get('', async function (req, res) {
     }
     const full_rows = Math.floor(total_orders / 5);
     const leftover = { Reached: total_orders - full_rows * 5, Unreached: 4 - (total_orders - full_rows * 5) };
-    // Retrieve full prizes list with length of 12(Null values filled in for unregistered prize days)
-    const prizes_list = await RewardsList.findAll({
-        order: [['day_no', 'ASC']],
+    // Retrieve full prizes list with length of 12 (Null values filled in for unregistered prize days)
+    const prizes = await RewardsList.findAll({
+        attributes: ['day_no', 'food_name'],
+        order: [['day_no', 'ASC'], ['food_no', 'ASC']],
         raw: true
     });
-    // Fill up unregisted days
-    var temp = 5;
-    try {
-        for (i = 0; i < 12; i++) {
-            if (prizes_list[i]["day_no"] != temp) {
-                prizes_list.splice(i, 0, { food_primary: null, food_secondary: null });
-            }
-            temp += 5;
-        }
-    // Fill up the rest at the back
-    } catch (TypeError) {
-        for (i = temp; i < 61; i += 5) {
-            prizes_list.push({ day_no: i, food_primary: null, food_secondary: null })
-        } 
-    }
+
+    const prizes_list = rewardsArranger.arrange_rewards(prizes);
+
     // Retrieve prizes of the user
-    let user_prizes = [];
+    let user_prizes_list = [];
     try {
-        user_prizes = await UserRewards.findAll({
+        user_prizes_list = await UserRewards.findAll({
             include: [{
                 model: RewardsList,
-                attributes: ['food_primary', 'food_secondary']
+                attributes: ['day_no', 'food_name'],
+                order: [['day_no', 'ASC'], ['food_no', 'ASC']]
             }],
             attributes: ['claimed'],
             where: { uuid: req.user.uuid },
@@ -60,9 +52,8 @@ Router.get('', async function (req, res) {
         console.error("Unable to get user progress. Reasons: User is not logged in/User has no rewards");
         console.error(error);
     }
-    /*const prizes_list = ["Coca-cola", "Beef Chili Cheese Fries", "Chargrilled Chicken Club", "Battered Cod Fish", 
-                        "(Not specified)", "(Not specified)", "(Not specified)", "(Not specified)",
-                        "(Not specified)", "(Not specified)", "(Not specified)", "(Not specified)"]*/
+
+    const user_prizes = rewardsArranger.arrange_rewards_noNull(user_prizes_list);
 
     const middle = prizes_list[leftover.Reached];
     const not_reached = prizes_list.slice(leftover.Reached + 1, prizes_list.length);
@@ -76,25 +67,33 @@ Router.get('', async function (req, res) {
 });
 
 Router.get('/add-reward-to-cart/:day_no', async function (req, res) {
-    const reward = await UserRewards.findOne({
+    const reward = await UserRewards.findAll({
+        attributes: ['food_name'],
         where: {day_no:req.params.day_no},
         raw: true
     });
 
     // Adding primary food
-    const cart = await Cart.create({
-        cart_item_name: reward.food_primary+"--Reward<"+reward.day_no.ToFixed(2)+">",
-        cart_item_price: 0,
-        cart_item_quantity: 1
-    });
-
-    // Adding secondary food
-    if (reward.food_secondary != null) {
-        const cart2 = await Cart.create({
-            cart_item_name: reward.food_secondary+"--Reward<"+reward.day_no.ToFixed(2)+">",
-            cart_item_price: 0,
-            cart_item_quantity: 1
-        }); 
+    let found_quant;
+    let cart;
+    for (var obj in reward) {
+        found_quant = await Cart.findOne({
+            attributes: ['cart_item_quantity'],
+            where: {cart_item_name: obj.food_name}
+        });
+        if (found_quant == null) {
+            cart = await Cart.create({
+                cart_item_name: obj.food_name+" (Reward "+reward.day_no.ToFixed(2)+")",
+                cart_item_price: 0,
+                cart_item_quantity: 1
+            });
+        }
+        else {
+            found_quant++;
+            cart = await Cart.update({
+                cart_item_quantity: found_quant,
+            }, { where: {cart_item_name: obj.food_name+" (Reward "+reward.day_no.ToFixed(2)+")"}});
+        }
     }
 
     return res.redirect('/user/cart');
@@ -102,7 +101,7 @@ Router.get('/add-reward-to-cart/:day_no', async function (req, res) {
 
 Router.get('/remove-reward-from-cart/:day_no', async function (req, res) {
     const removeReward = await Cart.destroy({where:{
-        [Op.like]: '%--Reward<'+req.params.day_no+'>'
+        [Op.like]: '% (Reward '+req.params.day_no.ToFixed(2)+')'
     }});
 
     return res.redirect('/user/cart');
