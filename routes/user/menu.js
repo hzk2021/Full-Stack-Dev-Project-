@@ -24,12 +24,17 @@ Router.get('/', async function(req, res){
     }
     // Below is for rewards
     // Get user rewards
-    const rewards = null;
-
-	res.render('menu/menuPublic', {
-        items: items,
-        prizes_list: rewards,
-        })
+    const rewards =  null;
+    try {
+        rewards = UserRewards.findAll({where:{uuid:req.user.uuid}});
+    }
+    catch (error) {
+        console.error("User is not logged in");
+    }
+    res.render('menu/menuPublic', {
+            items: items,
+            prizes_list: rewards,
+            }) ;
     });
 
 module.exports = Router;
