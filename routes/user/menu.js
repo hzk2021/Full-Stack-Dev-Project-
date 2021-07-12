@@ -1,28 +1,27 @@
 const Express = require('express');
 const Router = Express.Router();
 const {UserRewards} = require('../../models/UserRewards');
+const Menu = require('../../models/Menu');
+const Cart = require('../../models/Order');
 
 //Retrieve
-Router.get('/menuPublic', async function(req, res){
-    var beefb = [
-        {
-            item:'Guacamole Bacon Cheeseburger',
-            price:'11.90',
-            img:'img/GuacBacon.jpg'
-        },
-        {
-            item:'Chili Cheeseburger',
-            price:'13.90',
-            img:'img/GuacBacon.jpg'
-        }
-    ]
-    var pab = [
-        {
-            item:'Original Angus Beef Burger',
-            price:'12.90',
-            img:'img/GuacBacon.jpg'
-        }
-    ]
+Router.get('/', async function(req, res){
+    console.log("Public menu page accessed");
+    const items = null;
+    try {
+        // Get all menu items
+        const items = await Menu.findAll({
+            attributes: ['item_name', 'item_price', 'item_course', 'item_description'],
+            raw: true
+        });
+        console.log(items);        
+    }
+
+    catch (error) {
+        console.error("An error occured while trying to retrieve the menu items");
+        console.error(error);
+        return res.status(500).end();
+    }
     // Below is for rewards
     // Get user rewards
     const rewards = null;
@@ -38,10 +37,8 @@ Router.get('/menuPublic', async function(req, res){
     }
 
 	res.render('menu/menuPublic', {
-        beefb: beefb,
-        pab: pab,
+        items: items,
         prizes_list: rewards,
-        img:'GuacBacon.jpg'
         })
     });
 

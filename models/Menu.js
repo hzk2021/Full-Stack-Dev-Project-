@@ -6,18 +6,18 @@ const Menu = Database.sequelize.define('menu',{
     uuid:  {
         type: Sequelize.CHAR(36),
         primaryKey: true,
-        default: Sequelize.DataTypes.UUIDV4
-    },
-    item_course: {
-        type: Sequelize.STRING(64),
-        allowNull: false
+        defaultValue: Sequelize.DataTypes.UUIDV4
     },
     item_name: {
         type: Sequelize.STRING(64),
         allowNull: false
     },
     item_price: {
-        type: Sequelize.FLOAT(4,2),
+        type: Sequelize.DECIMAL(10,2),
+        allowNull: false
+    },
+    item_course: {
+        type: Sequelize.STRING(64),
         allowNull: false
     },
     item_description: {

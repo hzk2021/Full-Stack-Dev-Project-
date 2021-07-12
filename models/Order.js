@@ -10,16 +10,14 @@ const Order = Database.sequelize.define('order',{
     },
     order_id: {
         type: Sequelize.CHAR(6),
-        primaryKey: true,
         allowNull: false
     },
     order_item: {
         type: Sequelize.STRING(64),
-        primaryKey: true,
         allowNull: false
     },
     order_price: {
-        type: Sequelize.FLOAT(4,2),
+        type: Sequelize.DECIMAL(10,2),
         allowNull: false
     },
     order_item_quantity: {

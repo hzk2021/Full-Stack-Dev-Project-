@@ -1,7 +1,6 @@
 const Express = require('express');
 const { User, UserRole} = require('../../models/User');
 const Router = Express.Router();
-const AccountChecker = require('../../utilities/account_checker');
 const { Op, Model } = require('sequelize');
 const Hash = require('hash.js');
 
@@ -11,11 +10,11 @@ const regexName = /^[a-zA-Z][a-zA-Z]{2,}$/;
 const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 
-Router.get('/list', AccountChecker.isLoggedIn, AccountChecker.isAdmin , async function(req,res) {
+Router.get('/list', async function(req,res) {
     return res.render('accounts/showAccounts');
 });
 
-Router.get('/list-data', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async function(req,res) {
+Router.get('/list-data', async function(req,res) {
     console.log(req.query);
     const filterSearch = req.query.search;
 
@@ -51,7 +50,7 @@ Router.get('/list-data', AccountChecker.isLoggedIn, AccountChecker.isAdmin, asyn
     });
 });
 
-Router.get('/create', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async function(req,res){
+Router.get('/create', async function(req,res){
     res.render('accounts/createAccount', {
         success_msg: req.flash('success_msg'),
         error: req.flash('error'),
@@ -59,7 +58,7 @@ Router.get('/create', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async f
     });
 });
 
-Router.post('/create', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async function(req,res) {
+Router.post('/create', async function(req,res) {
     let errors = [];
     
     try {
@@ -109,7 +108,7 @@ Router.post('/create', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async 
     }
 });
 
-Router.post('/delete/:id/', AccountChecker.isLoggedIn, AccountChecker.isAdmin, async function(req,res) {
+Router.post('/delete/:id/', async function(req,res) {
     const user_uuid = req.params.id;
 
     if (user_uuid == "00000000-0000-0000-000000000000"){

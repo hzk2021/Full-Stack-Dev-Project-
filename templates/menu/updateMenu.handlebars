@@ -1,36 +1,38 @@
 <div class="form-sm">
-<h1 class="display-4">Create Menu (Admin)</h1>
+<h1 class="display-4">Update Menu (Admin)</h1>
 
 <form method="POST" action="">
     <div class="form-group">
         <label for="name">Item name</label>
-        <input type="text" class="form-control" name="Name" value="" required>
+        <input type="text" class="form-control" name="item_name" value="{{item_name}}" required>
     </div>
     <div class="form-group">
         <label for="name">Price</label>
-        <input type="text" class="form-control" name="Price" value="" required>
+        <input type="text" class="form-control" name="item_price" value="{{item_price}}" required>
     </div>
     <div class="form-group">
         <label for="name">Course</label>
         <select id="course" name="Course" class="form-control">
-            <option value="CBB" selected>Chargrilled Beef Burger</option>
+            <option value="CBB" >Chargrilled Beef Burger</option>
             <option value="PAB">Premium Angus Beef</option>
             <option value="CCS">Chargrilled Chicken Sandwich</option>
             <option value="SID">Sides</option>
             <option value="SAL">Salad</option>
-        </select>
+        </select>  
     </div>
     <div id="prof">
         <div class="form-group">
         <label for="name">Description</label>
-        <input type="text" class="form-control" name="Description" value="" required>  
+        <input type="text" class="form-control" name="item_description" value="{{item_description}}" required>  
         </div>
     </div>
     <div>
         <label for="name">Image</label>
         <input type="text" class="form-control" name="image" value="" required>  
     </div>
+    <input type="hidden" id="uuid" name="uuid" value="{{uuid}}">
 
+    <a href="/admin/menu/" class="btn btn-danger">Back</a>
     <input type="submit" value="Submit" class="btn btn-primary"/>
 </form>
-</div>
+</div> 

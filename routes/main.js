@@ -6,7 +6,7 @@ const UserRoutes = require('./user/user');
 const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../utilities/account_checker');
 
 Router.use("/auth", AuthRoutes);
-Router.use('/admin', AdminRoutes);
+Router.use('/admin', isLoggedIn, isAdmin, AdminRoutes);
 Router.use('/user', UserRoutes);
 
 /* Root */

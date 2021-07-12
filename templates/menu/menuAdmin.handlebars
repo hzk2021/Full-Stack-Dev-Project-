@@ -9,6 +9,8 @@
 </style>
 
 <h1 class="display-4">Menu</h1>
+<div class="text-right"><a href="/admin/menu/create/" class="btn btn-primary">Create Menu Item</a></div>
+
 <!-- Nav tabs -->
 <ul class="nav nav-tabs">
   <li class="active">
@@ -27,47 +29,6 @@
     <a class="nav-link" data-toggle="tab" href="#SAL">Salad</a>
   </li>
 </ul>
-
-<!-- Rewards button -->
-<div class="rewards-tab nav-item dropdown float-right">
-    <a class="btn btn-primary nav-link dropdown-toggle float-right" href="#" id="rewardsTab" data-toggle="dropdown">
-      <i class="fa fa-gift" aria-hidden="true"></i> Claim Rewards!</a>
-    <div class="dropdown-menu dropdown-menu-right rewards-container rewards-container" id="rewardsTab" style="clear:right;">
-        {{#if user}}
-        <h3>Your Rewards</h3>
-
-        {{#if prizes_list}}
-        <p>Click on claim to add your reward to cart</p>
-        <table class="rewards-list">
-            {{#each prizes_list}}
-            <tr>
-              <td>{{ this.food_primary }}</td>
-              {{#if this.food_secondary}}
-              <td>{{ this.food_secondary }}</td>
-              <td rowspan="2">
-              {{else}}
-              <td> </td>
-              <td>
-              {{/if}}
-              <a class="btn btn-success" style="margin-left:15px;" href="/user/rewards/add-reward-to-cart/{{this.day_no}}">Claim</a>
-              </td>
-            </tr>
-            <br>
-            {{/each}}
-        </table>
-        {{else}}
-        <p>You do not have any claimable rewards</p>
-        {{/if}}
-
-        {{else}}
-        <h3>You are not signed in</h3>
-        <p>Log in to your account or sign up for a new account to partake in rewards</p>
-        <a class="btn btn-primary sign" href="">Login</a>
-        <a class="btn btn-outline-secondary sign" href="">Sign Up</a>
-        {{/if}}
-        <a class="btn btn-secondary button-close" href="#" id="rewardsTab2" data-toggle="collapse">Close</a>
-    </div>
-</div>
 
 <!-- Tab panes -->
 <div class="tab-content">
@@ -95,8 +56,8 @@
               <td></td>
 
               <td></td>
-              {{!--addToCart/{{this.item_name}}--}}
-              <td><a href="" class="btn btn-warning">Add to cart</a></td>
+              <td><a href="/admin/menu/update/{{this.item_name}}" class="btn btn-warning">Edit</a></td>
+              <td><a href="/admin/menu/delete/{{this.item_name}}" class="btn btn-danger">Delete</a></td>
             </tr>
           {{/ifc}}
         {{/each}}
@@ -129,8 +90,8 @@
               <td></td>
 
               <td></td>
-              {{!--addToCart/{{this.item_name}}--}}
-              <td><a href="" class="btn btn-warning">Add to cart</a></td>
+              <td><a href="/admin/menu/update/{{this.item_name}}" class="btn btn-warning">Edit</a></td>
+              <td><a href="/admin/menu/delete/{{this.item_name}}" class="btn btn-danger">Delete</a></td>
             </tr>
           {{/ifc}}
         {{/each}}
@@ -163,8 +124,8 @@
               <td></td>
 
               <td></td>
-              {{!--addToCart/{{this.item_name}}--}}
-              <td><a href="" class="btn btn-warning">Add to cart</a></td>
+              <td><a href="/admin/menu/update/{{this.item_name}}" class="btn btn-warning">Edit</a></td>
+              <td><a href="/admin/menu/delete/{{this.item_name}}" class="btn btn-danger">Delete</a></td>
             </tr>
           {{/ifc}}
         {{/each}}
@@ -180,7 +141,6 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th></th>
             <th></th>
             <th width="50%">Item</th>
             <th width="40%">Price</th>
@@ -198,8 +158,8 @@
               <td></td>
 
               <td></td>
-              {{!--addToCart/{{this.item_name}}--}}
-              <td><a href="" class="btn btn-warning">Add to cart</a></td>
+              <td><a href="/admin/menu/update/{{this.item_name}}" class="btn btn-warning">Edit</a></td>
+              <td><a href="/admin/menu/delete/{{this.item_name}}" class="btn btn-danger">Delete</a></td>
             </tr>
           {{/ifc}}
         {{/each}}
@@ -232,8 +192,8 @@
               <td></td>
 
               <td></td>
-              {{!--addToCart/{{this.item_name}}--}}
-              <td><a href="" class="btn btn-warning">Add to cart</a></td>
+              <td><a href="/admin/menu/update/{{this.item_name}}" class="btn btn-warning">Edit</a></td>
+              <td><a href="/admin/menu/delete/{{this.item_name}}" class="btn btn-danger">Delete</a></td>
             </tr>
           {{/ifc}}
         {{/each}}
@@ -242,4 +202,6 @@
     </div>
   </div>
 
-</div>
+
+
+  </div>

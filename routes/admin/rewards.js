@@ -4,8 +4,6 @@ const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const Menu = require('../../models/Menu');
 const Cart = require('../../models/Order');
-
-const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../../utilities/account_checker');
 const rewardsArranger = require('../../utilities/rewards_arranger');
 
 // /**
@@ -18,7 +16,7 @@ const rewardsArranger = require('../../utilities/rewards_arranger');
  */
 
 // Accessing edit rewards page
-Router.get('/edit/:day_no', isLoggedIn, isAdmin, async function (req, res) {
+Router.get('/edit/:day_no', async function (req, res) {
     console.log("Admin edit rewards page accessed");
     try {
         const rewards = await RewardsList.findAll({ 
@@ -64,7 +62,7 @@ Router.get('/edit/:day_no', isLoggedIn, isAdmin, async function (req, res) {
 });
 
 // Post when changes are submitted
-Router.post('/edit/:day_no', isLoggedIn, isAdmin, async function (req, res) {
+Router.post('/edit/:day_no', async function (req, res) {
     console.log("Executing edit rewards POST");
     let errors = [];
     // Change RewardsList to Menu model when Menu model is ready
@@ -153,7 +151,7 @@ Router.get('/delete-all/:day_no', async function(req, res) {
 });
 
 // Accessing admin rewards page
-Router.get('/rewardsList', isLoggedIn, isAdmin, async function (req, res) {
+Router.get('/rewardsList', async function (req, res) {
     console.log("Admin rewards page accessed");
     // Get all prizes
     const prizes = await RewardsList.findAll({
