@@ -1,3 +1,5 @@
+const Menu = require('../models/Menu');
+const Sequelize = require('sequelize');
 
 const arrange_rewards = function (prizes) {
     let merged_prizes = [];

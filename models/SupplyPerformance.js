@@ -12,10 +12,6 @@ class SupplyPerformance extends Model {
 }
 
 SupplyPerformance.init({
-    item_id: {
-        type: Sequelize.CHAR(36),
-        primaryKey: true,
-    },
     date_submitted: {
         type: Sequelize.DATE,
         allowNull: true,

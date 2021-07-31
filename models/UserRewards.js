@@ -16,15 +16,6 @@ UserRewards.init({
         type: Sequelize.CHAR(36),
         primaryKey: true
     },
-    day_no: {
-        type: Sequelize.SMALLINT(2),
-        primaryKey: true,
-        unique: true,
-        allowNull: false,
-        validate: {
-            isIn: [daysAllowed]
-        }
-    },
     claimed: {
         type: Sequelize.BOOLEAN(),
         allowNull: false,

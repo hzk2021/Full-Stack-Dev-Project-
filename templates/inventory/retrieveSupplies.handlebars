@@ -153,14 +153,13 @@
   data-show-refresh="true">
   <thead>
     <tr>
-    <th data-field="item_name">Product Name</th>
-    <th data-field="category_name">Category</th>
-    <th data-field="stock_used">Stock Used</th>
-    <th data-field="stock-">Stock Left</th>
-    <th data-field="val_change">Stock Change</th>
-    <th data-field="next_next">Calculated Value</th>
-    <th><a class="btn btn-primary" href="/admin/inventory/calculate-next-values">Calculate Quantity For Next Week</a></th>
-  </tr>
+      <th data-field="item_name">Product Name</th>
+      <th data-field="supply_category.category_name">Category</th>
+      <th data-field="stock_used">Stock Used</th>
+      <th data-field="current_stock_lvl">Stock Left</th>
+      <th data-field="supply_performance.val_change">Stock Change</th>
+      <th data-field="supply_performance.next_value">Predicted Order</th>
+    </tr>
   </thead>
 </table>
   <a href="/submittedSupplies" class="btn btn-success float-right">Submit Order List</a>

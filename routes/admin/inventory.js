@@ -115,18 +115,18 @@ Router.post('/edit/categories', async function(req, res) {
         // Get the current list of categories
         const categories = await SupplyCategory.findAll({
             attributes: ['category_name'],
-            order: [['category_no', 'ASC']]
+            order: [['category_no', 'ASC']],
+            raw: true
         });
 
         // Updating existing categories
         var req_i = 1
         var i = 0;
         for (i=0; i<categories.length; i++) {
-            while (req.body['name'+req_i] == "") {
+            while (req.body['name'+req_i] == null) {
                 req_i++;
             }
             if (categories[i].category_name != req.body['name'+req_i]) {
-                console.log(req.body.name1);
                 const updateCat = await SupplyCategory.update({
                     category_name: req.body['name'+req_i]             
                 }, { where: {category_no:i} });
@@ -185,7 +185,7 @@ Router.get('/dashboard', async function(req, res) {
                    },*/
         all_data: sorted_graph_data,
         supplies_dict: [{name:"Bun", type:"Others", qty:4012, valChange:5.19, nextVal:4136}, 
-                        {item_id:"abfa2554-aad9-4306-a256-fdd751d19283", name:"Chicken", type:"Meat", qty:2132, valChange:-4.00, nextVal:2019}, 
+                        {item_id:"61db7439-87bc-4924-8eca-1bb15fb57720", name:"Chicken", type:"Meat", qty:2132, valChange:-4.00, nextVal:2019}, 
                         {item_id:"5135618d-f32b-482a-a993-846273d7446d", name:"Beef", type:"Meat", qty:2987, valChange:4.04, nextVal:2900},
                         {name:"Lettuce", type:"Vegetables", qty:3412, valChange:0.35, nextVal:3328}
                         ],
@@ -196,7 +196,8 @@ Router.get('/dashboard', async function(req, res) {
 Router.get('/update/:id', async function(req, res) {
     try {
         const item = await Supplies.findOne({
-            attributes:['item_name', 'category_no', 'next_value'],
+            
+            attributes:['item_name', 'category_no'],
             where: { item_id:req.params.id },
             raw: true
         });
@@ -258,7 +259,7 @@ Router.get('/suppliesList', async function(req, res) {
                 },
                 {
                     model: SupplyPerformance,
-                    attributes: [, 'next_value']
+                    attributes: ['next_value']
                 }
             ],
             attributes:['item_name'],
@@ -305,14 +306,14 @@ Router.get('/get-data', async function(req, res) {
             include: [
                 {
                     model: SupplyCategory,
-                    attributes: ['category_name']
+                    attributes: ['category_name'],
                 },
                 {
                     model: SupplyPerformance,
                     attributes: ['val_change', 'next_value']
                 }
             ],
-            attributes:['item_name', 'stock_used'],
+            attributes:['item_name', 'stock_used', 'current_stock_lvl', 'category_no'],
             where: {week_no:1},
             offset: parseInt(req.query.offset),
             limit: parseInt(req.query.limit),
@@ -329,6 +330,34 @@ Router.get('/get-data', async function(req, res) {
         console.error(error);
     }
 
+});
+
+Router.get('/get-supplies', async function(req, res) {
+    console.log('Retrieving data for supplies list');
+    try {
+        const list_data = await Supplies.findAll({
+            include: [
+                {
+                    model: SupplyCategory,
+                    attributes: ['category_name'],
+                },
+            ],
+            attributes:['item_name'],
+            where: {week_no:1},
+            offset: parseInt(req.query.offset),
+            limit: parseInt(req.query.limit),
+            raw: true
+        });
+        console.log(list_data);
+
+        return res.json({
+            "rows": list_data
+        });
+    }
+    catch (error) {
+        console.error("Error retrieving the data for generating tables");
+        console.error(error);
+    }
 });
 
 Router.get('/calculate-next-values', async function(req, res) {

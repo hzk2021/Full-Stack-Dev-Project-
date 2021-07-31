@@ -5,12 +5,11 @@ const {UserRewards} = require('../../models/UserRewards');
 const Order = require('../../models/Order');
 const Cart = require('../../models/Cart');
 const { Op } = require('sequelize');
-const { arrange_rewards } = require('../../utilities/data_arranger');
+const { arrange_rewards, arrange_rewards_noNull } = require('../../utilities/data_arranger');
 
 
 Router.get('', async function (req, res) {
     console.log("Rewards page viewed");
-    let errors = [];
     var total_orders = 0
     try {
         total_orders = await Order.count({ 

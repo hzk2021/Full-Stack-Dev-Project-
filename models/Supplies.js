@@ -24,10 +24,6 @@ Supplies.init({
         type: Sequelize.STRING(40),
         allowNull: false
     },
-    category_no: {
-        type: Sequelize.STRING(10),
-        allowNull: false,
-    },
     current_stock_lvl: {
         type: Sequelize.BIGINT(5),
         defaultValue: 0
