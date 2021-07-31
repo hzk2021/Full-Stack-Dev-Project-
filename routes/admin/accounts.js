@@ -40,7 +40,7 @@ Router.get('/list-data', async function(req,res) {
             raw: true
         });
     }catch(error){
-        console.log("Error retrieving accounts in User Database");
+        console.log("Error retrieving accounts from User Database");
         console.error(error);
     }
 
