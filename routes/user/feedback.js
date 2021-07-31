@@ -1,20 +1,21 @@
 const Express = require('express');
-const { User, UserRole} = require('../../models/User');
 const Feedback = require('../../models/Feedback');
 const Router = Express.Router();
 const { Op, Model } = require('sequelize');
 const { uuid } = require('uuid');
+const AccountChecker = require('../../utilities/account_checker');
 
 
-Router.get('/create', async function(req,res) {
+Router.get('/create', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req,res) {
     res.render('feedback/createFeedback', {
         success_msg: req.flash('success_msg'),
         error: req.flash('error'),
-        errors: req.flash('errors')
+        errors: req.flash('errors'),
+        'title': "Create Feedback"
     });
 });
 
-Router.post('/create', async function(req,res){
+Router.post('/create',AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req,res){
     let errors = [];
     try {
         if (parseFloat(req.body.rating) < 0 || parseFloat(req.body.rating) > 5){
@@ -52,11 +53,13 @@ Router.post('/create', async function(req,res){
 });
 
 
-Router.get('/list', async function(req,res) {
-    return res.render('feedback/viewFeedback');
+Router.get('/list', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req,res) {
+    return res.render('feedback/viewFeedback', {
+        'title': "View My Feedbacks"
+    });
 });
 
-Router.get('/list-my-feedbacks', async function(req, res) {
+Router.get('/list-my-feedbacks', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req, res) {
     console.log(req.query);
     const filterSearch = req.query.search;
 

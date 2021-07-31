@@ -11,7 +11,9 @@ const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$
 
 
 Router.get('/list', async function(req,res) {
-    return res.render('accounts/showAccounts');
+    return res.render('accounts/showAccounts', {
+        'title': "Show Accounts"
+    });
 });
 
 Router.get('/list-data', async function(req,res) {
@@ -54,7 +56,8 @@ Router.get('/create', async function(req,res){
     res.render('accounts/createAccount', {
         success_msg: req.flash('success_msg'),
         error: req.flash('error'),
-        errors: req.flash('errors')
+        errors: req.flash('errors'),
+        'title': "Create Account"
     });
 });
 
@@ -143,7 +146,9 @@ Router.post('/delete/:id/', async function(req,res) {
     }
 
 
-    return res.render('accounts/showAccounts');
+    return res.render('accounts/showAccounts', {
+        'title': "Show Accounts"
+    });
 });
 
 

@@ -11,7 +11,8 @@ Router.get('/edit', AccountChecker.isLoggedIn, async function(req,res) {
         email_display: req.user.email,
         success_msg: req.flash('success_msg'),
         error: req.flash('error'),
-        errors: req.flash('errors')
+        errors: req.flash('errors'),
+        'title': "Edit Profile"
     })
 });
 

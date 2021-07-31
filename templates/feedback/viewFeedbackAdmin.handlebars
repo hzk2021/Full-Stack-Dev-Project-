@@ -23,6 +23,20 @@
       <th data-field="description">Description</th>
       <th data-field="dateCreated">CreatedAt</th>
       <th data-field="dateUpdated">UpdatedAt</th>
+      <th data-field="response">Response</th>
+      <th data-formatter="Respond">Option</th>
     </tr>
   </thead>
 </table>
+
+<script>
+  function Respond(value, row) {
+    if (row.response == null){
+      return`<form action="/admin/feedback/respond/${row.feedbackID}" method="GET">
+              <input type="submit" value="Respond" class="btn btn-success">
+            </form>`
+    }else{
+      return "<b>Responded</b>"
+      }
+    }
+</script>
