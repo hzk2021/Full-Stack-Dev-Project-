@@ -65,7 +65,8 @@ Router.get('/list-my-feedbacks', async function(req, res) {
             "feedbackID" : { [Op.substring]: filterSearch}, 
             "type": { [Op.substring]: filterSearch},
             "rating": { [Op.substring]: filterSearch},
-            "description": { [Op.substring]: filterSearch}
+            "description": { [Op.substring]: filterSearch},
+            "response": { [Op.substring]: filterSearch}
         },
         "userUUID" : req.user.uuid
     };
