@@ -5,8 +5,7 @@ const {UserRewards} = require('../../models/UserRewards');
 const Order = require('../../models/Order');
 const Cart = require('../../models/Cart');
 const { Op } = require('sequelize');
-
-const rewardsArranger = require('../../utilities/rewards_arranger');
+const { arrange_rewards } = require('../../utilities/data_arranger');
 
 
 Router.get('', async function (req, res) {
@@ -31,7 +30,7 @@ Router.get('', async function (req, res) {
         raw: true
     });
 
-    const prizes_list = rewardsArranger.arrange_rewards(prizes);
+    const prizes_list = arrange_rewards(prizes);
 
     // Retrieve prizes of the user
     let user_prizes_list = [];
@@ -53,7 +52,7 @@ Router.get('', async function (req, res) {
         console.error(error);
     }
 
-    const user_prizes = rewardsArranger.arrange_rewards_noNull(user_prizes_list);
+    const user_prizes = await arrange_rewards_noNull(user_prizes_list);
 
     const middle = prizes_list[leftover.Reached];
     const not_reached = prizes_list.slice(leftover.Reached + 1, prizes_list.length);

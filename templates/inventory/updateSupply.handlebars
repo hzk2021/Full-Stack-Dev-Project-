@@ -1,27 +1,26 @@
-<div class="form-sm">
+<div class="card card-body form-sm">
 <h1 class="display-4">Update Supply</h1>
 <br>
 
 <form method="POST" action="">
     <div class="form-group">
         <label for="name">Item Name</label>
-        <input type="text" name="name" class="form-control">
+        <input type="text" name="name" class="form-control" value="{{item.item_name}}">
     </div>
     <div class="form-group" style="width:40%">
-        <label for="type">Supply Type</label>
+        <label for="type">Category</label>
         <select name="type" id="type" class="form-control">
-            <option class="disabled-option" disabled selected value>Select category</option>
-            <option value="Meat">Meat</option>
-            <option value="Vegetables">Vegetables</option>
-            <option value="Others">Others</option>
+            {{#each categories}}
+            <option class="cat-option" value="{{this.category_no}}" {{#if this.selected}}selected{{/if}}>{{this.category_name}}</option>
+            {{/each}}
         </select>
     </div>
-    <div class="form-group" style="width:40%">
-        <label for="quantity">Quantity</label>
+    <div class="form-group">
+        <label for="quantity">Next Order Quantity</label>
         {{#if next_orders}}
-        <input type="number" name="quantity" class="form-control" value="{{next_orders}}">
+        <input type="number" name="quantity" class="form-control" value="{{next_orders}}" style="width:40%">
         {{else}}
-        <input type="number" name="quantity" class="form-control" value="0" disabled>
+        <input type="number" name="quantity" class="form-control" value="" style="width:40%" placeholder="~Not generated yet~" disabled>
         {{/if}}
     </div>
     <br>
@@ -29,3 +28,10 @@
     <input type="submit" value="Submit Changes" class="btn btn-success">
 </form>
 </div>
+
+<script>
+    function insertVal() {
+        var options = document.getElementsByClassName('cat-option');
+
+    }
+</script>

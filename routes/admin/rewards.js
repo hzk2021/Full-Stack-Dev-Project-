@@ -4,16 +4,7 @@ const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const Menu = require('../../models/Menu');
 const Cart = require('../../models/Order');
-const rewardsArranger = require('../../utilities/rewards_arranger');
-
-// /**
-//  * 
-//  * @param {Express.Request} req Express Request handle
-//  * @param {Express.Response} res Express Response handle
-//  */
-/**
- * @param {rewardsArranger.rewards_arrange}
- */
+const { arrange_rewards } = require('../../utilities/data_arranger');
 
 // Accessing edit rewards page
 Router.get('/edit/:day_no', async function (req, res) {
@@ -161,7 +152,7 @@ Router.get('/rewardsList', async function (req, res) {
     });
     
     // Filling up not registered days with null keys
-    const merged_prizes = rewardsArranger.arrange_rewards(prizes);
+    const merged_prizes = await arrange_rewards(prizes);
     console.log(prizes);
 
     // Arranging the array in "rows with 4 columns" format for handlebars to display

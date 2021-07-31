@@ -1,28 +1,48 @@
-<div class="form-sm">
+<div class="card card-body form-sm">
 <h1 class="display-4">Create Supply</h1>
 <br>
 
 <form method="POST" action="">
     <div class="form-group">
-        <label for="name">Item Name:</label>
+        <label for="name">Item Name</label>
         <input type="text" name="name" class="form-control" required>
     </div>
     <div class="form-group" style="width:40%;">
-        <label for="type">Supply type:</label>
-        <input type="text" name="type" class="form-control" required>
+        <label for="type">Category</label>
+        <select class="form-control" name="type" id="chooseCategory" required>
+            <option value="disabled-option" disabled selected value>- Select category -</option>
+            {{#each categories}}
+            <option class="cat-option" value="{{this.category_no}}">{{this.category_name}}</option>
+            {{/each}}
+        </select>
+    </div>
+    <!-- Checkboxes for selecting food on the menu that needs the new supply --> 
+    <label>Food required</label>
+    <div>
+        <table>
+            {{#each food_list}}
+            <tr>
+              {{#each this}}
+              <td><input type="checkbox" name="food_{{this.item_course}}">{{this.item_course}}</td>
+              {{/each}}  
+            </tr>
+            {{/each}}
+        </table>
     </div>
     <br>
     <input type="submit" value="Add to supplies" class="btn btn-success">
-    <a href="/retrieveSupplies" class="btn btn-primary" style="margin-left:1%;">View list and performance</a>
+    <a href="/retrieveSupplies" class="btn btn-primary" style="margin-left:1%;">Go to dashboard</a>
 </form>
 <br>
 
 <div>
     <h3>Your Supply List</h3>
-    <ol>
+    {{#if supplies_dict}}
+    <ol style="border: 1px solid lightgrey;border-radius:4px;padding-top:10px; padding-bottom: 8px;">
         {{#each supplies_dict}}
-        <li>{{ this }}</li>
+        <li style="padding-bottom:2px">{{ this.item_name }}</li>
         {{/each}}
     </ol>
+    {{/if}}
 </div>
 </div>

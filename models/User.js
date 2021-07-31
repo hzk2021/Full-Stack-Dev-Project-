@@ -21,6 +21,7 @@ class User extends Model{
     set email(email) { this.setDataValue("email", email)}
     
 }
+
 User.init({
     uuid: {
         type: Sequelize.CHAR(36),

@@ -88,4 +88,58 @@ const arrange_rewards_noNull = function (prizes) {
     }
 }
 
-module.exports = {arrange_rewards, arrange_rewards_noNull};
+
+
+const arrange_supplies_menu_checkbox = async function () {
+    const food_list = await Menu.findAll({
+        attributes:['item_name', 'item_course'],
+        order:[['item_name', 'ASC']],
+        raw: true
+    });
+
+    const food_courses = await Menu.findAll({
+        attributes:[[Sequelize.fn('DISTINCT', Sequelize.col('item_course')), 'item_course']],
+        raw: true
+    })
+
+    let sorted_food = [];
+    try {
+        for (var course in food_courses) {
+            let list_counter = []
+            let current_list = food_list.filter(food => food.item_name == food_courses[course].item_course);
+            while (current_list.length != 0) {
+                list_counter.push(current_list.slice(0, 5));
+                current_list = current_list.slice(5, current_list.length);
+            }
+            for (var li in list_counter) {
+                sorted_food.push(li);
+            }
+        }
+        return sorted_food 
+    }      
+    catch (error) {
+        console.log('Courses has yet been yet');
+        return null
+    }
+}
+
+// Format: {food: [week1, week2, week3]}
+const arrange_supplies_by_food_weekNo = function (supplies) {
+    var cur_food = supplies[0].item_id;
+    let food_weeks_amt = [supplies[0].stock_used];
+    let sorted_list = {cur_food: food_weeks_amt};
+    for (var food in all_items_wks) {
+        var item = all_items_wks[food]
+        if (item.id != cur_food) {
+            cur_food = item.item_id;
+            food_weeks_amt = [item.stock_used];
+            sorted_list[cur_food] = food_weeks_amt;
+        }
+        else {
+            food_weeks_amt.append(food.stock_used);
+        }
+    }
+    return sorted_list;
+}
+
+module.exports = {arrange_rewards, arrange_rewards_noNull, arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo};

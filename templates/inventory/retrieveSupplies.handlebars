@@ -1,25 +1,5 @@
-<!-- {% if sess != {} %}
-  <div class="alert alert-success alert-dismissible">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    {{ message }}
-  </div>
-{% endif %}
-{% if 'supply_created' in session %}
-<div class="alert alert-success alert-dismissible">
-  <button type="button" class="close" data-dismiss="alert">&times</button>
-  was created.
-</div>
-{% elif 'supply_updated' in session %}
-<div class="alert alert-warning alert-dismissible">
-  <button type="button" class="close" data-dismiss="alert">&times</button>
-   was updated.
-</div>
-{% elif 'supply_deleted' in session %}
-<div class="alert alert-danger alert-dismissible">
-  <button type="button" class="close" data-dismiss="alert">&times</button>
-   was deleted
-</div>
-{% endif %} -->
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+<link href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css" rel="stylesheet">
 
 <h1 class="display-4">View Supplies Information</h1>
 <br>
@@ -73,7 +53,8 @@
 <div id="supplies">
   <h2>Supplies Information</h2>
   <div class="row" style="margin-left:0.5%;">
-    <a class="btn btn-warning btn-lg" href="createSupply"><i class="fas fa-plus-circle"></i> Add supply</a>
+    <a class="btn btn-warning btn-lg" href="create/supplyItem"><i class="fas fa-plus-circle" aria-hidden="true"></i> Add supply</a>
+    <a class="btn btn-primary btn-lg" href="edit/categories"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Categories</a>
     <div class="col float-right" id="search-supply">
       <input class="supplies-search" id="suppliesSearch" type="text" placeholder="⌕ Filter by name" size="30px">
       <button class="btn btn-secondary col-xs-6" style="height:35px;margin-top:5px;" onclick="filter()">⌕</button>
@@ -117,7 +98,7 @@
             {% endif %}-->
         </td>
         <td class="row" style="padding-left:20px;">
-          <a href="updateSupply/{{this.name}}" class="btn btn-warning col-xs-6 supplies-update"
+          <a href="update/{{this.item_id}}" class="btn btn-warning col-xs-6 supplies-update"
             style="margin-right:10px;">Edit</a>
           <form action="/" method="POST">
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#myModal_{{id_name}}">
@@ -154,6 +135,34 @@
       {{/each}}
     </tbody>
   </table>
+<div id="toolbar">
+  <a class="btn btn-warning btn-lg" href="create/supplyItem"><i class="fas fa-plus-circle" aria-hidden="true"></i> Add supply</a>
+  <a class="btn btn-primary btn-lg" href="edit/categories"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Categories</a>
+</div>
+<table
+  id="supplies-table"
+  data-toggle="table"
+  data-search="true"
+  data-toolbar="#toolbar"
+  data-toolbar-align="left"
+  data-url="/admin/inventory/get-data"
+  data-pagination= "true"
+  data-side-pagination= "server"
+  data-filter-control="true"
+  data-buttons-class="primary"
+  data-show-refresh="true">
+  <thead>
+    <tr>
+    <th data-field="item_name">Product Name</th>
+    <th data-field="category_name">Category</th>
+    <th data-field="stock_used">Stock Used</th>
+    <th data-field="stock-">Stock Left</th>
+    <th data-field="val_change">Stock Change</th>
+    <th data-field="next_next">Calculated Value</th>
+    <th><a class="btn btn-primary" href="/admin/inventory/calculate-next-values">Calculate Quantity For Next Week</a></th>
+  </tr>
+  </thead>
+</table>
   <a href="/submittedSupplies" class="btn btn-success float-right">Submit Order List</a>
   <div id="finishWeek">
     <a href="#" class="btn btn-warning float-right" data-toggle="modal" data-target="#myModal_Finish"
@@ -185,6 +194,8 @@
     </div>
   </div>
   <br>
+
+  <!-- Scripts coded into -->
   <script>
     //Function to generate bar graph from the data of past records
     function generate_graph(all_data, view_item) {
@@ -273,4 +284,11 @@
     assign_num();
     decimalFixed();
 
+  </script>
+
+  <!-- Script for generation of supplies table -->
+  <script>
+    $(document).ready(function() {
+      $('#supplies-table').DataTable();
+    });
   </script>
