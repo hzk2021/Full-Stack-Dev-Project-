@@ -2,20 +2,15 @@
 
 <script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
 
-<div class="toolbar">
-    <a class="btn btn-primary" href="/user/feedback/create">
-      Create Feedback
-    </a>
-  </div>
 
-<h1>My Feedbacks</h1>
+<h1>Users' Feedbacks</h1>
 <table
   id="table"
   data-toggle="table"
   data-search="true"
   data-toolbar=".toolbar"
   data-toolbar-align="left"
-  data-url="/user/feedback/list-my-feedbacks"
+  data-url="/admin/feedback/list-users-feedbacks"
   data-pagination= "true"
   data-side-pagination= "server"
   data-filter-control="true"
@@ -27,6 +22,7 @@
       <th data-field="rating">Rating</th>
       <th data-field="description">Description</th>
       <th data-field="dateCreated">CreatedAt</th>
+      <th data-field="dateUpdated">UpdatedAt</th>
     </tr>
   </thead>
 </table>

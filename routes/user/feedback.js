@@ -3,7 +3,7 @@ const { User, UserRole} = require('../../models/User');
 const Feedback = require('../../models/Feedback');
 const Router = Express.Router();
 const { Op, Model } = require('sequelize');
-const { parse } = require('uuid');
+const { uuid } = require('uuid');
 
 
 Router.get('/create', async function(req,res) {

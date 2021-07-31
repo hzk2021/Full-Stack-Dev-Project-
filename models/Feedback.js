@@ -9,11 +9,13 @@ class Feedback extends Model {
     get description() { return String(this.getDataValue("description")); }
     get dateCreated() { return new Date(this.getDataValue("dateCreated")); }
     get dateUpdated() { return new Date(this.getDataValue("dateUpdated")); }
+    get response() { return new String(this.getDataValue("response")); }
 
     set feedbackID(uuid) { this.setDataValue("feedbackID", uuid); }
     set type(type) { this.setDataValue("type", type); }
     set rating(rating) { this.setDataValue("rating", rating); }
     set description(description) { this.setDataValue("description", description); }
+    set response(response) { this.setDataValue("response", response); }
     
 }
 
@@ -46,6 +48,10 @@ Feedback.init({
     description: {
         type: Sequelize.STRING(128),
         allowNull: false
+    },
+    response: {
+        type: Sequelize.STRING(128),
+        allowNull: true
     }
 },{
     sequelize:Database.sequelize,
