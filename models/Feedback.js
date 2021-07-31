@@ -1,15 +1,31 @@
-const Sequelize = require('sequelize');
+const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
 const uuid = require('uuid');
 
-const Feedback = Database.sequelize.define('feedback', {
-    uuid: {
+class Feedback extends Model {
+    get feedbackID() { return String(this.getDataValue("feedbackID")); }
+    get type() { return String(this.getDataValue("type")); }
+    get rating(){ return String(this.getDataValue("rating")); }
+    get description() { return String(this.getDataValue("description")); }
+    get dateCreated() { return new Date(this.getDataValue("dateCreated")); }
+    get dateUpdated() { return new Date(this.getDataValue("dateUpdated")); }
+
+    set feedbackID(uuid) { this.setDataValue("feedbackID", uuid); }
+    set type(type) { this.setDataValue("type", type); }
+    set rating(rating) { this.setDataValue("rating", rating); }
+    set description(description) { this.setDataValue("description", description); }
+    
+}
+
+Feedback.init({
+    feedbackID: {
         type: Sequelize.CHAR(36),
         primaryKey: true,
         defaultValue: Sequelize.DataTypes.UUIDV4
     },
     dateCreated: {
         type: Sequelize.DATE(),
+        primaryKey: true,
         allowNull: false,
         defaultValue: Sequelize.NOW
     },
@@ -18,6 +34,11 @@ const Feedback = Database.sequelize.define('feedback', {
         allowNull: false,
         defaultValue: Sequelize.NOW
     },
+    type:{
+        type: Sequelize.STRING(50),
+        allowNull: false,
+        defaultValue: "Others"
+    },
     rating: {
         type: Sequelize.FLOAT(11),
         allowNull: false
@@ -25,7 +46,17 @@ const Feedback = Database.sequelize.define('feedback', {
     description: {
         type: Sequelize.STRING(128),
         allowNull: false
-    },
+    }
+},{
+    sequelize:Database.sequelize,
+    modelName: 'Feedback',
+    hooks: {
+        afterUpdate: auto_update_timestamp
+    }
 });
+
+function auto_update_timestamp(user, options){
+    Feedback.dateUpdated = Sequelize.literal('CURRENT_TIMESTAMP');
+}
 
 module.exports = Feedback;

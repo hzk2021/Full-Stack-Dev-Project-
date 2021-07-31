@@ -14,7 +14,7 @@ const { SupplyPerformance } = require('../models/SupplyPerformance');
 const InitializeDB = async function(drop){
     await DB.sequelize.authenticate();
     await console.log("Database Connected!");
-    UserModel.User.hasMany(Feedback);
+    UserModel.User.hasMany(Feedback, {foreignKey: 'userUUID'});
     UserModel.User.hasMany(UserRewards);
     RewardsList.hasMany(UserRewards);
     Supplies.belongsTo(SupplyCategory);
