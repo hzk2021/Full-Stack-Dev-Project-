@@ -1,11 +1,11 @@
 <div class="form-sm">
 <h1 class="display-4">Confirm Delete</h1>
-<p>Are you sure you want to delete Menu item #{{item_name}}</p>
+<p>Delete all of #{{cart_item_name}} item(s) from cart?</p>
 <form method="POST" action="">
-    <input type="hidden" id="item_name" name="item_name" value="{{item_name}}">
+    <input type="hidden" id="cart_item_name" name="cart_item_name" value="{{cart_item_name}}">
     <input type="hidden" id="uuid" name="uuid" value="{{uuid}}">
 
-    <a href="/admin/menu/" class="btn btn-secondary">Back</a>
+    <a href="/user/cart/" class="btn btn-secondary">Back</a>
     <button type="submit" class="btn btn-danger">Delete</button>
 </form>
 </div> 

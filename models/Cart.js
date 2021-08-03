@@ -6,7 +6,15 @@ const Cart = Database.sequelize.define('cart',{
     uuid:  {
         type: Sequelize.CHAR(36),
         primaryKey: true,
-        default: Sequelize.DataTypes.UUIDV4
+        defaultValue: Sequelize.DataTypes.UUIDV4
+    },
+    cart_user_id: {
+        type: Sequelize.CHAR(36),
+        allowNull: false
+    },
+    cart_item_id: {
+        type: Sequelize.CHAR(36),
+        allowNull: false
     },
     cart_item_name: {
         type: Sequelize.STRING(64),
@@ -17,8 +25,9 @@ const Cart = Database.sequelize.define('cart',{
         allowNull: false
     },
     cart_item_quantity: {
-        type: Sequelize.TINYINT(3),
-        allowNull: false
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 1
     },
 });
 

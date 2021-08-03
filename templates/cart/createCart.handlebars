@@ -1,0 +1,18 @@
+<div class="form-sm">
+<h1 class="display-4">Add to cart</h1>
+<p>Add #{{cart_item_name}} to cart?</p>
+
+<form method="POST" action="">
+    <input type="hidden" id="cart_user_id" name="cart_user_id" value="{{cart_user_id}}">
+    <input type="hidden" id="cart_item_id" name="cart_item_id" value="{{cart_item_id}}">
+    <input type="hidden" id="cart_item_name" name="cart_item_name" value="{{cart_item_name}}">
+    <input type="hidden" id="cart_item_price" name="cart_item_price" value="{{cart_item_price}}">
+    <input type="hidden" id="cart_item_quantity" name="cart_item_quantity" value="{{cart_item_quantity}}">
+    <input type="hidden" id="isNull" name="isNull" value="{{isNull}}">
+
+    
+
+    <a href="/user/menu/" class="btn btn-danger">Back</a>
+    <input type="submit" value="Submit" class="btn btn-primary"/>
+</form>
+</div> 
