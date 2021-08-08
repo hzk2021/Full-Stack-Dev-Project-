@@ -1,7 +1,8 @@
 const Express = require('express');
 const Router = Express.Router();
-const { Sequelize } = require('sequelize');
-// const Ingredients = require('../../models/CalSupplies');
+const { Sequelize, Op } = require('sequelize');
+const Cron = require('node-cron');
+
 const {Supplies} = require('../../models/Supplies');
 const {SupplyCategory} = require('../../models/SupplyCategory');
 const {SupplyPerformance} = require('../../models/SupplyPerformance');
@@ -162,41 +163,61 @@ Router.post('/edit/categories', async function(req, res) {
 
 Router.get('/dashboard', async function(req, res) {
     console.log("Admins supplies dashboard accessed");
-    const all_data = await Supplies.findAll({
-        attributes: ['item_id', 'week_no', 'stock_used'],
-        order:[['item_name', 'ASC'], ['week_no', 'ASC']],
+    let view_id = req.query.selectedItem;
+    let filter_item = {};
+    if (view_id == undefined) {
+        // Get 1st item id (For accessing the page straight)
+        filter_item = await Supplies.findOne({
+            attributes:['item_id'],
+            order:[['item_name', 'ASC']],
+            raw: true
+        });
+        view_id = filter_item.item_id
+        req.query.selectedItem = view_id;
+    }
+    else {
+        filter_item = {};
+        filter_item.item_id = view_id;
+    }
+    console.log(filter_item);
+    console.log(req.query.selectedItem);
+    // Get 1st graph data
+    const items = await Supplies.findAll({
+        attributes: ['item_id', 'item_name', 'week_no', 'stock_used'],
+        order: [['item_name', 'ASC'], ['week_no', 'ASC']],
+        where: filter_item,
+        raw: true
+    });
+    // Get names of all supplies
+    const all_items_names = await Supplies.findAll({
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('item_name')), 'item_name'], 'item_id'],
+        order: [['item_name', 'ASC']],
         raw: true
     });
     
-    let sorted_graph_data = {}
+    let sorted_graph_data = {};
     try {
-        sorted_graph_data = arrange_supplies_by_food_weekNo(all_data);
+        sorted_graph_data = arrange_supplies_by_food_weekNo(items);
     }
-    catch (TypeError) {
+    catch (error) {
+        console.error(error);
         console.error(`Error: Supplies is still empty`);
     }
 
-    return res.render('inventory/retrieveSupplies', {
-        /*all_data: {"Supplies":{Bun:4012, Chicken:2134, Beef:2987, Lettuce:3412}, 
-                    "5th Week":{Bun:3964, Chicken:2456, Beef:3600, Lettuce:3912},
-                    "4th Week":{Bun:4215, Chicken:2742, Beef:3461, Lettuce:4132},
-                    "3rd Week":{Bun:4002, Chicken:2514, Beef:3265, Lettuce:3712},
-                    "2nd Week":{Bun:3814, Chicken:2223, Beef:2871, Lettuce:3402}
-                   },*/
-        all_data: sorted_graph_data,
-        supplies_dict: [{name:"Bun", type:"Others", qty:4012, valChange:5.19, nextVal:4136}, 
-                        {item_id:"61db7439-87bc-4924-8eca-1bb15fb57720", name:"Chicken", type:"Meat", qty:2132, valChange:-4.00, nextVal:2019}, 
-                        {item_id:"5135618d-f32b-482a-a993-846273d7446d", name:"Beef", type:"Meat", qty:2987, valChange:4.04, nextVal:2900},
-                        {name:"Lettuce", type:"Vegetables", qty:3412, valChange:0.35, nextVal:3328}
-                        ],
-        view_item: "Chicken"
+    return res.render('inventory/suppliesDashboard', {
+        graph_data: sorted_graph_data,
+        all_names: all_items_names,
+        view_item: sorted_graph_data.name
     });
+});
+
+Router.get('/suppliesList', async function(req, res) {
+    return res.render('inventory/retrieveSupplies', {});
 });
 
 Router.get('/update/:id', async function(req, res) {
     try {
         const item = await Supplies.findOne({
-            
             attributes:['item_name', 'category_no'],
             where: { item_id:req.params.id },
             raw: true
@@ -249,40 +270,18 @@ Router.post('/update/:id', async function(req, res) {
     return res.redirect('/admin/inventory/dashboard');
 });
 
-Router.get('/suppliesList', async function(req, res) {
-    try {
-        const list_data = await Supplies.findAll({
-            include: [
-                {
-                    model: SupplyCategory,
-                    attributes: ['category_name']
-                },
-                {
-                    model: SupplyPerformance,
-                    attributes: ['next_value']
-                }
-            ],
-            attributes:['item_name'],
-            where: {week_no:1},
-            offset: parseInt(req.query.offset),
-            limit: parseInt(req.query.limit),
-            raw: true
-        });
-        console.log(list_data);
-
-        return res.render({
-            "rows": list_data
-        });
-    }
-    catch (error) {
-        console.error("Error retrieving the data for generating tables");
-        console.error(error);
-    }
-});
-
 Router.get('/viewSuppliesOrder', async function(req, res) {
+    // Checks if the current timing allows you to make changes to predicted value
+    const set_orders = await SupplyPerformance.findOne({
+        attributes: ['set_value']
+    });
+    var allow_change = false;
+    if (set_orders.set_value != null) {
+        allow_change = true;
+    }
+
     return res.render('inventory/submittedSupplies', {
-        next_value_dict: {Bun:4136, Chicken:2019, Beef:2900, Lettuce:3328}
+        allow_change: allow_change
     });
 });
 
@@ -299,7 +298,18 @@ Router.post('/test', async function(req, res) {
 
 Router.get('/get-data', async function(req, res) {
     console.log('Retrieving data for supplies table');
-    const searchInput = req.query.search;
+    const getPage = parseInt(req.query.page);
+    const getSize = parseInt(req.query.size);
+
+    let page = 0;
+    let size = 10;
+    if (!Number.isNaN(getPage) && getPage > 0) {
+        page = getPage;
+    }
+    if (!Number.isNaN(getPage) && 0 < getPage < 10) {
+        size = getSize;
+    }
+
     //const results;
     try {
         const list_data = await Supplies.findAll({
@@ -308,21 +318,17 @@ Router.get('/get-data', async function(req, res) {
                     model: SupplyCategory,
                     attributes: ['category_name'],
                 },
-                {
-                    model: SupplyPerformance,
-                    attributes: ['val_change', 'next_value']
-                }
             ],
             attributes:['item_name', 'stock_used', 'current_stock_lvl', 'category_no'],
             where: {week_no:1},
-            offset: parseInt(req.query.offset),
-            limit: parseInt(req.query.limit),
+            //limit: size,
+            //offset: page*size,
             raw: true
         });
         console.log(list_data);
 
         return res.json({
-            "rows": list_data
+            rows: list_data
         });
     }
     catch (error) {
@@ -339,19 +345,22 @@ Router.get('/get-supplies', async function(req, res) {
             include: [
                 {
                     model: SupplyCategory,
-                    attributes: ['category_name'],
+                    attributes: ['category_name']
                 },
+                {
+                    model: SupplyPerformance,
+                    attributes: ['next_value', 'date_submitted']
+                }
             ],
-            attributes:['item_name'],
+            attributes:['item_name', 'item_id'],
             where: {week_no:1},
-            offset: parseInt(req.query.offset),
-            limit: parseInt(req.query.limit),
             raw: true
         });
         console.log(list_data);
+        var uncal_msg;
 
         return res.json({
-            "rows": list_data
+            rows: list_data,
         });
     }
     catch (error) {
@@ -361,6 +370,11 @@ Router.get('/get-supplies', async function(req, res) {
 });
 
 Router.get('/calculate-next-values', async function(req, res) {
+    set_predicted_value();
+    return res.redirect('/admin/inventory/dashboard');
+});
+
+async function set_predicted_value() {
     function cal_change_val(weeks) {
         var info = {}
         var change_val = 0
@@ -370,6 +384,7 @@ Router.get('/calculate-next-values', async function(req, res) {
         }
         info['changed_value'] = change_val += Math.round(change_val*-0.01);
         info['change_percentage'] = ((change_val / weeks[0]) * 100).toFixed(5);
+        return info;
     }
 
     const all_items_wks = await Supplies.findAll({
@@ -392,8 +407,66 @@ Router.get('/calculate-next-values', async function(req, res) {
             next_value: info_dict.change_percentage
         }, {where: {item_id: item}});
     }
+}
 
-    return res.redirect('/admin/inventory/dashboard');
+// Setting final value of supplies order and resetting current week every Monday 12.00am
+const finalizingUpdate = Cron.schedule('* 0 * * Mon', async function(req, res) {
+    // Calculate the stock level for new week
+    set_predicted_value();
+    // Shifting all items week up by 1 (Stores up to 5 weeks only)
+    try {
+        const up_week_all = await Supplies.increment('week_no');
+        const remove_highest = await Supplies.destroy({ where: { week_no: 6 } });
+    }
+    catch (error) {
+        console.error("An error occurred trying to shift all items week up a level");
+        console.error(error);
+    }
+
+    // Actions to initialize new week values
+    const all_items = await Supplies.findAll({
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('item_id')), 'item_id'], 'item_name', 'ingredients_list']
+    });
+    
+    for (var item in all_items) {
+        // Initialise new week items with no stock value (Stock level set at 2.59pm - Orders made between uses week 2 stock level) 
+        const new_week = await Supplies.create({
+            item_id: all_items.item_id,
+            item_name: all_items.item_name,
+            ingredients_list: all_items.ingredients_list,
+        });
+    }
+    // Set the to-be order quantity
+    const set_order = await SupplyPerformance.update({
+        set_value: Sequelize.literal('next_value')
+    });
+    
+}, {
+    scheduled: true,
+    timezone: "Asia/Singapore"
 });
+// Schedule for update of supplies weeks every Monday 2.59 pm
+const scheduleUpdate = Cron.schedule('59 59 2 * * Mon', async function(req, res) {
+    // Set stock level to the amount specified in SupplyPerformance
+    const set_orders = await SupplyPerformance.findAll({
+        attributes: ['item_id', 'set_value']
+    });
+    for (var item in set_orders) {
+        const set_stock_lvl = await Supplies.update({
+            current_stock_level: set_orders[item].set_value
+        }, { where: { item_id: set_orders[item].item_id, week_no: 1 } });
+    }
+
+    // Reset set_value and next_value
+    const set_orders_null = await SupplyPerformance.update({
+        set_value: null,
+        next_value: null
+    })
+}, {
+    scheduled: true,
+    timezone: "Asia/Singapore"
+});
+scheduleUpdate.start();
+finalizingUpdate.start();
 
 module.exports = Router;

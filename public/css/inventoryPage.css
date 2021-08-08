@@ -61,6 +61,18 @@ ul#x-axis li {
     float:right;
 }
 
+.selected-name-id {
+    font-size:1.5em;
+    margin-bottom:25px;
+    border: 0px;
+    border-radius: 5px;
+}
+
+#select-graph-button:hover {
+    color: #0090FF;
+    cursor: pointer;
+}
+
 h4, h5 {
     font-weight: normal;
 }

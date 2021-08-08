@@ -56,6 +56,10 @@ const RegisterHelpers = async function () {
                 return options.inverse(this);
         }
     });
+
+    await Hbs.handlebars.registerHelper('json', function (content) {
+        return JSON.stringify(content);
+    });
 }
 
 module.exports = {RegisterHelpers};

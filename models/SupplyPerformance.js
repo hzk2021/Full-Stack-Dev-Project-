@@ -1,5 +1,7 @@
 const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
+const { Supplies } = require('./Supplies');
+
 
 class SupplyPerformance extends Model {
     get item_id() { return String(this.getDataValue("item_id")); }
@@ -12,6 +14,14 @@ class SupplyPerformance extends Model {
 }
 
 SupplyPerformance.init({
+    item_id:  {
+        type: Sequelize.CHAR(36),
+        primaryKey: true,
+        references: {
+            model: Supplies,
+            key: 'item_id',
+        }
+    },
     date_submitted: {
         type: Sequelize.DATE,
         allowNull: true,
@@ -27,6 +37,11 @@ SupplyPerformance.init({
         allowNull: true,
         defaultValue: null
     },
+    set_value: {
+        type: Sequelize.INTEGER(7),
+        allowNull: true,
+        defaultValue: null
+    }
 },  {
         sequelize: Database.sequelize,
         modelName: 'supply_performances',

@@ -1,0 +1,172 @@
+<script src="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.js"></script>
+<link href="https://unpkg.com/bootstrap-table@1.18.3/dist/bootstrap-table.min.css" rel="stylesheet">
+
+<h1 class="display-4">View Supplies Information</h1>
+<br>
+
+<div id="graph">
+  <h2>Performance Overview</h2>
+
+  <div class="graph-container">
+    <ul id="y-axis">
+      <li>12000</li>
+      <li>10000</li>
+      <li>8000</li>
+      <li>6000</li>
+      <li>4000</li>
+      <li>2000</li>
+      <li>0</li>
+    </ul>
+    <div id="graph-axis">
+      <div class="graph-bar bg-primary" id="bar5"></div>
+      <div class="graph-bar bg-primary" id="bar4"></div>
+      <div class="graph-bar bg-primary" id="bar3"></div>
+      <div class="graph-bar bg-primary" id="bar2"></div>
+      <div class="graph-bar bg-success" id="bar1"></div>
+    </div>
+    <ul id="x-axis">
+      <li>5th Week</li>
+      <li>4th Week</li>
+      <li>3rd Week</li>
+      <li>2nd Week</li>
+      <li>Current Week</li>
+    </ul>
+  </div>
+
+  <div id="graph-controls">
+    <h2 style="margin-bottom:25px;">Graph Controls</h2>
+    <div class="dropdown">
+      <form id="select-form-item" method="GET">
+        <h5>Selected Item</h5>
+        <p id="selected-graph-item" class="selected-name-id">{{ view_item }}</p>
+        <input type="text" name="selectedItem" class="selected-name-id" id="selected-graph-item-id" style="display: none;" value="{{ graph_data.id }}" readonly>
+        <h5>Select Supply Item To View</h5>
+        <ul class="li-striped">
+          {{#each all_names}}
+          <li><a id="select-graph-button" onclick="set_display_name('{{this.item_id}}', '{{this.item_name}}')">{{this.item_name}}</a></li>
+          {{/each}}
+        </ul>
+        <br>
+      </form>
+      <form action="get-item-graph" method="GET">
+        <input type="text" name="selectedItem" id="selected-graph-item-post" value="{{ view_item }}" style="display: none;" readonly>
+        <input type="submit" value="Generate" class="btn btn-primary" id="gen-data">
+      </form>
+    </div>
+  </div>
+</div>
+<br>
+
+<div id="supplies">
+  <h2>Supplies Information</h2>
+  <div id="toolbar">
+    <a class="btn btn-warning btn-lg" href="suppliesList"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>Edit List</a>
+  </div>
+  <table
+    id="supplies-table"
+    data-toggle="table"
+    data-search="true"
+    data-toolbar="#toolbar"
+    data-toolbar-align="left"
+    data-url="/admin/inventory/get-data"
+    data-pagination= "true"
+    data-side-pagination= "server"
+    data-filter-control="true"
+    data-buttons-class="primary"
+    data-show-refresh="true">
+    <thead>
+      <tr>
+        <th data-field="item_name">Product Name</th>
+        <th data-field="supply_category.category_name">Category</th>
+        <th data-field="stock_used">Stock Used</th>
+        <th data-field="current_stock_lvl">Stock Left</th>
+      </tr>
+    </thead>
+  </table>
+  <br>
+</div>
+  <!-- Scripts coded into -->
+  <script>
+    generate_graph({{{json graph_data}}}, {{{json view_item}}});
+    decimalFixed();
+    //Function to generate bar graph from the data of past records
+    function generate_graph(all_data, view_item) {  
+      var full_height = parseFloat(document.getElementById('graph-axis').clientHeight);
+      var size_ratio = full_height / 12000;
+
+      var week_val_list = all_data.values;
+      var id = "bar";
+      for (i=0; i<week_val_list.length; i++) {
+        console.log("Running generate_graph");
+        var orders = week_val_list[i];
+        id = "bar"+(i+1);
+        console.log(id);
+
+        var bar_height = orders * size_ratio;
+        document.getElementById(id).style.height = bar_height + "px";
+        document.getElementById(id).style.top = (full_height - bar_height) + "px";
+      }
+    }
+
+    //Search function for supplies list
+    function filter() {
+      word = document.getElementById('suppliesSearch').value;
+      allRows = document.getElementsByTagName('tr');
+
+      for (tag in allRows) {
+        allRows[tag].style.display = null;
+        if (word != "") {
+          id = allRows[tag].id.toLowerCase();
+          if (!(id.includes(word))) {
+            allRows[tag].style.display = "none";
+          }
+        }
+      }
+    }
+
+    //Function to put format the text colour and leave the percentage change value in 2 decimal places
+    function decimalFixed() {
+      var next_orders = document.getElementsByClassName('next-val-cell');
+      for (i = 0; i < next_orders.length; i++) {
+        var val = next_orders[i].innerText;
+        //Assign colour from value
+        var op = "";
+        if (parseFloat(val) > 0) {
+          op = "+";
+          next_orders[i].classList.add("text-success");
+        }
+        else if (parseFloat(val) < 0) {
+          next_orders[i].classList.add("text-danger");
+        }
+        else {
+          next_orders[i].classList.add("text-secondary");
+        }
+        //Convert to 2dp
+        var newVal = parseFloat(val).toFixed(2);
+        next_orders[i].innerText = op + newVal + " %";
+      }
+
+    }
+
+    function set_display_name(id, name) { 
+      document.getElementById('selected-graph-item').innerText = name;
+      document.getElementById('selected-graph-item-id').value = id;
+      document.getElementById('select-form-item').submit();
+    }
+
+    var all_data = {
+      "Supplies": { "Bun": 4012, "Chicken": 4134, "Beef": 2987, "Lettuce": 3412 },
+      "5th Week": { "Bun": 3964, "Chicken": 4456, "Beef": 3600, "Lettuce": 3912 },
+      "4th Week": { "Bun": 4215, "Chicken": 4742, "Beef": 3461, "Lettuce": 4132 },
+      "3rd Week": { "Bun": 4002, "Chicken": 4514, "Beef": 3265, "Lettuce": 3712 },
+      "2nd Week": { "Bun": 3814, "Chicken": 4223, "Beef": 2871, "Lettuce": 3402 }
+    };
+
+  </script>
+
+  <!-- Script for generation of supplies table -->
+  <script>
+    $(document).ready(function() {
+      $('#supplies-table').DataTable();
+    });
+  </script>

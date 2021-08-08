@@ -20,11 +20,11 @@
         {{#if next_orders}}
         <input type="number" name="quantity" class="form-control" value="{{next_orders}}" style="width:40%">
         {{else}}
-        <input type="number" name="quantity" class="form-control" value="" style="width:40%" placeholder="~Not generated yet~" disabled>
+        <input type="number" name="quantity" class="form-control" value="" style="width:40%" placeholder="- Not generated yet -" disabled>
         {{/if}}
     </div>
     <br>
-    <a href="/retrieveSupplies" class="btn btn-danger">Discard Changes</a>
+    <a href="/suppliesList" class="btn btn-danger">Discard Changes</a>
     <input type="submit" value="Submit Changes" class="btn btn-success">
 </form>
 </div>

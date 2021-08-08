@@ -125,22 +125,21 @@ const arrange_supplies_menu_checkbox = async function () {
     }
 }
 
-// Format: {food: [week1, week2, week3]}
+// Format: {name: <name>, id: <id>, values: [week1, week2, week3]}
 const arrange_supplies_by_food_weekNo = function (supplies) {
-    var cur_food = supplies[0].item_id;
-    let food_weeks_amt = [supplies[0].stock_used];
-    let sorted_list = {cur_food: food_weeks_amt};
-    for (var food in all_items_wks) {
-        var item = all_items_wks[food]
-        if (item.id != cur_food) {
-            cur_food = item.item_id;
-            food_weeks_amt = [item.stock_used];
-            sorted_list[cur_food] = food_weeks_amt;
-        }
-        else {
-            food_weeks_amt.append(food.stock_used);
-        }
+    let sorted_list = {};
+    sorted_list.name = supplies[0].item_name;
+    sorted_list.id = supplies[0].item_id;
+    sorted_list.values = [supplies[0].stock_used];
+
+    var remaining = 5 - supplies.length;
+    for (i=1; i<supplies.length; i++) {
+        sorted_list.values.push(supplies[i].stock_used);
     }
+    for (i=remaining; i>0; i-=1) {
+        sorted_list.values.push(0);
+    }
+    console.log(sorted_list);
     return sorted_list;
 }
 

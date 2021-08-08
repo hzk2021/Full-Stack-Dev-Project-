@@ -15,12 +15,11 @@ const InitializeDB = async function(drop){
     await DB.sequelize.authenticate();
     await console.log("Database Connected!");
     UserModel.User.hasMany(Feedback, {foreignKey: 'userUUID'});
-    UserModel.User.hasMany(UserRewards);
-    RewardsList.hasMany(UserRewards);
-    Supplies.belongsTo(SupplyCategory);
-    Supplies.belongsTo(SupplyPerformance);
-    // SupplyCategory.hasMany(Supplies);
-    // SupplyPerformance.hasMany(Supplies);
+    UserModel.User.hasMany(UserRewards, {foreignKey: 'userUUID'});
+    RewardsList.hasMany(UserRewards, {foreignKey: 'day_no'});
+    SupplyCategory.hasMany(Supplies, {foreignKey: 'category_no'});
+    Supplies.belongsTo(SupplyCategory, {foreignKey: 'category_no'});
+    Supplies.hasMany(SupplyPerformance, {foreignKey: 'item_id'});
     //Change line below accordingly to ur menu name if needed, uncomment it & delete this comment afterwards
     //Menu.hasMany(Ingredients);
     

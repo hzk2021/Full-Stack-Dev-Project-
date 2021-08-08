@@ -1,42 +1,63 @@
 <h1 class="display-4">Orders For Next Weeks</h1>
 <br>
 
-{{#unless next_value_dict}}
-<h4>The admin has yet to submit their following week supplies order.</h4>
-<h4>Check back soon!</h4>
-<br>
-<a class="btn btn-primary" href="/">Back to Home</a>
+{{#if allow_change}}
+<p>The order amount is opened for changes. Make the neccessary changes and submit before <strong>2.59pm</strong>.</p>
 {{else}}
-{{set count '=' 1}}
-<table class="table table-striped">
+<p>The order amount has yet been set. Check back on Mondays <strong>12.00am - 1.00pm</strong>.</p>
+{{/if}}
+<br>
+<table
+  id="supplies-table3"
+  data-toggle="table"
+  data-search="true"
+  data-toolbar-align="left"
+  data-url="/admin/inventory/get-supplies"
+  data-pagination= "true"
+  data-side-pagination= "server"
+  data-filter-control="true"
+  data-buttons-class="primary"
+  data-show-refresh="true">
   <thead>
     <tr>
-      <th></th>
-      <th>Product Name</th>
-      <th>Quantity</th>
+      <th data-field="item_id" max-width="100px">Product ID</th>
+      <th data-field="item_name">Product Name</th>
+      <th data-field="supply_category.category_name">Category</th>
+      <th data-field="supply_performances.next_value">Order Quantity</th>
     </tr>
   </thead>
-  <tbody> 
-    {{#each next_value_dict}}
-    <tr class="submitted-items">
-      <th></th>
-      <td>{{ @key }}</td>
-      <td>{{ this }}</td>
-      {{set count "+=" 1}}
-    </tr>
-    {{/each}}
-  </tbody>
 </table>
-<a href="/retrieveSupplies" class="btn btn-secondary btn-long">Go Back</a>
-<a href="/" class="btn btn-primary float-right btn-long">Home</a>
-{{/unless}}
+<a class="btn btn-secondary" href="/">Back to Home</a>
 
 <script>
-  function assign_num() {
-    var rows = document.getElementsByClassName('submitted-items');
-    for (i=0; i<rows.length; i++) {
-      rows[i].getElementsByTagName('th')[0].innerText = i+1;
+  window.addEventListener('load', check_data_loaded);
+    var startTime = new Date();
+    function check_data_loaded() {
+        var cells = document.getElementsByTagName('td');
+        var endTime = new Date();
+        if (cells.length < 4) {
+            if (cells.length <= 1 && endTime - startTime >= 7000) {
+                console.log("Timeout.")
+                return 
+            }
+            else {
+                setTimeout(check_data_loaded, 25);
+            }
+
+        }
+        else {
+            gen_edit_del_button();  
+        }
     }
-  }
-  assign_num();
+
+    function gen_edit_del_button() {
+        var all_cells = document.getElementsByTagName('td');
+        for (i=3; i<all_cells.length; i+= 4) {
+            all_cells[i-3].width = "300px";
+            all_cells[i].innerHTML +=
+            `<a href="update/`+all_cells[i-3].innerText+`" class="btn btn-warning supplies-update float-right" style="margin-left:10px;margin-right:10px;">
+                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+            </a>`
+        }
+    }   
 </script>
