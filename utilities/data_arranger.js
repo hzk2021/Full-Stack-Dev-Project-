@@ -91,7 +91,6 @@ const arrange_rewards_noNull = function (prizes) {
 }
 
 
-
 const arrange_supplies_menu_checkbox = async function () {
     const food_list = await Menu.findAll({
         attributes:['item_name', 'item_course'],
@@ -102,25 +101,30 @@ const arrange_supplies_menu_checkbox = async function () {
     const food_courses = await Menu.findAll({
         attributes:[[Sequelize.fn('DISTINCT', Sequelize.col('item_course')), 'item_course']],
         raw: true
-    })
+    });
 
-    let sorted_food = [];
+    // Format: { SID:[ [1,2,3,4,5], [1,2] ], SEA:[ [1,2,3,4] ] }
+    let sorted_food = {};
     try {
         for (var course in food_courses) {
-            let list_counter = []
-            let current_list = food_list.filter(food => food.item_name == food_courses[course].item_course);
+            // Set key as course name
+            // {SID: []};
+            let list_counter = [];
+            let current_list = food_list.filter(food => food.item_course == food_courses[course].item_course);
             while (current_list.length != 0) {
+                // [ [1,2,3,4,5] ]
                 list_counter.push(current_list.slice(0, 5));
+                // Push the list of 5 into the course as value
                 current_list = current_list.slice(5, current_list.length);
             }
-            for (var li in list_counter) {
-                sorted_food.push(li);
-            }
+            sorted_food[food_courses[course].item_course] = list_counter;
         }
+        console.log(sorted_food);
         return sorted_food 
     }      
     catch (error) {
         console.log('Courses has yet been yet');
+        console.log(error);
         return null
     }
 }

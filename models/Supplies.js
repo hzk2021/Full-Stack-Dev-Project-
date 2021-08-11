@@ -24,18 +24,15 @@ Supplies.init({
         type: Sequelize.STRING(40),
         allowNull: false
     },
-    current_stock_lvl: {
-        type: Sequelize.BIGINT(5),
-        defaultValue: 0
+    val_change: {
+        type: Sequelize.DECIMAL(5, 5),
+        allowNull: true,
+        defaultValue: null
     },
-    stock_used: {
-        type: Sequelize.BIGINT(5),
-        defaultValue: 0
-    },
-    week_no: {
-        type: Sequelize.INTEGER(2),
-        defaultValue: 1,
-        primaryKey: true
+    next_value: {
+        type: Sequelize.INTEGER(7),
+        allowNull: true,
+        defaultValue: null
     },
     ingredients_list: {
         type: Sequelize.STRING(300),

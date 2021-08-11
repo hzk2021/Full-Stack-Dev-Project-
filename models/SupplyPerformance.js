@@ -22,26 +22,26 @@ SupplyPerformance.init({
             key: 'item_id',
         }
     },
+    week_no: {
+        type: Sequelize.INTEGER(2),
+        defaultValue: 1,
+        primaryKey: true,
+        max: 5,
+        min: 1
+    },
+    current_stock_lvl: {
+        type: Sequelize.BIGINT(5),
+        defaultValue: 0
+    },
+    stock_used: {
+        type: Sequelize.BIGINT(5),
+        defaultValue: 0
+    },
     date_submitted: {
         type: Sequelize.DATE,
         allowNull: true,
         defaultValue: null
     },
-    val_change: {
-        type: Sequelize.DECIMAL(5, 5),
-        allowNull: true,
-        defaultValue: null
-    },
-    next_value: {
-        type: Sequelize.INTEGER(7),
-        allowNull: true,
-        defaultValue: null
-    },
-    set_value: {
-        type: Sequelize.INTEGER(7),
-        allowNull: true,
-        defaultValue: null
-    }
 },  {
         sequelize: Database.sequelize,
         modelName: 'supply_performances',

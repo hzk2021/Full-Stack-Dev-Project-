@@ -42,9 +42,13 @@
         <input type="text" name="selectedItem" class="selected-name-id" id="selected-graph-item-id" style="display: none;" value="{{ graph_data.id }}" readonly>
         <h5>Select Supply Item To View</h5>
         <ul class="li-striped">
-          {{#each all_names}}
-          <li><a id="select-graph-button" onclick="set_display_name('{{this.item_id}}', '{{this.item_name}}')">{{this.item_name}}</a></li>
-          {{/each}}
+          {{#if all_names}}
+            {{#each all_names}}
+            <li><a id="select-graph-button" onclick="set_display_name('{{this.item_id}}', '{{this.item_name}}')">{{this.item_name}}</a></li>
+            {{/each}}
+          {{else}}
+            <p>No records found</p>
+          {{/if}}
         </ul>
         <br>
       </form>
@@ -78,8 +82,8 @@
       <tr>
         <th data-field="item_name">Product Name</th>
         <th data-field="supply_category.category_name">Category</th>
-        <th data-field="stock_used">Stock Used</th>
-        <th data-field="current_stock_lvl">Stock Left</th>
+        <th data-field="supply_performances.stock_used">Stock Used</th>
+        <th data-field="supply_performances.current_stock_lvl">Stock Left</th>
       </tr>
     </thead>
   </table>
@@ -87,10 +91,15 @@
 </div>
   <!-- Scripts coded into -->
   <script>
-    generate_graph({{{json graph_data}}}, {{{json view_item}}});
+    if ({{{json graph_data}}} === []) {
+      generate_graph({{{json graph_data}}}, {{{json view_item}}});
+    }
+    else {
+      generate_graph_empty();
+    }
     decimalFixed();
     //Function to generate bar graph from the data of past records
-    function generate_graph(all_data, view_item) {  
+    function generate_graph(all_data, view_item) {
       var full_height = parseFloat(document.getElementById('graph-axis').clientHeight);
       var size_ratio = full_height / 12000;
 
@@ -100,9 +109,22 @@
         console.log("Running generate_graph");
         var orders = week_val_list[i];
         id = "bar"+(i+1);
-        console.log(id);
 
         var bar_height = orders * size_ratio;
+        document.getElementById(id).style.height = bar_height + "px";
+        document.getElementById(id).style.top = (full_height - bar_height) + "px";
+      }
+    }
+
+    function generate_graph_empty() {
+      var full_height = parseFloat(document.getElementById('graph-axis').clientHeight);
+      var size_ratio = full_height / 12000;
+      var id = "bar";
+      for (i=0; i<5; i++) {
+        console.log("Running generate_graph_empty");
+        id = "bar"+(i+1);
+
+        var bar_height = 0;
         document.getElementById(id).style.height = bar_height + "px";
         document.getElementById(id).style.top = (full_height - bar_height) + "px";
       }

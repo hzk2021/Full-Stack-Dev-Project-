@@ -20,13 +20,18 @@
     <label>Food required</label>
     <div>
         <table>
-            {{#each food_list}}
+        {{#each food_list}}
+            <p><strong>{{ @key }}</strong></p>
+            {{#each this}}
             <tr>
-              {{#each this}}
-              <td><input type="checkbox" name="food_{{this.item_course}}">{{this.item_course}}</td>
-              {{/each}}  
+                {{#each this}}
+                <td>
+                    <input type="checkbox" name="food_{{this.item_course}}" value="{{this.item_name}}"> {{this.item_name}}
+                </td>
+                {{/each}}  
             </tr>
             {{/each}}
+        {{/each}}
         </table>
     </div>
     <br>
