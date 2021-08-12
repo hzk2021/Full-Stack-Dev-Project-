@@ -34,10 +34,6 @@ Supplies.init({
         allowNull: true,
         defaultValue: null
     },
-    ingredients_list: {
-        type: Sequelize.STRING(300),
-        allowNull: true,
-    }
 }, {
         sequelize: Database.sequelize,
         modelName: 'supplies',

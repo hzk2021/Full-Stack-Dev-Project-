@@ -1,4 +1,5 @@
 const Menu = require('../models/Menu');
+const { Supplies } = require('../models/Supplies');
 const Sequelize = require('sequelize');
 
 const arrange_rewards = function (prizes) {
@@ -90,9 +91,9 @@ const arrange_rewards_noNull = function (prizes) {
     }
 }
 
-
+// Format: { SID:[ [1,2,3,4,5], [1,2] ], SEA:[ [1,2,3,4] ] }
 const arrange_supplies_menu_checkbox = async function () {
-    const food_list = await Menu.findAll({
+    const food_list = await Supplies.findAll({
         attributes:['item_name', 'item_course'],
         order:[['item_name', 'ASC']],
         raw: true
@@ -103,7 +104,6 @@ const arrange_supplies_menu_checkbox = async function () {
         raw: true
     });
 
-    // Format: { SID:[ [1,2,3,4,5], [1,2] ], SEA:[ [1,2,3,4] ] }
     let sorted_food = {};
     try {
         for (var course in food_courses) {
@@ -146,5 +146,6 @@ const arrange_supplies_by_food_weekNo = function (supplies) {
     console.log(sorted_list);
     return sorted_list;
 }
+
 
 module.exports = {arrange_rewards, arrange_rewards_noNull, arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo};

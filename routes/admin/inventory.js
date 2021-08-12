@@ -7,7 +7,7 @@ const {Supplies} = require('../../models/Supplies');
 const {SupplyCategory} = require('../../models/SupplyCategory');
 const {SupplyPerformance} = require('../../models/SupplyPerformance');
 const Menu = require('../../models/Menu');
-const { arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo } = require('../../utilities/data_arranger');
+const { arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo } = require('../../utilities/functions');
 
 // REQUEST routes
 Router.get('/create/supplyItem', async function(req, res) {
@@ -394,11 +394,6 @@ Router.get('/get-supplies', async function(req, res) {
     }
 });
 
-Router.get('/calculate-next-values', async function(req, res) {
-    set_predicted_value();
-    return res.redirect('/admin/inventory/dashboard');
-});
-
 async function set_predicted_value() {
     function cal_change_val(weeks) {
         var info = {}
@@ -445,8 +440,8 @@ const finalizingUpdate = Cron.schedule('* 0 * * Mon', async function(req, res) {
     set_predicted_value();
     // Shifting all items week up by 1 (Stores up to 5 weeks only)
     try {
-        const remove_highest = await Supplies.destroy({ where: { week_no: 5 } });
-        const up_week_all = await Supplies.increment('week_no');
+        const remove_highest = await SupplyPerformance.destroy({ where: { week_no: 5 } });
+        const up_week_all = await SupplyPerformance.increment('week_no');
     }
     catch (error) {
         console.error("An error occurred trying to shift all items week up a level");
@@ -460,16 +455,10 @@ const finalizingUpdate = Cron.schedule('* 0 * * Mon', async function(req, res) {
     
     for (var item in all_items) {
         // Initialise new week items with no stock value (Stock level set at 2.59pm - Orders made between uses week 2 stock level) 
-        const new_week = await Supplies.create({
+        const new_week = await SupplyPerformance.create({
             item_id: all_items.item_id,
-            item_name: all_items.item_name,
-            ingredients_list: all_items.ingredients_list,
         });
     }
-    // Set the to-be order quantity
-    const set_order = await SupplyPerformance.update({
-        set_value: Sequelize.literal('next_value')
-    });
     
 }, {
     scheduled: true,
@@ -478,16 +467,18 @@ const finalizingUpdate = Cron.schedule('* 0 * * Mon', async function(req, res) {
 // Schedule for update of supplies weeks every Monday 6.59 pm
 const scheduleUpdate = Cron.schedule('59 59 6 * * Mon', async function(req, res) {
     // Set stock level to the amount specified in SupplyPerformance
-    const set_orders = await SupplyPerformance.findAll({
+    const set_orders = await Supplies.findAll({
         attributes: ['item_id', 'next_value']
     });
     for (var item in set_orders) {
-        const set_stock_lvl = await Supplies.update({
+        const set_stock_lvl = await SupplyPerformance.update({
             current_stock_level: set_orders[item].next_value
-        }, { where: { item_id: set_orders[item].item_id, week_no: 1 } });
+        }, { where: { 
+                item_id: set_orders[item].item_id, week_no: 1 
+            } 
+        });
     }
-
-    // Reset next_value
+    // Reset next_value to indicate no changes to be allowed
     const set_orders_null = await SupplyPerformance.update({
         next_value: null
     });
