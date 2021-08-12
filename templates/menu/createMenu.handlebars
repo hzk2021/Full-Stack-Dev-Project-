@@ -26,9 +26,31 @@
         <input type="text" class="form-control" name="Description" value="" required>  
         </div>
     </div>
-    <div>
+    <div class="form-group">
         <label for="name">Image</label>
         <input type="text" class="form-control" name="image" value="" required>  
+    </div>
+    <!-- Checkboxes for selecting food on the menu that needs the new supply --> 
+    <div class="form-group">
+        <label>Food required</label>
+        <table>
+        {{#each checkboxes_list}}
+            <tr class="category-heading">
+                <td colspan="5">
+                    <p><strong>{{ @key }}</strong></p>
+                </td>
+            </tr>
+            {{#each this}}
+            <tr>
+                {{#each this}}
+                <td>
+                    <label><input type="checkbox" name="food_{{this.item_course}}" value="{{this.item_name}}"> {{this.item_name}}&nbsp&nbsp</label>
+                </td>
+                {{/each}}  
+            </tr>
+            {{/each}}
+        {{/each}}
+        </table>
     </div>
 
     <input type="submit" value="Submit" class="btn btn-primary"/>

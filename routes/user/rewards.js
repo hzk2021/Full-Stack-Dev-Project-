@@ -5,7 +5,7 @@ const {UserRewards} = require('../../models/UserRewards');
 const Order = require('../../models/Order');
 const Cart = require('../../models/Cart');
 const { Op } = require('sequelize');
-const { arrange_rewards, arrange_rewards_noNull } = require('../../utilities/data_arranger');
+const { arrange_rewards, arrange_rewards_noNull } = require('../../utilities/functions');
 
 
 Router.get('', async function (req, res) {

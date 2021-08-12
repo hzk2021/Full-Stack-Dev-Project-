@@ -1,17 +1,18 @@
 const Express = require('express');
 const Router = Express.Router();
 const Menu = require('../../models/Menu');
+const { arrange_supplies_menu_checkbox } = require('../../utilities/functions');
 
 //Create Menu items
 Router.get('/create', async function(req, res){
-	res.render('menu/createMenu', {})
+    // Inventory: Get all supplies in the right format
+    const checkboxes_list = await arrange_supplies_menu_checkbox();
+	res.render('menu/createMenu', { checkboxes_list: checkboxes_list});
 });
 
 Router.post('/create', async function(req, res){
     console.log("Create Menu page accessed");
     try {
-        
-
         let errors = []
         if (isNaN(req.body.Price)){
             errors = errors.concat({text: "Invalid price"})

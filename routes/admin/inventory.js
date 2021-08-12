@@ -11,6 +11,7 @@ const { arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo } = requ
 
 // REQUEST routes
 Router.get('/create/supplyItem', async function(req, res) {
+    console.log('Create supply item page accessed');
     try {
         const supplies = await Supplies.findAll({
             attributes:['item_name'],
@@ -22,14 +23,9 @@ Router.get('/create/supplyItem', async function(req, res) {
             raw: true
         });
 
-        // Get list of menu arranged by their respective categories and for display in form checkbox
-        const sorted_food = await arrange_supplies_menu_checkbox();
-
-        console.log(categories);
         return res.render('inventory/createSupply', {
             supplies_dict : supplies,
-            categories: categories,
-            food_list: sorted_food
+            categories: categories, 
         });
     }
     catch (error) {
@@ -48,27 +44,11 @@ Router.post('/create/supplyItem', async function(req, res) {
         return res.render('inventory/createSupply', {error: "Supply item already existed"});
     }
 
-    var db_string;
-    // Formatting selected dishes into string format for storing in db
-    for (var inp in req.body) {
-        // Prevent checking of name and category inputs
-        inputs_counter += 1
-        if (inputs_counter <= 2) {
-            break
-        }
-        if (inputs_counter != 3) {
-            db_string += ","
-        }
-        db_string += req.body[inp]
-    }
-    console.log(db_string);
-
     // Creating new supply item
     try {
         const supply = await Supplies.create({
             item_name: req.body.name,
             category_no: req.body.type,
-            food_list: db_string
         });
     }
     catch(error) {
@@ -223,7 +203,7 @@ Router.get('/dashboard', async function(req, res) {
 Router.get('/suppliesList', async function(req, res) {
     return res.render('inventory/retrieveSupplies', {});
 });
-
+// Delete operation on supply item
 Router.post('/suppliesList/:id', async function(req, res) {
     console.log("Deleting supply item")
     try {
@@ -231,7 +211,7 @@ Router.post('/suppliesList/:id', async function(req, res) {
             where: {item_id: req.params.id}
         });
 
-        return res.render('inventory/retrieveSupplies', {});
+        return res.redirect('/admin/inventory/suppliesList');
     }
     catch (error) {
         console.error(`An error occurred trying to delete item ${req.params.id}`);
@@ -329,6 +309,20 @@ Router.get('/get-data', async function(req, res) {
     console.log('Retrieving data for supplies table');
     const getPage = parseInt(req.query.page);
     const getSize = parseInt(req.query.size);
+    const filterSearch = req.query.search;
+
+    const condition = {
+        [Op.or]: {
+            "uuid": { [Op.substring]: filterSearch} ,
+            "email": { [Op.substring]: filterSearch} ,
+            "name": { [Op.substring]: filterSearch} ,
+            "role": { [Op.substring]: filterSearch}
+        }
+    }
+
+    const totalFound = await User.count({
+        where: condition
+    })
 
     let page = 0;
     let size = 10;

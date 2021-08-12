@@ -4,7 +4,7 @@ const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const Menu = require('../../models/Menu');
 const Cart = require('../../models/Order');
-const { arrange_rewards } = require('../../utilities/data_arranger');
+const { arrange_rewards } = require('../../utilities/functions');
 
 // Accessing edit rewards page
 Router.get('/edit/:day_no', async function (req, res) {

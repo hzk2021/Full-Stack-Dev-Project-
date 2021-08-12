@@ -1,5 +1,6 @@
 const Menu = require('../models/Menu');
 const { Supplies } = require('../models/Supplies');
+const { SupplyCategory } = require('../models/SupplyCategory');
 const Sequelize = require('sequelize');
 
 const arrange_rewards = function (prizes) {
@@ -94,30 +95,26 @@ const arrange_rewards_noNull = function (prizes) {
 // Format: { SID:[ [1,2,3,4,5], [1,2] ], SEA:[ [1,2,3,4] ] }
 const arrange_supplies_menu_checkbox = async function () {
     const food_list = await Supplies.findAll({
-        attributes:['item_name', 'item_course'],
-        order:[['item_name', 'ASC']],
+        attributes:['item_id', 'item_name', 'category_no'],
+        order:[['category_no', 'ASC'], ['item_name', 'ASC']],
         raw: true
     });
-
-    const food_courses = await Menu.findAll({
-        attributes:[[Sequelize.fn('DISTINCT', Sequelize.col('item_course')), 'item_course']],
-        raw: true
-    });
-
+    const categories = await SupplyCategory.findAll({});
+    
     let sorted_food = {};
     try {
-        for (var course in food_courses) {
+        for (var cat in categories) {
             // Set key as course name
             // {SID: []};
             let list_counter = [];
-            let current_list = food_list.filter(food => food.item_course == food_courses[course].item_course);
+            let current_list = food_list.filter(food => food.category_no == categories[cat].category_no);
             while (current_list.length != 0) {
                 // [ [1,2,3,4,5] ]
                 list_counter.push(current_list.slice(0, 5));
                 // Push the list of 5 into the course as value
                 current_list = current_list.slice(5, current_list.length);
             }
-            sorted_food[food_courses[course].item_course] = list_counter;
+            sorted_food[categories[cat].category_name] = list_counter;
         }
         console.log(sorted_food);
         return sorted_food 
