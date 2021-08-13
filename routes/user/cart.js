@@ -6,6 +6,9 @@ const Order = require('../../models/Order');
 const { Op } = require('sequelize');
 const {RewardsList} = require('../../models/RewardsList');
 const Menu = require('../../models/Menu');
+const {SupplyPerformance} = require('../../models/SupplyPerformance');
+const { SupplyCategory } = require('../../models/SupplyCategory');
+const { Supplies } = require('../../models/Supplies');
 
 //Retrieve cart items
 Router.get('/', async function(req, res){
@@ -152,10 +155,47 @@ Router.get('/orderComplete', async function(req, res){
 	const dtime = 30;
 	var etime = dtime + 10
 
-    // Rewards Operations below
+    // Inventory operations below
+    const orders = await Cart.findAll({
+        attributes: ['cart_user_id', 'cart_item_name', 'cart_item_quantity'],
+        where: { cart_user_id: req.user.uuid }
+    });
+    let add_quantity = {};
+    // To get total amount to add into the inventory stock level record
+    for (var food in orders) {
+        var item = orders[food];
+        // Get the food ingredient list
+        let ingredients = await Menu.findOne({
+            attributes: ['ingredients_list'],
+            where: { item_name: item.cart_item_name }
+        });
+        var ingredients_list = ingredients.ingredients_list.split(',');
+        // Accumulate the amount for each ingredient
+        for (var supply in ingredients_list) {
+            if (supply in add_quantity) {
+                add_quantity[supply] += parseInt(cart_item_quantity);
+            }
+            else {
+                add_quantity[supply] = parseInt(cart_item_quantity);
+            }
+        }
+    }
+    // Update stock used and stock left for each supply item
+    for (var supply in add_quantity) {
+        const addSupplies = await SupplyPerformance.increment('stock_used', {
+            by: add_quantity[supply],
+            where: { item_id:supply, week_no: 1 }
+        });
+        const reduceSupplies = await SupplyPerformance.decrement('current_stock_lvl', {
+            by: add_quantity[supply],
+            where: { item_id:supply, week_no: 1 }
+        });
+    }
+
+    // Rewards operations below
     if (req.user.uuid != null) {
         // Marking rewards claimed
-        const rewards = await Cart.findAll({where:{cart_item_price: 0}});
+        const rewards = await Cart.findAll({where:{uuid: req.user.uuid, cart_item_price: 0}});
         let rewards_days = [];
         for (var obj in rewards) {
             rewards_days.push(parseInt(obj.cart_item_name.substring(-3, -1)));

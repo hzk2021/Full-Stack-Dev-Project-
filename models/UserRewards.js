@@ -1,7 +1,9 @@
 const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
+const { RewardsList } = require('./RewardsList');
+const { User } = require('./User');
 
-const daysAllowed = [5,10,15,20,25,30,35,40,45,50,55,60]
+const daysAllowed = [5,10,15,20,25,30,35,40,45,50,55,60];
 
 class UserRewards extends Model {
     get uuid() { return String(this.getDataValue("uuid")); }
@@ -12,9 +14,25 @@ class UserRewards extends Model {
 }
 
 UserRewards.init({
+    day_no: {
+        type: Sequelize.SMALLINT(2),
+        primaryKey: true,
+        allowNull: false,
+        validate: {
+            isIn: [daysAllowed]
+        },
+        references: {
+            model: RewardsList,
+            key: 'day_no',
+        }
+    },
     uuid: {
         type: Sequelize.CHAR(36),
-        primaryKey: true
+        primaryKey: true,
+        references: {
+            model: User,
+            key: 'uuid',
+        }
     },
     claimed: {
         type: Sequelize.BOOLEAN(),

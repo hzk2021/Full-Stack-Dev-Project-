@@ -126,22 +126,35 @@ const arrange_supplies_menu_checkbox = async function () {
     }
 }
 
-// Format: {name: <name>, id: <id>, values: [week1, week2, week3]}
+// Format: [ {name: <name>, id: <id>, values: [week1, week2, week3]}, {name: <name>, id: <id>, values: [week1, week2, week3]} ]
 const arrange_supplies_by_food_weekNo = function (supplies) {
-    let sorted_list = {};
-    sorted_list.name = supplies[0].item_name;
-    sorted_list.id = supplies[0].item_id;
-    sorted_list.values = [supplies[0].stock_used];
+    let items_list = [];
+    let item_dict = {};
+    item_dict.name = supplies[0].item_name;
+    item_dict.id = supplies[0].item_id;
+    item_dict.values = [supplies[0]['supply_performances.stock_used']];
 
-    var remaining = 5 - supplies.length;
+    var check_id = item_dict.id;
     for (i=1; i<supplies.length; i++) {
-        sorted_list.values.push(supplies[i].stock_used);
+        if (supplies[i].item_id == check_id) {
+            item_dict.values.push(supplies[i]['supply_performances.stock_used']);
+            if (i == supplies.length-1) {
+                items_list.push(item_dict);
+            }
+        }
+        else {
+            items_list.push(item_dict);
+            check_id = supplies[i].item_id
+            item_dict = {};
+            item_dict.name = supplies[i].item_name;
+            item_dict.id = supplies[i].item_id;
+            item_dict.values = [supplies[i]['supply_performances.stock_used']];
+        }
+        
     }
-    for (i=remaining; i>0; i-=1) {
-        sorted_list.values.push(0);
-    }
-    console.log(sorted_list);
-    return sorted_list;
+    console.log(items_list);
+    items_list[0].values = [0, 0, 10000];
+    return items_list;
 }
 
 

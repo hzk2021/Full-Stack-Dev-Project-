@@ -15,7 +15,7 @@ const InitializeDB = async function(drop){
     await DB.sequelize.authenticate();
     await console.log("Database Connected!");
     UserModel.User.hasMany(Feedback, {foreignKey: 'userUUID'});
-    UserModel.User.hasMany(UserRewards, {foreignKey: 'userUUID'});
+    UserModel.User.hasMany(UserRewards, {foreignKey: 'uuid'});
     RewardsList.hasMany(UserRewards, {foreignKey: 'day_no'});
     SupplyCategory.hasMany(Supplies, {foreignKey: 'category_no'});
     Supplies.belongsTo(SupplyCategory, {foreignKey: 'category_no'});

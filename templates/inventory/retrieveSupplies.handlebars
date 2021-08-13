@@ -31,24 +31,20 @@
 </table>
 
 <script>
-    window.addEventListener('load', check_data_loaded);
-    var startTime = new Date();
+    window.addEventListener('load', setInterval(check_data_loaded, 25));
+
     function check_data_loaded() {
         var cells = document.getElementsByTagName('td');
-        var endTime = new Date();
-        if (cells.length < 4) {
-            if (cells.length <= 1 && endTime - startTime >= 7000) {
-                console.log("Timeout.")
-                return 
+        try {
+            var checkButtons = cells[4].innerHTML;
+            if (cells.length >= 4 && checkButtons == "-") {
+                gen_edit_del_button();  
             }
-            else {
-                setTimeout(check_data_loaded, 25);
-            }
-            
         }
-        else {
-            gen_edit_del_button();  
+        catch (error) {
+            console.log("Waiting for data to be loaded...");
         }
+        
     }
 
     function gen_edit_del_button() {
@@ -57,16 +53,16 @@
             all_cells[i-4].width = "300px";
             all_cells[i].innerHTML =
             `<div class="row">
-            <a href="update/`+all_cells[i-4].innerText+`" class="btn btn-warning col-xs-6 supplies-update" style="margin-left:10px;margin-right:10px;">
+            &nbsp&nbsp<a href="update/`+all_cells[i-4].innerText+`" class="btn btn-warning col-xs-6 supplies-update" style="margin-left:10px;margin-right:10px;">
                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
             </a>
             <form action="suppliesList/`+all_cells[i-4].innerText+`" method="POST">
-                <button type="button" class="btn btn-danger col-xs-6" data-toggle="modal" data-target="#myModal_`+all_cells[i-4].innerText+`">
+                <button type="button" class="btn btn-danger col-xs-6" data-toggle="modal" data-target="#modal_`+all_cells[i-4].innerText+`">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </button>
 
                 <!-- The Modal -->
-                <div class="modal" id="myModal_`+all_cells[i-4].innerText+`">
+                <div class="modal" id="modal_`+all_cells[i-4].innerText+`">
                 <div class="modal-dialog">
                     <div class="modal-content">
 
