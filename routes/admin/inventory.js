@@ -101,23 +101,21 @@ Router.post('/edit/categories', async function(req, res) {
         console.log(categories_amt);
 
         // Create/Update existing categories
-        var index = 1;
         for (var i in req.body) {
             var inp = req.body[i];
             // While inputs parsed less than the total in db, do update
-            if (index <= categories_amt) {
+            if (i <= categories_amt) {
                 const updateCat = await SupplyCategory.update({
                     category_name: inp
-                }, { where: {category_no: index}});
+                }, { where: {category_no: i}});
             }
             // Inputs parsed is more than db, do create
             else {
                 const addCat = await SupplyCategory.create({
-                    category_no: index,
+                    category_no: i,
                     category_name: inp
                 });
             }
-            index++;
         }
         // Delete categories (If all inputs is less than db)
         if (Object.keys(req.body).length < categories_amt) {

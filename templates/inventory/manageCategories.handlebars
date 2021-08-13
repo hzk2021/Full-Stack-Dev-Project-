@@ -5,13 +5,13 @@
     <div>
         <form method="POST" action="">
             <h3>Categories</h3>
-            <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Caution: Order of category follows the order of the input fields</p>
+            <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Avoid deleting registerd categories as much as possible</p>
             <br>
             <div id="supplyCategoriesForm">
                 {{#if categories}}
                 {{#each categories}}
                 <div class="form-group input-group" id="inputGroup{{ this.category_no }}">
-                    <input value="{{ this.category_name }}" type="text" name="name{{ this.category_no }}" class="form-control" required>
+                    <input value="{{ this.category_name }}" type="text" name="{{ this.category_no }}" class="form-control" required>
                     <div class="input-group-append">
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDelete_{{ this.category_no }}"><i class="fa fa-trash"></i></button>
                         <!-- The Modal -->
@@ -25,7 +25,7 @@
 
                                 <div class="modal-body">
                                     <p>Are you sure you want to delete field?</p>
-                                    <p class="text-danger font-weight-bold">Caution: Order of items stored follows the order of the inputs as below</p>
+                                    <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Proceed with caution!</p>
                                 </div>
 
                                 <div class="modal-footer">
@@ -40,7 +40,7 @@
                 {{/each}}
                 {{else}}
                 <div class="form-group input-group" id="inputGroup1">
-                    <input value="" type="text" name="name1" class="inputCName form-control" required>
+                    <input value="" type="text" name="1" class="inputCName form-control" required>
                     <div class="input-group-append">
                         <button type="button" class="btn btn-danger" data-toggle="modal" date-target="#confirmDelete_1"><i class="fa fa-trash"></i></button>
                         <!-- The Modal -->
@@ -54,7 +54,7 @@
 
                                     <div class="modal-body">
                                         <p>Are you sure you want to delete field?</p>
-                                        <p class="text-danger font-weight-bold">Caution: Order of items stored follows the order of the inputs as below</p>
+                                        <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Proceed with caution!</p>
                                     </div>
 
                                     <div class="modal-footer">
@@ -81,18 +81,23 @@
 
 <script>
     var num = {{{json length}}};
-    num += 1;
     var num2 = num;
+    num += 1;
+    // Store inputs not at the bottom that has been deleted
+    let deletedInputs = [];
 
     function createInput() {
         console.log("Creating an input");
+        if (deletedInputs.length != 0) {
+            num = deletedInputs[0];
+        }
         var inputsDiv = document.getElementById('supplyCategoriesForm');
 
         var newDiv = document.createElement('div');
         newDiv.className = "form-group input-group";
         newDiv.id = `inputGroup${num}`
         newDiv.innerHTML += 
-        `<input value="" type="text" name="name${num}" class="form-control" required>
+        `<input value="" type="text" name="${num}" class="form-control" required>
         <div class="input-group-append">
             <button type="button" class="del-butt btn btn-danger" data-toggle="modal" data-target="#confirmDelete_${num}"><i class="fa fa-trash"></i></button>
             <!-- The Modal -->
@@ -106,7 +111,7 @@
 
                     <div class="modal-body">
                         <p>Are you sure you want to delete field?</p>
-                        <p class="text-danger font-weight-bold">Caution: Order of items stored follows the order of the inputs as below</p>
+                        <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Proceed with caution!</p>
                     </div>
 
                     <div class="modal-footer">
@@ -118,12 +123,29 @@
             </div>
         </div>`;
         inputsDiv.appendChild(newDiv);
-        num++;
+        if (deletedInputs.includes(num)) {
+            deletedInputs.shift();
+            console.log(deletedInputs);
+            if (deletedInputs.length != 0) {
+                num = deletedInputs[0];
+            }
+            else {
+                num = num2 + 1;
+            }
+        }
+        else {
+            num++;
+        }
     }
 
-    function delInput(num) {
-        document.getElementById("inputGroup"+num).remove();
+    function delInput(inp_num) {
+        document.getElementById("inputGroup"+inp_num).remove();
+        // Mark that a slot that is not at the bottom has been deleted
+        if (inp_num <= num2) {
+            deletedInputs.push(inp_num);
+        }
         document.body.classList.remove('modal-open');
         document.querySelector(".modal-backdrop.show").remove();
+        console.log(deletedInputs);
     }
 </script>
