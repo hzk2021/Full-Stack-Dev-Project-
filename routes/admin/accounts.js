@@ -34,14 +34,14 @@ Router.get('/list-data', async function(req,res) {
     })
 
     let users_list = []
-    try{
+    try {
         users_list = await User.findAll({
             where: condition,
             limit: parseInt(req.query.limit),
             offset: parseInt(req.query.offset),
             raw: true
         });
-    }catch(error){
+    } catch(error){
         console.log("Error retrieving accounts from User Database");
         console.error(error);
     }

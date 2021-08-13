@@ -16,11 +16,6 @@ Router.get('/', async function(req, res){
             raw: true
         });
         console.log(items);
-
-        return res.render('menu/menuPublic', {
-            items: items,
-            
-        });
     }
     catch (error) {
         console.error("An error occured while trying to retrieve the menu items");
@@ -29,15 +24,18 @@ Router.get('/', async function(req, res){
     }
     // Below is for rewards
     // Get user rewards
-    // const rewards =  null;
-    // try {
-    //     rewards = UserRewards.findAll({where:{uuid:req.user.uuid}});
-    // }
-    // catch (error) {
-    //     console.log(error)
-    //     console.error("User is not logged in");
-    // }
-    
+    const rewards =  null;
+    try {
+         rewards = UserRewards.findAll({where:{uuid:req.user.uuid}});
+    }
+    catch (error) {
+        console.log(error)
+        console.error("User is not logged in");
+    }
+    return res.render('menu/menuPublic', {
+        items: items,
+        
+    });
     // res render put outside once rewards working
 });
 

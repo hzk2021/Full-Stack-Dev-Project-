@@ -1,7 +1,7 @@
 const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
 
-const daysAllowed = [5,10,15,20,25,30,35,40,45,50,55,60]
+const daysAllowed = [5,10,15,20,25,30,35,40,45,50,55,60];
 
 class RewardsList extends Model {
     get day_no() { return Int8Array(this.getDataValue("day_no")); }

@@ -1,117 +1,151 @@
 <div class="card card-body form-sm">
-<h1 class="display-4">Create New Category</h1>
-<br>
-
-<div>
-    <form method="POST" action="">
-        <h3>Categories</h3>
-        <br>
-        <div id="supplyCategoriesForm">
-            {{#if categories}}
-            {{#each categories}}
-            <div class="form-group input-group" id="">
-                <input value="{{ this.category_name }}" type="text" name="name" class="inputCName form-control" required>
-                <div class="input-group-append">
-                    <button onclick="" type="button" class="del-butt btn btn-danger"><i class="fa fa-trash"></i></button>
-                </div>
-            </div>
-            {{/each}}
-            {{else}}
-            <div class="form-group input-group" id="">
-                <input type="text" name="name" class="inputCName form-control" required>
-                <div class="input-group-append">
-                    <button onclick="" type="button" class="del-butt btn btn-danger"><i class="fa fa-trash"></i></button>
-                </div>
-            </div>
-            {{/if}}
-        </div>
-        <button onclick="createInput(); return false;" id="createCategories" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add more</button>
-        <div class="row">
-            <div class="col-md-6"><a href="/admin/inventory/dashboard" class="btn btn-secondary" style="margin-top: 20px;width:118px;">Go Back</a></div>
-            <div class="col-md-6"><br><input type="submit" value="Save changes" class="btn btn-success pull-right"></div>
-        </div>
-    </form>
+    <h1 class="display-4">Create New Category</h1>
     <br>
-</div>
 
-<div>
-    <h3>Your Supply List</h3>
-    <ol>
-        {{#each supplies_dict}}
-        <li>{{ this.item_name }}</li>
-        {{/each}}
-    </ol>
-</div>
+    <div>
+        <form method="POST" action="">
+            <h3>Categories</h3>
+            <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Avoid deleting registered categories as much as possible</p>
+            <br>
+            <div id="supplyCategoriesForm">
+                {{#if categories}}
+                {{#each categories}}
+                <div class="form-group input-group" id="inputGroup{{ this.category_no }}">
+                    <input value="{{ this.category_name }}" type="text" name="{{ this.category_no }}" class="form-control" required>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDelete_{{ this.category_no }}"><i class="fa fa-trash"></i></button>
+                        <!-- The Modal -->
+                        <div class="modal" id="confirmDelete_{{ this.category_no }}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                <h4 class="modal-title">Delete Confirmation</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
 
-<!-- The Modal -->
-<!-- <div class="modal" id="confirmDelete">
-    <div class="modal-dialog">
-        <div class="modal-content">
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete field?</p>
+                                    <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Proceed with caution!</p>
+                                </div>
 
-            
-            <div class="modal-header">
-            <h4 class="modal-title">Delete Confirmation</h4>
-            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <div class="modal-footer">
+                                    <button onclick="delInput({{ this.category_no }})" id="finishDelete" type="button" data-dismiss="modal" class="btn btn-danger del-butt">Delete</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+                {{else}}
+                <div class="form-group input-group" id="inputGroup1">
+                    <input value="" type="text" name="1" class="inputCName form-control" required>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-danger" data-toggle="modal" date-target="#confirmDelete_1"><i class="fa fa-trash"></i></button>
+                        <!-- The Modal -->
+                        <div class="modal" id="confirmDelete_1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h4 class="modal-title">Delete Confirmation</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete field?</p>
+                                        <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Proceed with caution!</p>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                    <button onclick="delInput(1)" id="finishDelete" type="button" value="Delete" class="btn btn-danger">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/if}}
             </div>
-
-            
-            <div class="modal-body">Are you sure you want to delete field?</div>
-
-            
-            <div class="modal-footer">
-            <button id="finishDelete" type="button" onclick="delInput()" value="Delete" class="btn btn-danger">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button onclick="createInput(); return false;" id="createCategories" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add more</button>
+            <div class="row">
+                <div class="col-md-6"><a href="/admin/inventory/suppliesList" class="btn btn-secondary" style="margin-top: 20px;width:118px;">Go Back</a></div>
+                <div class="col-md-6"><br><input type="submit" value="Save changes" class="btn btn-success pull-right"></div>
             </div>
-        </div>
+        </form>
+        <br>
     </div>
-</div>-->
 
 </div>
 
 <script>
-    var num = 1;
-    window.addEventListener('load', genAttributes);
+    var num = {{{json length}}};
+    var num2 = num;
+    num += 1;
+    // Store inputs not at the bottom that has been deleted
+    let deletedInputs = [];
 
     function createInput() {
         console.log("Creating an input");
-        document.getElementById('supplyCategoriesForm').innerHTML += 
-        `\n<div class="form-group input-group" id="inputGroup${num}">
-            \n<input type="text" name="name${num}" class="inputCName form-control" required>
-            \n<div class="input-group-append">
-                <button onclick="delInput(${num}); return false;" type="button" class="del-butt btn btn-danger" data-target="#confirmDelete"><i class="fa fa-trash"></i></button>
-            </div>
-        \n</div>`;
-        num++;
-    }
+        if (deletedInputs.length != 0) {
+            num = deletedInputs[0];
+        }
+        var inputsDiv = document.getElementById('supplyCategoriesForm');
 
-    function genAttributes() {
-        var inputs = document.getElementsByClassName("inputCName");
-        var delButtons = document.getElementsByClassName("del-butt");
-        var inputParents = document.getElementsByClassName("input-group");
-        for (i=0; i<inputs.length; i++) {
-            inputs[i].name += num;
-            delButtons[i].setAttribute('onclick', `delInput(${num}); return false;`);
-            inputParents[i].id = "inputGroup"+num;
+        var newDiv = document.createElement('div');
+        newDiv.className = "form-group input-group";
+        newDiv.id = `inputGroup${num}`
+        newDiv.innerHTML += 
+        `<input value="" type="text" name="${num}" class="form-control" required>
+        <div class="input-group-append">
+            <button type="button" class="del-butt btn btn-danger" data-toggle="modal" data-target="#confirmDelete_${num}"><i class="fa fa-trash"></i></button>
+            <!-- The Modal -->
+            <div class="modal" id="confirmDelete_${num}">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h4 class="modal-title">Delete Confirmation</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete field?</p>
+                        <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Proceed with caution!</p>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button id="finishDelete" type="button" onclick="delInput(${num})" class="btn btn-danger">Delete</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>`;
+        inputsDiv.appendChild(newDiv);
+        if (deletedInputs.includes(num)) {
+            deletedInputs.shift();
+            console.log(deletedInputs);
+            if (deletedInputs.length != 0) {
+                num = deletedInputs[0];
+            }
+            else {
+                num = num2 + 1;
+            }
+        }
+        else {
             num++;
         }
     }
 
-    $(document).on("click", ".open-modal")
-
-    /*function openModal(num) {
-        // Get selected input for delete
-        var num = parseInt(document.getElementById(`deleteCInput${num}`).id.charAt(-1));
-        // Open modal
-        var modal = document.querySelector('.modal');
-        modal.style.display = "block";
-        modal.className += " show";
-        // Setting delete param
-        document.getElementById("finishDelete").onclick = `delInput(${num})`;
-    }*/
-
-    function delInput(num) {
-        /*var input = document.querySelector(`[name="name${num}"]`);
-        input.remove();*/
-        document.getElementById("inputGroup"+num).remove();
+    function delInput(inp_num) {
+        document.getElementById("inputGroup"+inp_num).remove();
+        // Mark that a slot that is not at the bottom has been deleted
+        if (inp_num <= num2) {
+            deletedInputs.push(inp_num);
+        }
+        document.body.classList.remove('modal-open');
+        document.querySelector(".modal-backdrop.show").remove();
+        console.log(deletedInputs);
     }
 </script>
