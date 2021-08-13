@@ -81,10 +81,10 @@ Router.get('/edit/categories', async function(req, res) {
     try {
         console.log("Edit categories page accessed");
         const categories = await SupplyCategory.findAll({ raw: true });
-        console.log(categories);
+        const highest = await SupplyCategory.max('category_no');
         return res.render('inventory/manageCategories', {
             categories:categories,
-            length: categories.length
+            length: highest
         });
     }
     catch {
