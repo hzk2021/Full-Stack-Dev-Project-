@@ -12,7 +12,7 @@
     </div>
     <div class="form-group">
         <label for="name">Course</label>
-        <select id="course" name="Course" class="form-control">
+        <select id="item_course" name="item_course" class="form-control">
             <option value="CBB" >Chargrilled Beef Burger</option>
             <option value="PAB">Premium Angus Beef</option>
             <option value="CCS">Chargrilled Chicken Sandwich</option>
@@ -20,7 +20,7 @@
             <option value="SAL">Salad</option>
         </select>  
     </div>
-    <div id="prof">
+    <div>
         <div class="form-group">
         <label for="name">Description</label>
         <input type="text" class="form-control" name="item_description" value="{{item_description}}" required>  
@@ -28,7 +28,40 @@
     </div>
     <div>
         <label for="name">Image</label>
-        <input type="text" class="form-control" name="image" value="" required>  
+        <input type="text" class="form-control" name="item_image" value="">  
+    </div>
+    <!-- Checkboxes for selecting food on the menu that needs the new supply --> 
+    <div class="form-group">
+        <label>Ingredients required</label>
+        <table>
+            {{#each checkboxes_list}}
+                <tr class="category-heading">
+                    <td colspan="5">
+                        <p><strong>{{ @key }}</strong></p>
+                    </td>
+                </tr>
+                
+                {{#each this}}
+                    <tr>
+                    {{#each this}}
+                        {{#ifIn this.item_name ../../../item_ingredients_list}}
+                            <td>
+                                <label><input type="checkbox" name="Ingredients" value="{{this.item_name}}" checked>
+                                    {{this.item_name}}&nbsp&nbsp    
+                                </label>
+                            </td>
+                        {{else}}
+                            <td>
+                                <label><input type="checkbox" name="Ingredients" value="{{this.item_name}}">
+                                    {{this.item_name}}&nbsp&nbsp    
+                                </label>
+                            </td>
+                        {{/ifIn}}
+                    {{/each}}  
+                    </tr>
+                {{/each}}
+            {{/each}}
+        </table>
     </div>
     <input type="hidden" id="uuid" name="uuid" value="{{uuid}}">
 

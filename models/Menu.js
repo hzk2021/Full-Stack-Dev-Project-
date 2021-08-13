@@ -24,6 +24,10 @@ const Menu = Database.sequelize.define('menu',{
         type: Sequelize.STRING(128),
         allowNull: false
     },
+    item_ingredients: {
+        type: Sequelize.STRING(2000),
+        allowNull: true
+    },
 });
 
 module.exports = Menu;

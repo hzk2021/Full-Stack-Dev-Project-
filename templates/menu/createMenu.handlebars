@@ -28,7 +28,7 @@
     </div>
     <div class="form-group">
         <label for="name">Image</label>
-        <input type="text" class="form-control" name="image" value="" required>  
+        <input type="text" class="form-control" name="image" value="">  
     </div>
     <!-- Checkboxes for selecting food on the menu that needs the new supply --> 
     <div class="form-group">
@@ -44,7 +44,7 @@
             <tr>
                 {{#each this}}
                 <td>
-                    <label><input type="checkbox" name="food_{{this.item_course}}" value="{{this.item_name}}"> {{this.item_name}}&nbsp&nbsp</label>
+                    <label><input type="checkbox" name="Ingredients" value="{{this.item_name}}"> {{this.item_name}}&nbsp&nbsp</label>
                 </td>
                 {{/each}}  
             </tr>

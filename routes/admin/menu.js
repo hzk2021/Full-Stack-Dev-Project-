@@ -25,11 +25,24 @@ Router.post('/create', async function(req, res){
 
         }
         else{
+            // Add all checked ingredients to list  
+            let listIngredients = [];
+            if (typeof(req.body.Ingredients == "string")) {
+                listIngredients.push(req.body.Ingredients);
+            
+            }
+            else {
+                for (const i of req.body.Ingredients){
+                    listIngredients.push(i);
+                }
+            }
+
             const createMenu = await Menu.create({
                 item_name: req.body.Name,
                 item_price: req.body.Price,
                 item_course: req.body.Course,
-                item_description: req.body.Description
+                item_description: req.body.Description,
+                item_ingredients: listIngredients.toString(),
             });
             console.log("Successfully created new menu object");
         }
@@ -51,7 +64,7 @@ Router.get('/', async function (req, res) {
     try {
         // Get all menu items
         const items = await Menu.findAll({
-            attributes: ['item_name', 'item_price', 'item_course', 'item_description'],
+            attributes: ['item_name', 'item_price', 'item_course', 'item_description', 'item_ingredients'],
             raw: true
         });
         console.log(items);        
@@ -73,13 +86,23 @@ Router.get('/', async function (req, res) {
 Router.get('/update/:item_name', async function(req, res){
     console.log("Update admin menu page accessed");
 	try {
-        const menu = await Menu.findOne({ where: { item_name: req.params.item_name } });
+        const menu = await Menu.findOne({ where: { item_name: req.params.item_name } })
+
+        // Inventory: Get all supplies in the right format
+        const checkboxes_list = await arrange_supplies_menu_checkbox();
+        const listIngredients = menu.item_ingredients.split(",");
+
+        console.log("Ingredients for item:", listIngredients);
+        console.log("All igredients:", checkboxes_list);
         return res.render('menu/updateMenu', {
             item_name: req.params.item_name,
             item_price: menu.item_price,
             item_course: menu.item_course,
             item_description: menu.item_description,
-            uuid: menu.uuid
+            item_ingredients_list: listIngredients, 
+            uuid: menu.uuid,
+            checkboxes_list: checkboxes_list
+            
         })
     }
     catch (error) {
@@ -102,11 +125,23 @@ Router.post('/update/:item_name', async function (req, res) {
 
         }
         else {
+            // Add all checked ingredients to list  
+            let listIngredients = [];
+            if (typeof(req.body.Ingredients == "string")) {
+                listIngredients.push(req.body.Ingredients);
+            
+            }
+            else {
+                for (const i of req.body.Ingredients){
+                    listIngredients.push(i);
+                }
+            }
             const updateMenu = await Menu.update({
                 item_name: req.body.item_name,
                 item_price: req.body.item_price,
                 item_course: req.body.item_course,
-                item_description: req.body.item_description
+                item_description: req.body.item_description,
+                item_ingredients: listIngredients.toString(),
             }, { where:{ uuid: req.body.uuid}});
             
             console.log("Successfully updated menu object");
@@ -129,9 +164,6 @@ Router.get('/delete/:item_name', async function(req, res){
         const menu = await Menu.findOne({ where: { item_name: req.params.item_name } });
         return res.render('menu/deleteMenu', {
             item_name: req.params.item_name,
-            item_price: menu.item_price,
-            item_course: menu.item_course,
-            item_description: menu.item_description,
             uuid: menu.uuid
         })
     }

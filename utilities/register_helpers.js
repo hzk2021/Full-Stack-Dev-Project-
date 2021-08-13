@@ -4,6 +4,15 @@ const ExpHandlebars = require('express-handlebars');
 const Hbs = ExpHandlebars.create({});
 
 const RegisterHelpers = async function () {
+    await Hbs.handlebars.registerHelper('ifIn', function(elem, list, options) {
+        for (const property in list) {
+            if (list[property] == elem){
+                return options.fn(this);
+            }
+        }
+        return options.inverse(this);
+      });
+
     await Hbs.handlebars.registerHelper('with', function(context, options){
         return options.fn(context);
     });
