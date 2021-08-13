@@ -6,7 +6,7 @@ const Cron = require('node-cron');
 const {Supplies} = require('../../models/Supplies');
 const {SupplyCategory} = require('../../models/SupplyCategory');
 const {SupplyPerformance} = require('../../models/SupplyPerformance');
-const Menu = require('../../models/Menu');
+const {Menu} = require('../../models/Menu');
 const { arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo } = require('../../utilities/functions');
 
 // REQUEST routes

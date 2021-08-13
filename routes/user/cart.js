@@ -1,11 +1,11 @@
 const Express = require('express');
 const Router = Express.Router();
-const Cart = require('../../models/Cart');
+const {Cart} = require('../../models/Cart');
 const {UserRewards} = require('../../models/UserRewards');
-const Order = require('../../models/Order');
+const {Order} = require('../../models/Order');
 const { Op } = require('sequelize');
 const {RewardsList} = require('../../models/RewardsList');
-const Menu = require('../../models/Menu');
+const {Menu} = require('../../models/Menu');
 
 //Retrieve cart items
 Router.get('/', async function(req, res){

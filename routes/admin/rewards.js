@@ -2,8 +2,8 @@ const Express = require('express');
 const Router = Express.Router();
 const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
-const Menu = require('../../models/Menu');
-const Cart = require('../../models/Order');
+const {Menu} = require('../../models/Menu');
+const {Cart} = require('../../models/Order');
 const { arrange_rewards } = require('../../utilities/functions');
 
 // Accessing edit rewards page

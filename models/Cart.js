@@ -1,8 +1,12 @@
-const Sequelize = require('sequelize');
+const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
 const uuid = require('uuid');
 
-const Cart = Database.sequelize.define('cart',{
+class Cart extends Model {
+
+}
+
+Cart.init({
     uuid:  {
         type: Sequelize.CHAR(36),
         primaryKey: true,
@@ -29,6 +33,9 @@ const Cart = Database.sequelize.define('cart',{
         allowNull: false,
         defaultValue: 1
     },
+}, {
+    sequelize: Database.sequelize,
+    modelName: 'cart',
 });
 
-module.exports = Cart;
+module.exports = {Cart};

@@ -1,8 +1,8 @@
 const Express = require('express');
 const Router = Express.Router();
 const {UserRewards} = require('../../models/UserRewards');
-const Menu = require('../../models/Menu');
-const Cart = require('../../models/Cart');
+const {Menu} = require('../../models/Menu');
+const {Cart} = require('../../models/Cart');
 
 //Retrieve
 Router.get('/', async function(req, res){
