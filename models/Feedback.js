@@ -3,6 +3,7 @@ const Database = require('../configs/database');
 const uuid = require('uuid');
 
 class Feedback extends Model {
+    get byUser() { return String(this.getDataValue("byUser")); }
     get feedbackID() { return String(this.getDataValue("feedbackID")); }
     get type() { return String(this.getDataValue("type")); }
     get rating(){ return String(this.getDataValue("rating")); }
@@ -24,6 +25,10 @@ Feedback.init({
         type: Sequelize.CHAR(36),
         primaryKey: true,
         defaultValue: Sequelize.DataTypes.UUIDV4
+    },
+    byUser: {
+        type: Sequelize.STRING(50),
+        allowNull: true
     },
     dateCreated: {
         type: Sequelize.DATE(),

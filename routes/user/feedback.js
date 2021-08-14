@@ -39,6 +39,7 @@ Router.post('/create',AccountChecker.isLoggedIn, AccountChecker.isUser, async fu
 
     try {
         const feedback = await Feedback.create({
+            byUser: req.user.name,
             type: req.body.types,
             rating: parseFloat(req.body.rating),
             description: req.body.description,

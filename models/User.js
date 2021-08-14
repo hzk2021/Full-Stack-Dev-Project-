@@ -63,6 +63,8 @@ User.init({
     }
 });
 
+User.sync();
+
 function auto_update_timestamp(user, options){
     user.dateUpdated = Sequelize.literal('CURRENT_TIMESTAMP');
 }
