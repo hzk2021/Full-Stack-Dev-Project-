@@ -1,8 +1,12 @@
-const Sequelize = require('sequelize');
+const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
 const uuid = require('uuid');
 
-const Order = Database.sequelize.define('order',{
+class Order extends Model {
+
+}
+
+Order.init({
     uuid:  {
         type: Sequelize.CHAR(36),
         primaryKey: true,
@@ -37,6 +41,9 @@ const Order = Database.sequelize.define('order',{
         allowNull: false,
         defaultValue: Sequelize.NOW
     },
+}, {
+    sequelize: Database.sequelize,
+    modelName: 'order',
 });
 
-module.exports = Order;
+module.exports = {Order};

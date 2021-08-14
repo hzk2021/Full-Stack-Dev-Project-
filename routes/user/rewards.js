@@ -2,8 +2,8 @@ const Express = require('express');
 const Router = Express.Router();
 const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
-const Order = require('../../models/Order');
-const Cart = require('../../models/Cart');
+const {Order} = require('../../models/Order');
+const {Cart} = require('../../models/Cart');
 const { Op } = require('sequelize');
 const { arrange_rewards, arrange_rewards_noNull } = require('../../utilities/functions');
 

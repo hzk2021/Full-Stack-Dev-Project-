@@ -1,6 +1,6 @@
 const Express = require('express');
 const Router = Express.Router();
-const Menu = require('../../models/Menu');
+const {Menu} = require('../../models/Menu');
 const { arrange_supplies_menu_checkbox } = require('../../utilities/functions');
 
 //Create Menu items

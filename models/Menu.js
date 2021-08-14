@@ -1,8 +1,12 @@
-const Sequelize = require('sequelize');
+const {Sequelize, Model} = require('sequelize');
 const Database = require('../configs/database');
 const uuid = require('uuid');
 
-const Menu = Database.sequelize.define('menu',{
+class Menu extends Model {
+
+}
+
+Menu.init({
     uuid:  {
         type: Sequelize.CHAR(36),
         primaryKey: true,
@@ -28,6 +32,9 @@ const Menu = Database.sequelize.define('menu',{
         type: Sequelize.STRING(2000),
         allowNull: true
     },
+}, {
+    sequelize: Database.sequelize,
+    modelName: 'menu',
 });
 
-module.exports = Menu;
+module.exports = {Menu};
