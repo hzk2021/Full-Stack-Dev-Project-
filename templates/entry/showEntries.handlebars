@@ -59,8 +59,18 @@
    }
 
    function Delete(value, row){
-      return`<form action="/admin/entry/delete/${row.entryID}" method="POST">
-              <input type="submit" value="Delete" class="btn btn-danger">
-            </form>`
+       return `<button id="DeleteReqButton" type="submit" class="btn btn-danger" value="${row.entryID}" onclick="confirmDelete()"> Delete`
+   }
+
+   function confirmDelete(){
+       bootbox.confirm("Are you sure you want to delete this entry?", function(result){
+           const eID = document.getElementById("DeleteReqButton")
+           if (result == true){
+               document.body.innerHTML += `<form id="deleteReqForm" action="/admin/entry/delete/${eID.value}" method="POST">
+               <input type="submit" value="Delete" class="btn btn-danger"> </form>`
+
+              document.getElementById("deleteReqForm").submit();
+           }
+       });
    }
 </script>
