@@ -96,7 +96,7 @@ Router.post('/respond', async function(req,res){
         console.error("There are errors validating the feedback update/respond form body");
         console.error(error);
         req.flash('errors', errors)
-        return res.redirect('/admin/feedback/respond');
+        return res.redirect(`/admin/feedback/list`);
     }
 });
 

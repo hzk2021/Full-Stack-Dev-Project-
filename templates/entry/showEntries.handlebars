@@ -25,6 +25,8 @@
       <th data-field="DOV">Date of visit</th>
       <th data-field="dateCreated">Entry Time</th>
       <th data-formatter="exitDate">Exit Time</th>
+      <th data-formatter="Update"></th>
+      <th data-formatter="Delete"></th>
     </tr>
   </thead>
 </table>
@@ -48,5 +50,17 @@
     }else{
       return `<a href="#" class="btn btn-outline-primary rounded-circle disabled"> ${row.exitDate} </a></b>`
       }
+   }
+
+   function Update(value, row){
+      return`<form action="/admin/entry/update/${row.FullName}/${row.entryID}/${row.NRIC}/${row.PhoneNo}/${row.Temperature}" method="GET">
+              <input type="submit" value="Update" class="btn btn-warning">
+            </form>`
+   }
+
+   function Delete(value, row){
+      return`<form action="/admin/entry/delete/${row.entryID}" method="POST">
+              <input type="submit" value="Delete" class="btn btn-danger">
+            </form>`
    }
 </script>

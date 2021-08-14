@@ -160,4 +160,49 @@ Router.post('/exit/:entryid', async function(req,res){
     }
 });
 
+Router.get('/update/:fname/:entryid/:nric/:phoneno/:temperature', async function(req,res){
+    return res.render("entry/updateEntry", {
+        "fName": req.params.fname,
+        "entryID": req.params.entryid,
+        "NRIC": req.params.nric,
+        "phoneno": req.params.phoneno,
+        "temperature": req.params.temperature,
+        'title': "Update Entry"
+    })
+});
+
+Router.post('/update', async function(req,res){
+    let errors = []
+
+    try {
+        const entry = await Entry.findByPk(req.body.entryID);
+
+        if (entry){
+            const updateEntry = await Entry.update({
+                FullName: req.body.fullname,
+                NRIC: req.body.nric,
+                PhoneNo: req.body.phoneno,
+                Temperature: req.body.temperature
+            },{
+                where: {
+                    entryID: entry.entryID
+                }
+            });
+            req.flash('success_msg', "Entry updated successfully!")
+            return res.redirect("/admin/entry/show")
+        }else{
+            errors.push({text: "invalid entryID"})
+        }
+
+        if (errors.length > 0){
+            throw new Error("There are validation errors found");
+        }
+    } catch(error){
+        console.error("There are errors validating the entry update form body");
+        console.error(error);
+        req.flash('errors', errors)
+        return res.redirect('/admin/entry/show');
+    }
+});
+
 module.exports = Router;
