@@ -135,27 +135,42 @@ const arrange_supplies_by_food_weekNo = function (supplies) {
     item_dict.values = [supplies[0]['supply_performances.stock_used']];
 
     var check_id = item_dict.id;
-    for (i=1; i<supplies.length; i++) {
-        if (supplies[i].item_id == check_id) {
-            item_dict.values.push(supplies[i]['supply_performances.stock_used']);
-            if (i == supplies.length-1) {
-                items_list.push(item_dict);
+    if (supplies.length <= 1) {
+        items_list.push(item_dict);
+    }
+    else {
+        for (i=0; i<supplies.length; i++) {
+            if (supplies[i].item_id == check_id) {
+                item_dict.values.push(supplies[i]['supply_performances.stock_used']);
+                if (i == supplies.length-1) {
+                    items_list.push(item_dict);
+                }
             }
+            else {
+                items_list.push(item_dict);
+                check_id = supplies[i].item_id
+                item_dict = {};
+                item_dict.name = supplies[i].item_name;
+                item_dict.id = supplies[i].item_id;
+                item_dict.values = [supplies[i]['supply_performances.stock_used']];
+            }
+            
         }
-        else {
-            items_list.push(item_dict);
-            check_id = supplies[i].item_id
-            item_dict = {};
-            item_dict.name = supplies[i].item_name;
-            item_dict.id = supplies[i].item_id;
-            item_dict.values = [supplies[i]['supply_performances.stock_used']];
-        }
-        
     }
     console.log(items_list);
-    items_list[0].values = [0, 0, 10000];
     return items_list;
 }
 
+const arrange_supplies_by_food_weekNo_full = function (supplies) {
+    var result = arrange_supplies_by_food_weekNo(supplies);
+    for (var item in result) {
+        while (result[item].values.length < 5) {
+            result[item].values.push(0);
+        }
+    }
+    return result;
+}
 
-module.exports = {arrange_rewards, arrange_rewards_noNull, arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo};
+
+module.exports = {arrange_rewards, arrange_rewards_noNull, arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo, 
+                arrange_supplies_by_food_weekNo_full};

@@ -81,8 +81,12 @@
 
 <script>
     var num = {{{json length}}};
+    if (num == null) {
+        num += 1
+    }
     var num2 = num;
     num += 1;
+    console.log(num);
     // Store inputs not at the bottom that has been deleted
     let deletedInputs = [];
 
@@ -135,6 +139,9 @@
         }
         else {
             num++;
+            num2++;
+            console.log(num);
+            console.log(num2);
         }
     }
 
@@ -143,6 +150,10 @@
         // Mark that a slot that is not at the bottom has been deleted
         if (inp_num <= num2) {
             deletedInputs.push(inp_num);
+            deletedInputs.sort();
+        }
+        else {
+            num -= 1;
         }
         document.body.classList.remove('modal-open');
         document.querySelector(".modal-backdrop.show").remove();

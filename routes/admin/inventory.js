@@ -6,8 +6,8 @@ const Cron = require('node-cron');
 const {Supplies} = require('../../models/Supplies');
 const {SupplyCategory} = require('../../models/SupplyCategory');
 const {SupplyPerformance} = require('../../models/SupplyPerformance');
-const Menu = require('../../models/Menu');
-const { arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo } = require('../../utilities/functions');
+const {Menu} = require('../../models/Menu');
+const { arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo, arrange_supplies_by_food_weekNo_full } = require('../../utilities/functions');
 
 // REQUEST routes
 Router.get('/create/supplyItem', async function(req, res) {
@@ -97,14 +97,15 @@ Router.post('/edit/categories', async function(req, res) {
     try {
         console.log('POST edit categories');
         // Get the current list of categories
-        const categories_amt = await SupplyCategory.count({attributes: ['category_no']});
-        console.log(categories_amt);
+        const category_max = await SupplyCategory.max('category_no');
+        const category_amt = await SupplyCategory.findAndCountAll({attributes: ['category_no'], raw:true});
+        console.log(category_amt);
 
         // Create/Update existing categories
         for (var i in req.body) {
             var inp = req.body[i];
             // While inputs parsed less than the total in db, do update
-            if (i <= categories_amt) {
+            if (i <= category_max) {
                 const updateCat = await SupplyCategory.update({
                     category_name: inp
                 }, { where: {category_no: i}});
@@ -118,14 +119,18 @@ Router.post('/edit/categories', async function(req, res) {
             }
         }
         // Delete categories (If all inputs is less than db)
-        if (Object.keys(req.body).length < categories_amt) {
-            var extra_amt = categories_amt - Object.keys(req.body).length;
-            var remove_no = categories_amt;
-            for (i=0; i<extra_amt; i++) {
-                const delCat = await SupplyCategory.destroy({
-                    where: { category_no: remove_no }
-                });
-                remove_no -= 1;
+        if (Object.keys(req.body).length < category_amt.count) {
+            var all_inp = Object.keys(req.body);
+            var all_cat = category_amt.rows.map(x => x.category_no.toString());
+            console.log(all_inp);
+            console.log(all_cat);
+            // Identifying keys that do not exist anymore
+            for (var cat in all_cat) {
+                if (!all_inp.includes(all_cat[cat])) {
+                    const delCat = await SupplyCategory.destroy({
+                        where: { category_no: all_cat[cat] }
+                    });
+                }
             }
         }
 
@@ -402,11 +407,14 @@ async function set_predicted_value() {
         var info = {}
         var change_val = 0
         const weightages = [0.5, 0.3, 0.15, 0.05]
-        for (w=0; w< weeks.length; w++) {
+        for (w=0; w< weeks.length-1; w++) {
             change_val += (weeks[w+1] - weeks[w]) * weightages[w]
         }
-        info.changed_value = change_val + Math.round(change_val*0.01);
-        info.change_percentage = ((change_val / weeks[0]) * 100).toFixed(5);
+        info.changed_value = Math.round(change_val + change_val*0.01);
+        info.changed_percentage = ((weeks[1]-weeks[0]/ weeks[0]) * 100).toFixed(5);
+        if (info.changed_percentage == 'NaN') {
+            info.changed_percentage = 0;
+        }
         return info;
     }
     console.log("CALCULATING...");
@@ -414,25 +422,27 @@ async function set_predicted_value() {
         include:[{
             model: SupplyPerformance,
             attributes: ['week_no', 'stock_used'],
-            order:[['week_no', 'ASC']],
+            order:[['week_no', 'DESC']],
         }],
         attributes: ['item_id', 'item_name'],
         order: [['item_name', 'ASC']],
         raw: true
     });
 
-    // Arrange them in format of {food_name: [week1, week2, ...], ...}
-    const supplies_weeks = await arrange_supplies_by_food_weekNo(all_items_wks);
+    // Arrange them in format of [ {food_name: [week1, week2, ...], ...} ]
+    const supplies_weeks = await arrange_supplies_by_food_weekNo_full(all_items_wks);
+    console.log(supplies_weeks);
     let change_dict = {};
     // Calculate the predicted values for next orders
     for (var item in supplies_weeks) {
-        change_dict[item] = cal_change_val(supplies_weeks[item]);
+        change_dict[supplies_weeks[item].id] = cal_change_val(supplies_weeks[item].values);
     }
+    console.log(change_dict);
     for (var item in change_dict) {
         info_dict = change_dict[item]
         const update = await Supplies.update({
-            val_change: info_dict.changed_value,
-            next_value: info_dict.change_percentage
+            val_change: info_dict.changed_percentage,
+            next_value: info_dict.changed_value
         }, {where: {item_id: item}});
     }
 }
@@ -470,19 +480,26 @@ async function set_quantity() {
     const set_orders = await Supplies.findAll({
         attributes: ['item_id', 'next_value'],
     });
-    for (var item in set_orders) {
-        const set_stock_lvl = await SupplyPerformance.update({
-            current_stock_level: set_orders[item].next_value
-        }, { where: { 
-                item_id: set_orders[item].item_id, week_no: 1 
-            } 
-        });
+    try {
+        for (var item in set_orders) {
+            const set_stock_lvl = await SupplyPerformance.update({
+                current_stock_lvl: set_orders[item].next_value
+            }, { where: { 
+                    item_id: set_orders[item].item_id, 
+                    week_no: 1 
+                } 
+            });
+        }
+        // Reset next_value to indicate no changes to be allowed
+        const set_orders_null = await Supplies.update({
+            next_value: null,
+        }, {where: {}});
     }
-    // Reset next_value to indicate no changes to be allowed
-    const set_orders_null = await SupplyPerformance.update({
-        next_value: null,
-        where: {}
-    });
+    catch (error) {
+        console.error("An error occurred trying to update values");
+        console.error(error);
+    }
+
 }
 
 Router.get('/debug-finalize-supplies-values', async function(req, res) {
