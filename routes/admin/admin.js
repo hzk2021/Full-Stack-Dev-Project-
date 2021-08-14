@@ -7,6 +7,7 @@ const Menu = require("./menu");
 const Order = require("./rewards");
 const Accounts = require("./accounts");
 const Feedback = require("./feedback");
+const Entry = require("./entry");
 
 Router.use('/rewards', Rewards);
 Router.use('/inventory', Inventory);
@@ -14,5 +15,6 @@ Router.use('/menu', Menu);
 Router.use('/order', Order);
 Router.use('/accounts', Accounts);
 Router.use('/feedback', Feedback);
+Router.use('/entry', Entry);
 
 module.exports = Router;

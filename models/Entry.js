@@ -35,11 +35,11 @@ Entry.init({
         allowNull: false
     },
     PhoneNo: {
-        type: Sequelize.BIGINT(8),
+        type: Sequelize.INTEGER,
         allowNull: true
     },
     Temperature:{
-        type: Sequelize.FLOAT(2,2),
+        type: Sequelize.FLOAT,
         allowNull: false,
         defaultValue: 37.0
     },
@@ -65,6 +65,8 @@ Entry.init({
         afterUpdate: auto_update_timestamp
     }
 });
+
+Entry.sync();
 
 function auto_update_timestamp(user, options){
     Entry.dateUpdated = Sequelize.literal('CURRENT_TIMESTAMP');
