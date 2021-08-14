@@ -1,7 +1,7 @@
 const Express = require('express');
 const Entry = require('../../models/Entry');
 const Router = Express.Router();
-const { Op, Model } = require('sequelize');
+const { Op, Model, where } = require('sequelize');
 
 const nricRegex = /^[STFG]\d{7}[A-Z]$/
 const sgPhoneRegex = /^[0-9]{8}$/
@@ -201,6 +201,30 @@ Router.post('/update', async function(req,res){
         console.error("There are errors validating the entry update form body");
         console.error(error);
         req.flash('errors', errors)
+        return res.redirect('/admin/entry/show');
+    }
+});
+
+Router.post('/delete/:entryid', async function (req, res){
+    const entry_id = req.params.entryid;
+    try {
+        const entry = await Entry.findOne({
+            where: {
+                "entryID": entry_id
+            }
+        })
+
+        if (entry){
+            entry.destroy();
+            req.flash('success_msg', "Entry deleted successfully!")
+            return res.redirect('/admin/entry/show');
+        }else{
+            throw new Error("Invalid Error ID")
+        }
+    }catch(err) {
+        console.error("There are errors deleting the entry");
+        console.log(err)
+        req.flash('errors', ["Invalid error ID"])
         return res.redirect('/admin/entry/show');
     }
 });
