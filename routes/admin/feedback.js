@@ -3,6 +3,7 @@ const Feedback = require('../../models/Feedback');
 const Router = Express.Router();
 const { Op, Model } = require('sequelize');
 const { uuid } = require('uuid');
+const { User } = require('../../models/User');
 
 
 Router.get('/list', async function(req,res) {
@@ -25,7 +26,7 @@ Router.get('/list-users-feedbacks', async function(req, res) {
             "type": { [Op.substring]: filterSearch},
             "rating": { [Op.substring]: filterSearch},
             "description": { [Op.substring]: filterSearch},
-            "response": { [Op.substring]: filterSearch}
+            "response": { [Op.substring]: filterSearch},
         }
     };
 
@@ -41,6 +42,11 @@ Router.get('/list-users-feedbacks', async function(req, res) {
             offset: parseInt(req.query.offset),
             raw: true
         });
+
+        for (let i = 0; i < feedbacks_list.length; i++) {
+            user = await User.findByPk(feedbacks_list[i].userUUID)
+            feedbacks_list[i]["byUser"] = user.name
+        }
     } catch(error) {
         console.log("Error retrieving feedbacks from Feedback database");
         console.error(error);
