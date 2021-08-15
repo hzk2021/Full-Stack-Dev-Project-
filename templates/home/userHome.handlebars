@@ -37,7 +37,7 @@
             {{#ifc userRole '==' 'user'}}
             <a class="btn btn-primary col-xs-6" style="position:relative;left:10%;" href="/user/rewards">View My Rewards</a>
             {{else}}
-            <a class="btn btn-outline-light col-xs-6" href="/login">Login OR Sign Up For Membership</a>
+            <a class="btn btn-outline-light col-xs-6" href="/auth/login">Login OR Sign Up For Membership</a>
             {{/ifc}}
         </div>
     </div>
@@ -52,7 +52,7 @@
         {{#ifc userRole '==' 'user'}}
         <a class="btn btn-primary" href="/createPost">Post A Feedback</a>
         {{else}}
-        <a class="btn btn-outline-dark col-xs-6" href="/login">Login OR Sign Up For Membership</a>
+        <a class="btn btn-outline-dark col-xs-6" href="/auth/login">Login OR Sign Up For Membership</a>
         {{/ifc}}
     </div>
 </div>
