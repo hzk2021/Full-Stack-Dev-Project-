@@ -2,41 +2,49 @@ const Express = require('express');
 const Router = Express.Router();
 const {UserRewards} = require('../../models/UserRewards');
 const {Menu} = require('../../models/Menu');
+const {MenuCategory} = require('../../models/MenuCategory');
 const {Cart} = require('../../models/Cart');
 
-//Retrieve
-Router.get('/', async function(req, res){
+//Retrieve Public Menu
+Router.get('/', async function (req, res) {
     console.log("Public menu page accessed");
-    // Check whether user is logged in
-    let items = null;
     try {
         // Get all menu items
-        items = await Menu.findAll({
-            attributes: ['item_name', 'item_price', 'item_course', 'item_description'],
+        const items = await Menu.findAll({
+            attributes: ['item_name', 'item_price', 'category_no', 'item_description', 'item_ingredients'],
             raw: true
         });
-        console.log(items);
+        // Get all menu categories
+        const categories = await MenuCategory.findAll({
+            attributes: ['category_no', 'category_name'],
+            raw: true
+        }); 
+
+        // Below is for rewards
+        // Get user rewards
+        const rewards =  null;
+        try {
+                rewards = UserRewards.findAll({where:{uuid:req.user.uuid}});
+        }
+        catch (error) {
+            console.log(error)
+            console.error("User is not logged in");
+        }
+
+        console.log("items", items);   
+        console.log("categories", categories);   
+        return res.render('menu/menuPublic', {
+            items: items,
+            categories:categories
+        });
     }
+
     catch (error) {
         console.error("An error occured while trying to retrieve the menu items");
         console.error(error);
         return res.status(500).end();
     }
-    // Below is for rewards
-    // Get user rewards
-    const rewards =  null;
-    try {
-         rewards = UserRewards.findAll({where:{uuid:req.user.uuid}});
-    }
-    catch (error) {
-        console.log(error)
-        console.error("User is not logged in");
-    }
-    return res.render('menu/menuPublic', {
-        items: items,
-        
-    });
-    // res render put outside once rewards working
+
 });
 
 module.exports = Router;

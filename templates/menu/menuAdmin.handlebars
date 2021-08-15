@@ -6,33 +6,37 @@
     height:200px;
     width:300px;
   }
+
+  #create_buttons {
+    text-align: right;
+    padding-bottom: 10px;
+
+  }
 </style>
 
 <h1 class="display-4">Menu</h1>
-<div class="text-right"><a href="/admin/menu/create/" class="btn btn-primary">Create Menu Item</a></div>
+<div id="create_buttons">
+  <a href="/admin/menu/create/" class="btn btn-warning">Create Menu Item</a>
+  <a href="/admin/menu/edit/categories/" class="btn btn-primary">Create Menu Category</a>
+</div>
 
 <!-- Nav tabs -->
 <ul class="nav nav-tabs">
+  {{!-- filler nav tab --}}
   <li class="active">
-    <a class="nav-link active" data-toggle="tab" href="#CBB">Chargrilled Beef Burger</a>
+      <a class="nav-link active" data-toggle="tab" href="#CC">cc</a>
   </li>
-  <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" href="#PAB">Premium Angus Beef</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" href="#CCS">Chargrilled Chicken Sandwich</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" href="#SID">Sides</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" data-toggle="tab" href="#SAL">Salad</a>
-  </li>
+  {{#each categories}}
+    <li class="nav-item">
+      <a class="nav-link" data-toggle="tab" href="#{{this.category_no}}">{{this.category_name}}</a>
+    </li>
+  {{/each}}
 </ul>
 
 <!-- Tab panes -->
+{{!-- filler category --}}
 <div class="tab-content">
-  <div class="tab-pane container-fluid active" id="CBB">
+  <div class="tab-pane container-fluid active" id="1">
     <br>
     <br>
     <div>
@@ -48,7 +52,7 @@
         </thead>
         <tbody>
         {{#each items}}
-          {{#ifc this.item_course '==' 'CBB'}}
+          {{#ifc this.category_no '==' 0}}
             <tr>
               <td><img src=""></td>
               <td>{{this.item_name}}</td>
@@ -68,7 +72,10 @@
     </div>
   </div>
 
-  <div class="tab-pane container-fluid" id="PAB">
+  {{#each categories}}
+  {{!-- this part not working --}}
+  Category: {{this.category_name}}
+  <div class="tab-pane container-fluid active" id="{{this.category_no}}"> 
     <br>
     <br>
     <div>
@@ -83,8 +90,9 @@
           </tr>
         </thead>
         <tbody>
-        {{#each items}}
-          {{#ifc this.item_course '==' 'PAB'}}
+        {{#each ../items}}
+          {{#ifc this.category_no '==' ../this.category_no}}
+  
             <tr>
               <td><img src=""></td>
               <td>{{this.item_name}}</td>
@@ -103,114 +111,6 @@
       </table>
     </div>
   </div>
+  {{/each}}
 
-  <div class="tab-pane container-fluid" id="CCS">
-    <br>
-    <br>
-    <div>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th></th>
-            <th width="50%">Item</th>
-            <th width="40%">Price</th>
-            <th width="50%">Description</th>
-            <th width="50%">Ingredients</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{#each items}}
-          {{#ifc this.item_course '==' 'CCS'}}
-            <tr>
-              <td><img src=""></td>
-              <td>{{this.item_name}}</td>
-              <td>{{this.item_price}}</td>
-              <td>{{this.item_description}}</td>
-              <td>{{this.item_ingredients}}</td>
-              <td></td>
-
-              <td></td>
-              <td><a href="/admin/menu/update/{{this.item_name}}" class="btn btn-warning">Edit</a></td>
-              <td><a href="/admin/menu/delete/{{this.item_name}}" class="btn btn-danger">Delete</a></td>
-            </tr>
-          {{/ifc}}
-        {{/each}}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="tab-pane container-fluid" id="SID">
-    <br>
-    <br>
-    <div>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th></th>
-            <th width="50%">Item</th>
-            <th width="40%">Price</th>
-            <th width="50%">Description</th>
-            <th width="50%">Ingredients</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{#each items}}
-          {{#ifc this.item_course '==' 'SID'}}
-            <tr>
-              <td><img src=""></td>
-              <td>{{this.item_name}}</td>
-              <td>{{this.item_price}}</td>
-              <td>{{this.item_description}}</td>
-              <td>{{this.item_ingredients}}</td>
-              <td></td>
-
-              <td></td>
-              <td><a href="/admin/menu/update/{{this.item_name}}" class="btn btn-warning">Edit</a></td>
-              <td><a href="/admin/menu/delete/{{this.item_name}}" class="btn btn-danger">Delete</a></td>
-            </tr>
-          {{/ifc}}
-        {{/each}}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="tab-pane container-fluid" id="SAL">
-    <br>
-    <br>
-    <div>
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th></th>
-            <th width="50%">Item</th>
-            <th width="40%">Price</th>
-            <th width="50%">Description</th>
-            <th width="50%">Ingredients</th>
-          </tr>
-        </thead>
-        <tbody>
-        {{#each items}}
-          {{#ifc this.item_course '==' 'SAL'}}
-            <tr>
-              <td><img src=""></td>
-              <td>{{this.item_name}}</td>
-              <td>{{this.item_price}}</td>
-              <td>{{this.item_description}}</td>
-              <td>{{this.item_ingredients}}</td>
-              <td></td>
-
-              <td></td>
-              <td><a href="/admin/menu/update/{{this.item_name}}" class="btn btn-warning">Edit</a></td>
-              <td><a href="/admin/menu/delete/{{this.item_name}}" class="btn btn-danger">Delete</a></td>
-            </tr>
-          {{/ifc}}
-        {{/each}}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-
-  </div>
+</div>

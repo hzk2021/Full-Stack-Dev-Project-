@@ -10,15 +10,13 @@
         <label for="name">Price</label>
         <input type="text" class="form-control" name="item_price" value="{{item_price}}" required>
     </div>
-    <div class="form-group">
-        <label for="name">Course</label>
-        <select id="item_course" name="item_course" class="form-control">
-            <option value="CBB" >Chargrilled Beef Burger</option>
-            <option value="PAB">Premium Angus Beef</option>
-            <option value="CCS">Chargrilled Chicken Sandwich</option>
-            <option value="SID">Sides</option>
-            <option value="SAL">Salad</option>
-        </select>  
+    <div class="form-group" style="width:40%">
+        <label for="type">Category</label>
+        <select name="category_no" id="category_no" class="form-control">
+            {{#each categories}}
+            <option class="cat-option" value="{{this.category_no}}">{{this.category_name}}</option>
+            {{/each}}
+        </select>
     </div>
     <div>
         <div class="form-group">
