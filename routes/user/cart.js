@@ -3,11 +3,9 @@ const Router = Express.Router();
 const {Cart} = require('../../models/Cart');
 const {UserRewards} = require('../../models/UserRewards');
 const {Order} = require('../../models/Order');
-const { Op } = require('sequelize');
-const {RewardsList} = require('../../models/RewardsList');
+const { Sequelize, Op } = require('sequelize');
 const {Menu} = require('../../models/Menu');
 const {SupplyPerformance} = require('../../models/SupplyPerformance');
-const { SupplyCategory } = require('../../models/SupplyCategory');
 const { Supplies } = require('../../models/Supplies');
 
 //Retrieve cart items
@@ -158,7 +156,8 @@ Router.get('/orderComplete', async function(req, res){
     // Inventory operations below
     const orders = await Cart.findAll({
         attributes: ['cart_user_id', 'cart_item_name', 'cart_item_quantity'],
-        where: { cart_user_id: req.user.uuid }
+        where: { cart_user_id: req.user.uuid },
+        raw: true
     });
     let add_quantity = {};
     // To get total amount to add into the inventory stock level record
@@ -166,20 +165,27 @@ Router.get('/orderComplete', async function(req, res){
         var item = orders[food];
         // Get the food ingredient list
         let ingredients = await Menu.findOne({
-            attributes: ['ingredients_list'],
+            attributes: ['item_ingredients'],
             where: { item_name: item.cart_item_name }
         });
-        var ingredients_list = ingredients.ingredients_list.split(',');
+        var ingredients_list = ingredients.item_ingredients.split(',');
         // Accumulate the amount for each ingredient
         for (var supply in ingredients_list) {
+            var key = await Supplies.findOne({
+                attributes: ['item_id'],
+                where: {
+                    item_name: ingredients_list[supply]
+                }
+            });
             if (supply in add_quantity) {
-                add_quantity[supply] += parseInt(cart_item_quantity);
+                add_quantity[key.item_id] += parseInt(orders[food].cart_item_quantity);
             }
             else {
-                add_quantity[supply] = parseInt(cart_item_quantity);
+                add_quantity[key.item_id] = parseInt(orders[food].cart_item_quantity);
             }
         }
     }
+    console.log(add_quantity);
     // Update stock used and stock left for each supply item
     for (var supply in add_quantity) {
         const addSupplies = await SupplyPerformance.increment('stock_used', {
@@ -193,47 +199,51 @@ Router.get('/orderComplete', async function(req, res){
     }
 
     // Rewards operations below
-    if (req.user.uuid != null) {
-        // Marking rewards claimed
-        const rewards = await Cart.findAll({where:{uuid: req.user.uuid, cart_item_price: 0}});
-        let rewards_days = [];
-        for (var obj in rewards) {
-            rewards_days.push(parseInt(obj.cart_item_name.substring(-3, -1)));
+    // Marking rewards to be claimed
+    // Get rewards (identified by price = $0 )
+    const rewards = await Cart.findAll({
+        attributes: ['cart_item_name'],
+        where: {
+            uuid: req.user.uuid, 
+            cart_item_price: 0
         }
-            const claimedReward = UserRewards.update({
-                claimed: true
-            }, {where: {
-                uuid: req.user.uuid,
-                day_no :{[Op.in]: rewards_days}
-            }});
-        
-        // Adding reward if user has hit checkpoint
-        var total_orders = 0;
+    });
+    // Store the days that were claimed
+    let day_nos = [];
+    for (var r in rewards) {
+        var re_day_no = parseInt(rewards[r].cart_item_name.substring(-3, 2));
+        if (!day_nos.includes(re_day_no)) {
+            day_nos.push(re_day_no);
+        }
+    }
+    // Mark the rewards claimed
+    const claimedReward = await UserRewards.update({
+        claimed: true
+    }, { where: {
+        uuid: req.user.uuid,
+        day_no :{[Op.in]: day_nos}
+    }});
+    
+    // Adding reward if user has hit checkpoint
+    // Count number of orders by the user according to the order id 
+    const total_orders = await Order.count({ 
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('order_id')), 'order_id']],
+        where: { uuid: req.user.uuid }
+    });
+    console.log("Total orders:"+total_orders);
+
+    // Add if orders reached multiple of 5
+    if (total_orders % 5 == 0 && total_orders != 0) {
         try {
-            total_orders = await Order.count({ 
-                where: { uuid: req.user.uuid },
-                col: 'order_id',
+            const add_reward = await UserRewards.create({
+                uuid: req.user.uuid,
+                day_no: total_orders
             });
+            console.log(`Successfully added reward to user:${req.user.uuid}'s rewards list`);
         }
-        catch (TypeError) {
-            console.log(`An error occured trying to get count of user:${req.user.uuid} orders`);
-        }
-        console.log("Total orders:"+total_orders);
-        if (total_orders % 5 == 0) {
-            try {
-                const rewards = await RewardsList.findAll({where:{day_no:total_orders}});
-                const add_reward = await UserRewards.create({
-                    uuid: req.user.uuid,
-                    day_no: total_orders.day_no
-                });
-                
-                
-                console.log(`Successfully added reward to user:${req.user.uuid}'s rewards list`);
-            }
-            catch (error) {
-                console.error("An error occured");
-                console.error(error);
-            }
+        catch (error) {
+            console.error("An error occured");
+            console.error(error);
         }
     }
 

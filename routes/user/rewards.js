@@ -65,20 +65,23 @@ Router.get('', async function (req, res) {
 });
 
 Router.get('/add-reward-to-cart/:day_no', async function (req, res) {
+    // Get all food from the day
     const reward = await UserRewards.findAll({
         attributes: ['food_name'],
         where: {day_no:req.params.day_no},
         raw: true
     });
 
-    // Adding primary food
+    // Adding all reward food into cart
     let found_quant;
     let cart;
     for (var obj in reward) {
+        // Check if the item has already been added
         found_quant = await Cart.findOne({
             attributes: ['cart_item_quantity'],
-            where: {cart_item_name: obj.food_name}
+            where: {cart_item_name: reward[obj].food_name+" (Reward "+reward.day_no.ToFixed(2)+")"}
         });
+        // Adding the item into the cart
         if (found_quant == null) {
             cart = await Cart.create({
                 cart_item_name: obj.food_name+" (Reward "+reward.day_no.ToFixed(2)+")",
@@ -86,11 +89,12 @@ Router.get('/add-reward-to-cart/:day_no', async function (req, res) {
                 cart_item_quantity: 1
             });
         }
+        // Else add on to the quantity of the item
         else {
-            found_quant++;
-            cart = await Cart.update({
-                cart_item_quantity: found_quant,
-            }, { where: {cart_item_name: obj.food_name+" (Reward "+reward.day_no.ToFixed(2)+")"}});
+            cart = await Cart.increment('cart_item_quantity', {
+                where: {cart_item_name: reward[obj].food_name+" (Reward "+reward.day_no.ToFixed(2)+")" 
+                }
+            });
         }
     }
 

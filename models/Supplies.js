@@ -25,7 +25,7 @@ Supplies.init({
         allowNull: false
     },
     val_change: {
-        type: Sequelize.DECIMAL(5, 5),
+        type: Sequelize.DECIMAL(9, 5),
         allowNull: true,
         defaultValue: null
     },
@@ -34,6 +34,11 @@ Supplies.init({
         allowNull: true,
         defaultValue: null
     },
+    changes_lock: {
+        type: Sequelize.BOOLEAN(),
+        allowNull: false,
+        defaultValue: false
+    }
 }, {
         sequelize: Database.sequelize,
         modelName: 'supplies',

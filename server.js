@@ -34,8 +34,6 @@ PassportSetup.InitializePassport(Server);
 sqlDB.InitializeDB(false);
 Server.use(LocalsMiddleware);
 
-Server.use(Express.static('public/img'));
-
 Server.use('/', MainRoutes); // Main
 registerHelper.RegisterHelpers(); // Registering custom handlebars
 

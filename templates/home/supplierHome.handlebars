@@ -1,0 +1,18 @@
+<link rel="stylesheet" href="/css/home.css">
+<h1 class="display-4">Home</h1>
+<br>
+
+<h2>Welcome, {{#with user}}{{#with dataValues}}{{name}}{{/with}}{{/with}}!</h2>
+<p>What would you like to do?</p>
+
+<div id="supplies-sec" class="section-container">
+  <a style="color:black" href="#suppliesDiv" data-toggle="collapse"><h3 class="section-title bg-warning">Inventory<p class="float-right" >+</p></h3></a>
+  <div class="row collapse show section-div" id="suppliesDiv">
+      <h5 style="padding:15px;">As a supplier, you are allowed to modify the supplies list according to the stock you have and requests, 
+        as well as retrieve the orders from the staff. To add a new supply to your supply list, go to ''. </h5>
+      <a class="col-sm-3 normal-div" href="/supplier/create/supplyItem"><div>Add new supply</div></a>
+      <a class="col-sm-3 normal-div" href="/supplier/suppliesList"><div>View supplies list</div></a>
+      <a class="col-sm-3 normal-div" href="/supplier/edit/categories"><div>Edit supply categories</div></a>
+      <a class="col-sm-3 normal-div" href="/supplier/viewOrder"><div>Get next order</div></a>
+  </div>
+</div>

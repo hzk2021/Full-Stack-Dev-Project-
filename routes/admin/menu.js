@@ -87,8 +87,7 @@ Router.get('/', async function (req, res) {
         const categories = await MenuCategory.findAll({
             attributes: ['category_no', 'category_name'],
             raw: true
-        }); 
-
+        });
         console.log("items", items);   
         console.log("categories", categories);   
         return res.render('menu/menuAdmin', {
