@@ -47,8 +47,12 @@
 <body>
 	{{#ifc userRole '==' 'admin'}} 
 		{{> _admin-navbar }}
+	{{else}}
+		{{#ifc userRole '==' 'supplier'}}
+			{{> _supplier-navbar }}
 		{{else}}
-		{{> _navbar }}
+			{{> _navbar }}
+		{{/ifc}}
 	{{/ifc}}
 	<div class="container">
 		{{> _msg}}

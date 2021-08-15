@@ -1,0 +1,76 @@
+<link rel="stylesheet" href="/css/home.css">
+<h1 class="display-4">Home</h1>
+<br>
+
+<h2>Welcome, {{#with user}}{{#with dataValues}}{{name}}{{/with}}{{/with}}!</h2>
+<p>What would you like to do?</p>
+<div id="quick-access-sec" class="section-container">
+  <a style="color:black" href="#quickAccessDiv" data-toggle="collapse"><h4 class="section-title bg-light" >Quick Access<p class="float-right" >+</p></h4></a>
+  <div class="row collapse show section-div" id="quickAccessDiv">
+     <a class="quick-div col-sm-2" href="/admin/accounts/create"><div>Add account</div></a>
+     <a class="quick-div col-sm-2" href="/admin/inventory/dashboard"><div>View inventory dashboard</div></a>
+     <a class="quick-div col-sm-2" href="/admin/menu"><div>Check and edit menu</div></a>
+     <a class="quick-div col-sm-2" href="/admin/rewards/rewardsList"><div>Edit reward list</div></a>
+     <a class="quick-div col-sm-2" href="/admin/feedback/list"><div>Check feedbacks</div></a>
+  </div>
+</div>
+<br>
+
+<div id="users-sec" class="section-container">
+  <a style="color:black" href="#usersDiv" data-toggle="collapse"><h3 class="section-title bg-warning">User<p class="float-right" >+</p></h3></a>
+  <div class="row collapse show section-div" id="usersDiv">
+      <h5 style="padding:15px;">Users section allows you to add in new user with a specified permission and view list of all the users.
+          To add new account, go to 'Add new user account'. To view, update and delete user, go to 'View all users'</h5>
+      <a class="col-sm-4 normal-div" href="/admin/accounts/create"><div>Add new user account</div></a>
+      <a class="col-sm-4 normal-div" href="/admin/accounts/list"><div>View all users</div></a>
+  </div>
+</div>
+<br>
+
+
+<div id="supplies-sec" class="section-container">
+  <a style="color:black" href="#suppliesDiv" data-toggle="collapse"><h3 class="section-title bg-warning">Inventory<p class="float-right" >+</p></h3></a>
+  <div class="row collapse show section-div" id="suppliesDiv">
+      <h5 style="padding:15px;">Inventory section allows you to view the performance graph of each individual supplies based on the past 
+        4 weeks and includes a calculation algorithm for your next order. To look on visualization data analytics on orders and peformance 
+        and check on the stock used and left for each item, go to 'View inventory dashboard' .To view full list of all the supplies from vendor, 
+        go to 'View supplies list'. </h5>
+      <a class="col-sm-4 normal-div" href="/admin/inventory/dashboard"><div>View inventory dashboard</div></a>
+      <a class="col-sm-4 normal-div" href="/admin/inventory/suppliesList"><div>View supplies list</div></a>
+      <a class="col-sm-4 normal-div" href="/admin/inventory/viewOrder"><div>View and set next order</div></a>
+  </div>
+</div>
+<br>
+
+<div id="menu-sec" class="section-container">
+  <a style="color:black" href="#menuDiv" data-toggle="collapse"><h3 class="section-title bg-warning">Menu<p class="float-right">+</p></h3></a>
+  <div class="row collapse show section-div" id="menuDiv">
+      <h5 style="padding:15px;">Menu section allows you to add in new food to the menu and view the whole menu and edit it.
+          To add new item, go to 'Add New Item'. To update and delete food, go to 'View Menu'. To edit the categories for menu,
+          go to 'Edit menu categories'.</h5>
+      <a class="col-sm-4 normal-div" href="/admin/menu/create"><div>Add New Item</div></a>
+      <a class="col-sm-4 normal-div" href="/admin/menu"><div>View menu</div></a>
+      <a class="col-sm-4 normal-div" href="/admin/menu/edit/categories"><div>Edit menu categories</div></a>
+  </div>
+</div>
+<br>
+
+<div id="rewards-sec" class="section-container">
+  <a style="color:black" href="#rewardsDiv" data-toggle="collapse"><h3 class="section-title bg-warning">Rewards<p class="float-right">+</p></h3></a>
+  <div class="row collapse show section-div" id="rewardsDiv">
+      <h5 style="padding:15px;">Reward section allows you to add in rewards to day slots that has not been assigned yet or
+          change the rewards for each day slot. To perform CRUD for rewards, go to 'View Reward List'</h5>
+      <a class="col-sm-4 normal-div" href="/admin/rewards/rewardsList"><div>View Reward List</div></a>
+  </div>
+</div>
+<br>
+
+<div id="rewards-sec" class="section-container">
+  <a style="color:black" href="#feedbacksDiv" data-toggle="collapse"><h3 class="section-title bg-warning">Feedback<p class="float-right">+</p></h3></a>
+  <div class="row collapse show section-div" id="feedbacksDiv">
+      <h5 style="padding:15px;">Feedback section allows you to view the feedback and reviews posted by customers after ordering, which can be
+        show the overall performance of the system and get areas of improvements. To view all feedbacks, go to 'View all feedbacks'
+      </h5>
+      <a class="col-sm-4 normal-div" href="/admin/feedback/list"><div>View Feedbacks</div></a>
+  </div>
+</div>

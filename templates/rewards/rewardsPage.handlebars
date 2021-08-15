@@ -115,39 +115,15 @@
 </div>
 
 <script>
+    window.addEventListener('load', assignDay);
+    window.addEventListener('load', set_body_modal);
     function assignDay() {
         for (i=0; i<60; i++) {
             document.getElementsByTagName('h3')[i].innerText = "Day "+(i+1);
         }
     }
-    assignDay();
-</script>
-    <!-- Parts that users has yet to reach -->
-    <!--{% set loopDeduct = 60 - ns.daysAccounted %}
-    {% for i in range(0, loopDeduct, 5) %}
-    <tr>
     
-            <td>
-                <div class="normal locked-normal-day-cell">
-                    <h3>Day </h3>
-                </div>
-            </td>
-        {% endfor %}
-        {% set ns.daysAccounted = ns.daysAccounted + 1 %}
-        <td>
-            <div class="reward locked-reward-day-cell">
-                <h3>Day </h3>
-                <h4>{% if prizes.get(ns.daysAccounted) != None %}
-                   
-                    {% else %}
-                    (Item not specified yet)
-                    {% endif %}</h4>
-                <p>Not claimable yet</p>
-            </div>
-        </td>
-    </tr>
-    {% endfor %}
-    </tfoot>
-</table>
-</div>
-{% endblock %}
+    function set_body_modal() {
+        document.body.classList.add('modal-open');
+    }
+</script>

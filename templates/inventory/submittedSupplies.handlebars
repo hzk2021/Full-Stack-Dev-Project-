@@ -2,9 +2,17 @@
 <br>
 
 {{#if allow_change}}
+{{#ifc userRole '==' 'admin'}}
 <p>The order amount is opened for changes. Make the neccessary changes and submit before <strong>6.59pm</strong>.</p>
 {{else}}
+<p>Hold tight while the staffs are finalizing their orders... Check back at <strong>6.59pm</strong>.</p>
+{{/ifc}}
+{{else}}
+{{#ifc userRole '==' 'admin'}}
 <p>The order amount has not been set. Check back on Mondays <strong>12.00am - 6.00am</strong>.</p>
+{{else}}
+<p>Orders as of <strong>{{date_submitted}}</strong></p>
+{{/ifc}}
 {{/if}}
 <br>
 <table
@@ -12,7 +20,7 @@
   data-toggle="table"
   data-search="true"
   data-toolbar-align="left"
-  data-url="/admin/inventory/get-supplies"
+  data-url="/supplier/get-supplies"
   data-pagination= "true"
   data-side-pagination= "server"
   data-filter-control="true"
@@ -29,27 +37,31 @@
 </table>
 <a class="btn btn-secondary" href="/">Back to Home</a>
 
-<script>
-  window.addEventListener('load', setInterval(check_data_loaded, 25));
-    var startTime = new Date();
-    function check_data_loaded() {
-        var cells = document.getElementsByTagName('td');
-        var endTime = new Date();
-        if (cells.length >= 4) {
-            gen_edit_del_button();  
-        }
-    }
+{{#ifc userRole '==' 'admin'}}
+  {{#if allow_change}}
+  <script>
+    window.addEventListener('load', setInterval(check_data_loaded, 25));
+      var startTime = new Date();
+      function check_data_loaded() {
+          var cells = document.getElementsByTagName('td');
+          var endTime = new Date();
+          if (cells.length >= 4) {
+              gen_edit_del_button();  
+          }
+      }
 
-    function gen_edit_del_button() {
-        var all_cells = document.getElementsByTagName('td');
-        if (document.querySelector('.supplies-update') == null) {
-            for (i=3; i<all_cells.length; i+= 4) {
-                all_cells[i-3].width = "300px";
-                all_cells[i].innerHTML +=
-                `<a href="update/`+all_cells[i-3].innerText+`" class="btn btn-warning supplies-update float-right" style="margin-left:10px;margin-right:10px;">
-                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                </a>`
-            }
-        }
-    }   
-</script>
+      function gen_edit_del_button() {
+          var all_cells = document.getElementsByTagName('td');
+          if (document.querySelector('.supplies-update') == null) {
+              for (i=3; i<all_cells.length; i+= 4) {
+                  all_cells[i-3].width = "300px";
+                  all_cells[i].innerHTML +=
+                  `<a href="update/`+all_cells[i-3].innerText+`" class="btn btn-warning supplies-update float-right" style="margin-left:10px;margin-right:10px;">
+                      <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                  </a>`
+              }
+          }
+      }   
+  </script>
+  {{/if}}
+{{/ifc}}

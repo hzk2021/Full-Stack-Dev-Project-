@@ -3,17 +3,19 @@
 
 <h1 class="display-4">Supplies List</h1>
 <br>
+{{#ifc userRole '==' 'supplier'}}
 <div id="toolbar2">
   <a class="btn btn-warning btn-lg" href="create/supplyItem"><i class="fas fa-plus-circle" aria-hidden="true"></i> Add supply</a>
   <a class="btn btn-primary btn-lg" href="edit/categories"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Categories</a>
 </div>
+{{/ifc}}
 <table
   id="supplies-table2"
   data-toggle="table"
   data-search="true"
   data-toolbar="#toolbar2"
   data-toolbar-align="left"
-  data-url="/admin/inventory/get-supplies"
+  data-url="/supplier/get-supplies"
   data-pagination= "true"
   data-side-pagination= "server"
   data-filter-control="true"
@@ -24,11 +26,14 @@
       <th data-field="item_id" max-width="100px">Product ID</th>
       <th data-field="item_name">Product Name</th>
       <th data-field="supply_category.category_name">Category</th>
+      {{#ifc userRole '==' 'supplier'}} 
       <th>Functions</th>
+      {{/ifc}}
     </tr>
   </thead>
 </table>
 
+{{#ifc userRole '==' 'supplier'}}
 <script>
     window.addEventListener('load', setInterval(check_data_loaded, 25));
 
@@ -89,3 +94,4 @@
         }
     }   
 </script>
+{{/ifc}}

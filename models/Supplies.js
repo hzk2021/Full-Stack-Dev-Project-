@@ -34,6 +34,11 @@ Supplies.init({
         allowNull: true,
         defaultValue: null
     },
+    changes_lock: {
+        type: Sequelize.BOOLEAN(),
+        allowNull: false,
+        defaultValue: false
+    }
 }, {
         sequelize: Database.sequelize,
         modelName: 'supplies',

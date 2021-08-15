@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="/css/home.css">
+<div class="banner bn1">
+    <div class="home-titles">
+        <h1 class="display-2 title text-warning">Carl's Jr</h1>
+        <h1 class="display-2 title ">Specials</h1>
+        <br>
+        <a class="btn btn-lg btn-outline-light" href="/user/menu">Find out more</a>
+    </div>
+</div>
+<div class="banner bn2">
+    <div class="about-us">
+        <h1 class="display-4 about-title">About Us</h1>
+        <br>
+        <p>Born in California over 75 years ago, Carl Karcher had a hot dog cart and  a dream. The hot dog cart became Carl’s JR.® and
+            Carl’s JR.® has become one of the premier burger brands in the world, with over 3,800 restaurants in over 42 countries.</p>
+        <p>We focus on fresh food made with only premium quality ingredients so that you can indulge in our big, juicy burgers,
+            hand-scooped real ice-cream shakes and hand-breaded chicken. All while you sit back and relax as we bring food to your table
+            with a smile as warm as the California sunshine.</p>
+    </div>
+</div>
+<div class="banner bn3">
+    <div class="home-titles menu-bg">
+        <h1 class="display-4">We Always Promise To Serve You FRESH FOOD</h1>
+        <p>Carl’s Jr.® burger is assembled to your order, it will carry you always fresh up to your seats. We hope you’re hungry,
+            because this menu isn’t playing around.</p>
+        <br>
+        <a href="/user/menu" class="btn btn-warning">Check out our menu</a>
+    </div>
+</div>
+<div class="banner bn4">
+    <div class="home-titles menu-bg">
+        <h1 class="display-4" style="font-weight:bold;">Get Free Attractive Prizes!</h1>
+        <p>Carl's Jr gives you free dishes, and we won't hesitate to give you more free food as you order more from us. Sign up for
+            membership to start earning yourself some free dishes the next time you buy from us! You have our word!</p>
+        <br>
+        <div class="row rewards-btn">
+            {{#ifc userRole '==' 'user'}}
+            <a class="btn btn-primary col-xs-6" style="position:relative;left:10%;" href="/user/rewards">View My Rewards</a>
+            {{else}}
+            <a class="btn btn-outline-light col-xs-6" href="/login">Login OR Sign Up For Membership</a>
+            {{/ifc}}
+        </div>
+    </div>
+</div>
+<div>
+    <img id="feedback-img" src="/img/feedback-bg.jpg">
+    <div class="float-right" style="width:40%;margin-top:70px;">
+        <h1 class="display-4">Drop Us A Feedback</h1>
+        <br>
+        <p>We love feedback! Your feedback are valuable to us as it allow us to learn of areas where customers are satisfied with
+        and areas that we needed improvement on. Don't hesitate to say out whatever is in your head, send us a feedback now!</p>
+        {{#ifc userRole '==' 'user'}}
+        <a class="btn btn-primary" href="/createPost">Post A Feedback</a>
+        {{else}}
+        <a class="btn btn-outline-dark col-xs-6" href="/login">Login OR Sign Up For Membership</a>
+        {{/ifc}}
+    </div>
+</div>
