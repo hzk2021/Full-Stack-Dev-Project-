@@ -20,10 +20,6 @@ Menu.init({
         type: Sequelize.DECIMAL(10,2),
         allowNull: false
     },
-    item_course: {
-        type: Sequelize.STRING(64),
-        allowNull: false
-    },
     item_description: {
         type: Sequelize.STRING(128),
         allowNull: false

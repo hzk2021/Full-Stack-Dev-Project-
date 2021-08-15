@@ -4,10 +4,10 @@
 
     <div>
         <form method="POST" action="">
-            <h3>Categories (Supplies)</h3>
+            <h3>Categories (Menu)</h3>
             <p class="text-danger"><i class="fas fa-exclamation-triangle"></i> Avoid deleting registered categories as much as possible</p>
             <br>
-            <div id="supplyCategoriesForm">
+            <div id="menuCategoriesForm">
                 {{#if categories}}
                 {{#each categories}}
                 <div class="form-group input-group" id="inputGroup{{ this.category_no }}">
@@ -70,7 +70,7 @@
             </div>
             <button onclick="createInput(); return false;" id="createCategories" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add more</button>
             <div class="row">
-                <div class="col-md-6"><a href="/admin/inventory/suppliesList" class="btn btn-secondary" style="margin-top: 20px;width:118px;">Go Back</a></div>
+                <div class="col-md-6"><a href="/admin/menu" class="btn btn-secondary" style="margin-top: 20px;width:118px;">Go Back</a></div>
                 <div class="col-md-6"><br><input type="submit" value="Save changes" class="btn btn-success pull-right"></div>
             </div>
         </form>
@@ -95,7 +95,7 @@
         if (deletedInputs.length != 0) {
             num = deletedInputs[0];
         }
-        var inputsDiv = document.getElementById('supplyCategoriesForm');
+        var inputsDiv = document.getElementById('menuCategoriesForm');
 
         var newDiv = document.createElement('div');
         newDiv.className = "form-group input-group";

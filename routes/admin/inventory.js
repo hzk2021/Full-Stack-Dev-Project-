@@ -36,6 +36,8 @@ Router.get('/create/supplyItem', async function(req, res) {
 
 // RESPONSE routes
 Router.post('/create/supplyItem', async function(req, res) {
+    console.log(req.body)
+    console.log(req.body.type)
     var inputs_counter = 0
 
     // Check if item already existed
@@ -79,7 +81,7 @@ Router.post('/create/supplyItem', async function(req, res) {
 
 Router.get('/edit/categories', async function(req, res) {
     try {
-        console.log("Edit categories page accessed");
+        console.log("Edit supply categories page accessed");
         const categories = await SupplyCategory.findAll({ raw: true });
         const highest = await SupplyCategory.max('category_no');
         return res.render('inventory/manageCategories', {
