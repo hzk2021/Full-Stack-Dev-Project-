@@ -5,7 +5,8 @@ const Hash = require('hash.js');
 
 const UserRole = {
     Admin: "admin",
-    User: "user"
+    User: "user",
+    Supplier: "supplier"
 };
 
 class User extends Model{
@@ -37,7 +38,8 @@ User.init({
         allowNull: false
     },
     role: {
-        type: Sequelize.ENUM(UserRole.Admin, UserRole.User),
+        type: Sequelize.ENUM,
+        values: [UserRole.Admin, UserRole.User, UserRole.Supplier],
         allowNull: false,
         defaultValue: UserRole.User
     },

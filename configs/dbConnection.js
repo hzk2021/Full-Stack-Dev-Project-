@@ -25,6 +25,7 @@ const InitializeDB = async function(drop){
     UserModel.User.hasMany(Entry);
     SupplyCategory.hasMany(Supplies, {foreignKey: 'category_no'});
     Menu.belongsTo(MenuCategory, {foreignKey: 'category_no'});
+    Entry.sync();
     // Havent convert to fk for menu cart order
     // UserModel.User.hasMany(Cart, {foreignKey: 'cart_user_id'});
     
