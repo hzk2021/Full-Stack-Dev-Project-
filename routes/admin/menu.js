@@ -1,13 +1,31 @@
 const Express = require('express');
 const Router = Express.Router();
+const { Sequelize, Op } = require('sequelize');
 const {Menu} = require('../../models/Menu');
+const {MenuCategory} = require('../../models/MenuCategory');
 const { arrange_supplies_menu_checkbox } = require('../../utilities/functions');
+
+// Menu Items ---------------------------------------------------------------------------------------------------
 
 //Create Menu items
 Router.get('/create', async function(req, res){
-    // Inventory: Get all supplies in the right format
-    const checkboxes_list = await arrange_supplies_menu_checkbox();
-	res.render('menu/createMenu', { checkboxes_list: checkboxes_list});
+    try {
+        // Inventory: Get all supplies in the right format
+        const checkboxes_list = await arrange_supplies_menu_checkbox();
+
+        const categories = await MenuCategory.findAll({
+            attributes:['category_no', 'category_name'],
+            raw: true
+        });
+        res.render('menu/createMenu', { 
+            checkboxes_list: checkboxes_list,
+            categories:categories
+        });
+    }
+    catch (error) {
+        console.log("Error fetching supplies or menu categories");
+        console.log(error);
+    }
 });
 
 Router.post('/create', async function(req, res){
@@ -40,14 +58,12 @@ Router.post('/create', async function(req, res){
             const createMenu = await Menu.create({
                 item_name: req.body.Name,
                 item_price: req.body.Price,
-                item_course: req.body.Course,
                 item_description: req.body.Description,
                 item_ingredients: listIngredients.toString(),
+                category_no: req.body.type
             });
             console.log("Successfully created new menu object");
         }
-        
-
     }
 
     catch (error) {
@@ -64,12 +80,20 @@ Router.get('/', async function (req, res) {
     try {
         // Get all menu items
         const items = await Menu.findAll({
-            attributes: ['item_name', 'item_price', 'item_course', 'item_description', 'item_ingredients'],
+            attributes: ['item_name', 'item_price', 'category_no', 'item_description', 'item_ingredients'],
             raw: true
         });
-        console.log(items);        
+        // Get all menu categories
+        const categories = await MenuCategory.findAll({
+            attributes: ['category_no', 'category_name'],
+            raw: true
+        }); 
+
+        console.log("items", items);   
+        console.log("categories", categories);   
         return res.render('menu/menuAdmin', {
-            items: items
+            items: items,
+            categories:categories
         });
     }
 
@@ -87,6 +111,10 @@ Router.get('/update/:item_name', async function(req, res){
     console.log("Update admin menu page accessed");
 	try {
         const menu = await Menu.findOne({ where: { item_name: req.params.item_name } })
+        const categories = await MenuCategory.findAll({
+            attributes: ['category_no', 'category_name'],
+            raw: true
+        }); 
 
         // Inventory: Get all supplies in the right format
         const checkboxes_list = await arrange_supplies_menu_checkbox();
@@ -97,11 +125,11 @@ Router.get('/update/:item_name', async function(req, res){
         return res.render('menu/updateMenu', {
             item_name: req.params.item_name,
             item_price: menu.item_price,
-            item_course: menu.item_course,
             item_description: menu.item_description,
             item_ingredients_list: listIngredients, 
             uuid: menu.uuid,
-            checkboxes_list: checkboxes_list
+            checkboxes_list: checkboxes_list,
+            categories: categories,
             
         })
     }
@@ -139,9 +167,9 @@ Router.post('/update/:item_name', async function (req, res) {
             const updateMenu = await Menu.update({
                 item_name: req.body.item_name,
                 item_price: req.body.item_price,
-                item_course: req.body.item_course,
                 item_description: req.body.item_description,
                 item_ingredients: listIngredients.toString(),
+                category_no: req.body.category_no,
             }, { where:{ uuid: req.body.uuid}});
             
             console.log("Successfully updated menu object");
@@ -192,5 +220,72 @@ Router.post('/delete/:item_name', async function (req, res) {
 
     return res.redirect("/admin/menu");
 });
+
+// Menu Categories ---------------------------------------------------------------------------------------------------
+
+Router.get('/edit/categories', async function(req, res) {
+    try {
+        console.log("Edit menu categories page accessed");
+        const categories = await MenuCategory.findAll({ raw: true });
+        const highest = await MenuCategory.max('category_no');
+        return res.render('menu/manageCategories', {
+            categories:categories,
+            length: highest
+        });
+    }
+    catch {
+        console.error("Error retrieving all categories");
+    }
+});
+
+Router.post('/edit/categories', async function(req, res) {
+    console.log(req.body);
+    try {
+        console.log('POST edit categories');
+        // Get the current list of categories
+        const category_max = await MenuCategory.max('category_no');
+        const category_amt = await MenuCategory.findAndCountAll({attributes: ['category_no'], raw:true});
+        console.log(category_amt);
+
+        // Create/Update existing categories
+        for (var i in req.body) {
+            var inp = req.body[i];
+            // While inputs parsed less than the total in db, do update
+            if (i <= category_max) {
+                const updateCat = await MenuCategory.update({
+                    category_name: inp
+                }, { where: {category_no: i}});
+            }
+            // Inputs parsed is more than db, do create
+            else {
+                const addCat = await MenuCategory.create({
+                    category_no: i,
+                    category_name: inp
+                });
+            }
+        }
+        // Delete categories (If all inputs is less than db)
+        if (Object.keys(req.body).length < category_amt.count) {
+            var all_inp = Object.keys(req.body);
+            var all_cat = category_amt.rows.map(x => x.category_no.toString());
+            console.log(all_inp);
+            console.log(all_cat);
+            // Identifying keys that do not exist anymore
+            for (var cat in all_cat) {
+                if (!all_inp.includes(all_cat[cat])) {
+                    const delCat = await MenuCategory.destroy({
+                        where: { category_no: all_cat[cat] }
+                    });
+                }
+            }
+        }
+
+        return res.redirect('/admin/menu');
+    }
+    catch (error) {
+        console.log('Error in insert/update/delete items from db');
+        console.error(error);
+    }
+})
 
 module.exports = Router;
