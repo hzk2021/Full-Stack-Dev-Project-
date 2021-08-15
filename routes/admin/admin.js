@@ -8,6 +8,7 @@ const Order = require("./rewards");
 const Accounts = require("./accounts");
 const Feedback = require("./feedback");
 const Entry = require("./entry");
+const gDashboard = require("./gDashboard");
 
 Router.use('/rewards', Rewards);
 Router.use('/inventory', Inventory);
@@ -16,5 +17,6 @@ Router.use('/order', Order);
 Router.use('/accounts', Accounts);
 Router.use('/feedback', Feedback);
 Router.use('/entry', Entry);
+Router.use('/dashboard', gDashboard);
 
 module.exports = Router;
