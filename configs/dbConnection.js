@@ -22,7 +22,6 @@ const InitializeDB = async function(drop){
     SupplyCategory.hasMany(Supplies, {foreignKey: 'category_no'});
     Supplies.belongsTo(SupplyCategory, {foreignKey: 'category_no'});
     Supplies.hasMany(SupplyPerformance, {foreignKey: 'item_id'});
-    UserModel.User.hasMany(Entry);
     SupplyCategory.hasMany(Supplies, {foreignKey: 'category_no'});
     Menu.belongsTo(MenuCategory, {foreignKey: 'category_no'});
     Entry.sync();
