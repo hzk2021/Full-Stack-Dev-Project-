@@ -10,33 +10,15 @@
     <div class="form-group" style="width:40%;">
         <label for="type">Category</label>
         <select class="form-control" name="type" id="chooseCategory" required>
-            <option value="disabled-option" disabled selected value>- Select category -</option>
+            <option value="" disabled selected hidden>- Select category -</option>
             {{#each categories}}
             <option class="cat-option" value="{{this.category_no}}">{{this.category_name}}</option>
             {{/each}}
         </select>
     </div>
-    <!-- Checkboxes for selecting food on the menu that needs the new supply --> 
-    <label>Food required</label>
-    <div>
-        <table>
-        {{#each food_list}}
-            <p><strong>{{ @key }}</strong></p>
-            {{#each this}}
-            <tr>
-                {{#each this}}
-                <td>
-                    <label><input type="checkbox" name="food_{{this.item_course}}" value="{{this.item_name}}"> {{this.item_name}}</label>
-                </td>
-                {{/each}}  
-            </tr>
-            {{/each}}
-        {{/each}}
-        </table>
-    </div>
     <br>
     <input type="submit" value="Add to supplies" class="btn btn-success">
-    <a href="/retrieveSupplies" class="btn btn-primary" style="margin-left:1%;">Go to dashboard</a>
+    <a href="/admin/inventory/suppliesList" class="btn btn-primary" style="margin-left:1%;">Back to list</a>
 </form>
 <br>
 
@@ -51,3 +33,4 @@
     {{/if}}
 </div>
 </div>
+ 

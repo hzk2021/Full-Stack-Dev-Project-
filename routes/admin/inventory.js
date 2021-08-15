@@ -36,6 +36,8 @@ Router.get('/create/supplyItem', async function(req, res) {
 
 // RESPONSE routes
 Router.post('/create/supplyItem', async function(req, res) {
+    console.log(req.body)
+    console.log(req.body.type)
     var inputs_counter = 0
 
     // Check if item already existed
@@ -79,7 +81,7 @@ Router.post('/create/supplyItem', async function(req, res) {
 
 Router.get('/edit/categories', async function(req, res) {
     try {
-        console.log("Edit categories page accessed");
+        console.log("Edit supply categories page accessed");
         const categories = await SupplyCategory.findAll({ raw: true });
         const highest = await SupplyCategory.max('category_no');
         return res.render('inventory/manageCategories', {
@@ -292,45 +294,33 @@ Router.get('/viewSuppliesOrder', async function(req, res) {
 
 Router.get('/get-data', async function(req, res) {
     console.log('Retrieving data for supplies table');
-    const getPage = parseInt(req.query.page);
-    const getSize = parseInt(req.query.size);
     const filterSearch = req.query.search;
-
-    let page = 0;
-    let size = 10;
-    if (!Number.isNaN(getPage) && getPage > 0) {
-        page = getPage;
-    }
-    if (!Number.isNaN(getPage) && 0 < getPage < 10) {
-        size = getSize;
-    }
-
-    //const results;
     try {
         const list_data = await Supplies.findAll({
-            include: [{
+            include:[{
                 model: SupplyCategory,
-                attributes: ['category_name'],
+                attributes: ['category_name']
             },
             {
                 model: SupplyPerformance,
                 attributes: ['stock_used', 'current_stock_lvl'],
-                where: { week_no: 1 }
             }],
             attributes:['item_name'],
+            order: [['item_name', 'DESC']],
+            limit: parseInt(req.query.limit),
+            offset: parseInt(req.query.offset),
             where: {
+                "$supply_performances.week_no$": 1,
                 [Op.or]: {
-                    "item_name": { [Op.substring]: filterSearch},
-                    "$supply_performances.stock_used$": { [Op.substring]: filterSearch}, 
+                    item_name: { [Op.substring]: filterSearch},
+                    "$supply_performances.stock_used$": { [Op.substring]: filterSearch},
                     "$supply_performances.current_stock_lvl$": { [Op.substring]: filterSearch},
-                    "$supply_category.category_name$": { [Op.substring]: filterSearch},
+                    "$supply_category.category_name$": { [Op.substring]: filterSearch}
                 }
             },
-            order: [['item_name', 'DESC']],
-            //limit: size,
-            //offset: page*size,
+            subQuery: false,
             raw: true
-        });
+        })
         console.log(list_data);
 
         return res.json({
@@ -349,21 +339,22 @@ Router.get('/get-supplies', async function(req, res) {
     const filterSearch = req.query.search;
     try {
         const list_data = await Supplies.findAll({
-            include: [
-                {
-                    model: SupplyCategory,
-                    attributes: ['category_name']
-                },
-            ],
+            include: [{
+                model: SupplyCategory,
+                attributes: ['category_name']
+            }],
             attributes: ['item_name', 'item_id', 'next_value'],
+            limit: parseInt(req.query.limit),
+            offset: parseInt(req.query.offset),
             where: {
                 [Op.or]: {
-                    "item_name": { [Op.substring]: filterSearch},
-                    "item_id": { [Op.substring]: filterSearch}, 
-                    "next_value": { [Op.substring]: filterSearch},
+                    item_name: { [Op.substring]: filterSearch},
+                    item_id: { [Op.substring]: filterSearch}, 
+                    next_value: { [Op.substring]: filterSearch}, 
                     "$supply_category.category_name$": { [Op.substring]: filterSearch}
                 }
             },
+            subQuery: false,
             raw: true
         });
 
@@ -384,13 +375,27 @@ Router.get('/debug-set-random', async function(req, res) {
         var generated_limit_used = Math.round( ((Math.random()*5.2)+4.8)*1000 );
         console.log(generated_limit_used);
         // Generate a range for the stock level left
+        var submitted_date = new Date();
         for (i=1; i<=5; i++) {
+            submitted_date.setDate(submitted_date.getDate() - 7);
             var stock_used = Math.floor(Math.random() * 2000) + generated_limit_used;
             var stock_left = Math.floor(Math.random() * 1500) + 10;
-            const updateWeek = await SupplyPerformance.update({
-                stock_used: stock_used,
-                current_stock_lvl: stock_left
-            }, { where: {week_no: i, item_id: all_items[item].item_id} });
+            try {
+                const createWeek = await SupplyPerformance.create({
+                    item_id: all_items[item].item_id,
+                    stock_used: stock_used,
+                    current_stock_lvl: stock_left,
+                    date_submitted: submitted_date.toISOString(),
+                    week_no: i
+                });
+            }
+            catch (error) {
+                const updateWeek = await SupplyPerformance.update({
+                    stock_used: stock_used,
+                    current_stock_lvl: stock_left,
+                    date_submitted: submitted_date.toISOString()
+                }, { where: {week_no: i, item_id: all_items[item].item_id} });
+            }
         }
     }
     return res.redirect('/admin/inventory/dashboard');
@@ -399,7 +404,7 @@ Router.get('/debug-set-random', async function(req, res) {
 Router.get('/debug-cal-val', async function(req, res) {
     set_predicted_value();
     return res.redirect('/');
-})
+});
 
 // Calculate predicted value and store them inside column next_value
 async function set_predicted_value() {
@@ -408,10 +413,11 @@ async function set_predicted_value() {
         var change_val = 0
         const weightages = [0.5, 0.3, 0.15, 0.05]
         for (w=0; w< weeks.length-1; w++) {
-            change_val += (weeks[w+1] - weeks[w]) * weightages[w]
+            change_val += (weeks[w] - weeks[w+1]) * weightages[w]
         }
-        info.changed_value = Math.round(change_val + change_val*0.01);
-        info.changed_percentage = ((weeks[1]-weeks[0]/ weeks[0]) * 100).toFixed(5);
+        info.changed_value = Math.round(change_val) + weeks[0] + change_val*0.01;
+        console.log(weeks[0]-weeks[1]);
+        info.changed_percentage = ( ((weeks[0]-weeks[1])/ weeks[0]) * 100).toFixed(5);
         if (info.changed_percentage == 'NaN') {
             info.changed_percentage = 0;
         }
@@ -454,7 +460,9 @@ async function finalize_quantity() {
     // Shifting all items week up by 1 (Stores up to 5 weeks only)
     try {
         const remove_highest = await SupplyPerformance.destroy({ where: { week_no: 5 } });
-        const up_week_all = await SupplyPerformance.increment('week_no', { where: {} });
+        for (i=4; i>0; i-=1) {
+            const up_week_all = await SupplyPerformance.increment('week_no', { where: { week_no: i} });
+        }
     }
     catch (error) {
         console.error("An error occurred trying to shift all items week up a level");
@@ -465,7 +473,6 @@ async function finalize_quantity() {
     const all_items = await Supplies.findAll({
         attributes: ['item_id', 'item_name'],
     });
-    console.log(all_items);
     
     for (var item in all_items) {
         // Initialise new week items with no stock value (Stock level set at 6.59pm - Orders made between uses week 2 stock level) 
@@ -482,18 +489,23 @@ async function set_quantity() {
     });
     try {
         for (var item in set_orders) {
-            const set_stock_lvl = await SupplyPerformance.update({
-                current_stock_lvl: set_orders[item].next_value
-            }, { where: { 
+            const set_stock_lvl = await SupplyPerformance.increment('current_stock_lvl', {
+                by: set_orders[item].next_value,
+                where: {
                     item_id: set_orders[item].item_id, 
                     week_no: 1 
-                } 
+                }
             });
         }
         // Reset next_value to indicate no changes to be allowed
         const set_orders_null = await Supplies.update({
             next_value: null,
         }, {where: {}});
+        // Set date submitted
+        const current_time = new Date();
+        const date_submitted = await SupplyPerformance.update({
+            date_submitted: current_time.toISOString()
+        }, {where: { week_no: 1 }});
     }
     catch (error) {
         console.error("An error occurred trying to update values");
@@ -504,12 +516,12 @@ async function set_quantity() {
 
 Router.get('/debug-finalize-supplies-values', async function(req, res) {
     finalize_quantity();
-    return res.redirect('/admin/inventory/dashboard');
+    return res.redirect('/');
 });
 
 Router.get('/debug-set-supplies-values', async function(req, res) {
     set_quantity();
-    return res.redirect('/admin/inventory/dashboard');
+    return res.redirect('/');
 });
 
 // Setting final value of supplies order and resetting current week every Monday 12.00am

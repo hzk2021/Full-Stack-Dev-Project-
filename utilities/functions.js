@@ -130,6 +130,11 @@ const arrange_supplies_menu_checkbox = async function () {
 const arrange_supplies_by_food_weekNo = function (supplies) {
     let items_list = [];
     let item_dict = {};
+    if (supplies.length == 0) {
+        items_list.push(item_dict);
+        return items_list;
+    }
+
     item_dict.name = supplies[0].item_name;
     item_dict.id = supplies[0].item_id;
     item_dict.values = [supplies[0]['supply_performances.stock_used']];
@@ -139,7 +144,7 @@ const arrange_supplies_by_food_weekNo = function (supplies) {
         items_list.push(item_dict);
     }
     else {
-        for (i=0; i<supplies.length; i++) {
+        for (i=1; i<supplies.length; i++) {
             if (supplies[i].item_id == check_id) {
                 item_dict.values.push(supplies[i]['supply_performances.stock_used']);
                 if (i == supplies.length-1) {

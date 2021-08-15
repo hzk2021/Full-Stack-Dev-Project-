@@ -24,7 +24,6 @@
       <th data-field="item_id" max-width="100px">Product ID</th>
       <th data-field="item_name">Product Name</th>
       <th data-field="supply_category.category_name">Category</th>
-      <th data-field="supply_performances.next_value">Predicted Order</th>
       <th>Functions</th>
     </tr>
   </thead>
@@ -36,8 +35,8 @@
     function check_data_loaded() {
         var cells = document.getElementsByTagName('td');
         try {
-            var checkButtons = cells[4].innerHTML;
-            if (cells.length >= 4 && checkButtons == "-") {
+            var checkButtons = cells[3].innerHTML;
+            if (cells.length >= 3 && checkButtons == "-") {
                 gen_edit_del_button();  
             }
         }
@@ -49,20 +48,20 @@
 
     function gen_edit_del_button() {
         var all_cells = document.getElementsByTagName('td');
-        for (i=4; i<all_cells.length; i+= 5) {
-            all_cells[i-4].width = "300px";
+        for (i=3; i<all_cells.length; i+= 4) {
+            all_cells[i-3].width = "300px";
             all_cells[i].innerHTML =
             `<div class="row">
-            &nbsp&nbsp<a href="update/`+all_cells[i-4].innerText+`" class="btn btn-warning col-xs-6 supplies-update" style="margin-left:10px;margin-right:10px;">
+            &nbsp&nbsp<a href="update/`+all_cells[i-3].innerText+`" class="btn btn-warning col-xs-6 supplies-update" style="margin-left:10px;margin-right:10px;">
                 <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
             </a>
-            <form action="suppliesList/`+all_cells[i-4].innerText+`" method="POST">
-                <button type="button" class="btn btn-danger col-xs-6" data-toggle="modal" data-target="#modal_`+all_cells[i-4].innerText+`">
+            <form action="suppliesList/`+all_cells[i-3].innerText+`" method="POST">
+                <button type="button" class="btn btn-danger col-xs-6" data-toggle="modal" data-target="#modal_`+all_cells[i-3].innerText+`">
                     <i class="fa fa-trash" aria-hidden="true"></i>
                 </button>
 
                 <!-- The Modal -->
-                <div class="modal" id="modal_`+all_cells[i-4].innerText+`">
+                <div class="modal" id="modal_`+all_cells[i-3].innerText+`">
                 <div class="modal-dialog">
                     <div class="modal-content">
 
