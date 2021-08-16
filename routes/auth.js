@@ -5,6 +5,113 @@ const Hash = require('hash.js');
 const Passport = require('passport');
 const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../utilities/account_checker');
 const SendEmail = require('../utilities/send_email');
+const crypto = require('crypto');
+const { promisify } = require('util');
+const { Op } = require('sequelize');
+
+Router.get('/forgot', async function (req,res){
+    return res.render('authentication/forgot', {
+        success_msg: req.flash('success_msg'),
+        error: req.flash('error'),
+        errors: req.flash('errors'),
+    });
+});
+
+Router.post('/forgot', async function (req,res,next) {
+    const token = (await promisify(crypto.randomBytes)(20)).toString('hex');
+    const user = await User.findOne({
+        where: {
+            email: req.body.email,
+            eActive: {
+                [Op.eq]: 1
+            }
+        }
+    });
+
+    if (!user) {
+        req.flash('error', 'No account with that email address exists or it is not verified.')
+        return res.redirect('/auth/forgot')
+    }
+
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hr
+    await user.save();
+
+    SendEmail(user.email, 'Password Reset (Carl Jr)', `You are receiving this because you (or someone else have requested for a password reset for your account.
+        Please click on the following link, or paste this into your browser to complete the process:
+        http://${req.headers.host}/auth/reset/${token} 
+        Please ignore this email if you did not request this.`)
+
+    req.flash('success_msg', `An email has been sent to ${user.email} with further instructions.`)
+    return res.redirect('/auth/forgot');
+    
+});
+
+Router.get('/reset/:token', async function (req,res){
+    const user = await User.findOne({
+        where: {
+            resetPasswordExpires: {
+                [Op.gt]: Date.now()
+            },
+            resetPasswordToken: req.params.token
+        }
+    });
+
+    if (!user){
+        req.flash('error', 'Password reset token is invalid or has expired.');
+        return res.redirect('/auth/forgot');
+    }
+
+    return res.render('authentication/reset', {
+        
+    })
+});
+
+Router.post('/reset/:token', async function(req,res){
+    let errors = [];
+    
+    try {
+        if (!regexPassword.test(req.body.password)){
+            errors.push({text: "Password does not meet the minimum requirement. Please have at least 8 characters, 1 uppercase, 1 lowercase, and 1 number!"});
+        }
+        else if (req.body.password !== req.body.password2){
+            errors.push({text: "Passwords do not match"});
+        }
+
+        if (errors.length > 0){
+            throw new Error("There are errors found!");
+        }
+    } catch(error) {
+        console.error("There are errors validating the reset password form body");
+        console.error(error);
+        req.flash('errors', errors)
+        return res.redirect(`/auth/reset/${req.params.token}`);
+    }
+
+    const user = await User.findOne({
+        where: {
+            resetPasswordExpires: {
+                [Op.gt]: Date.now()
+            },
+            resetPasswordToken: req.params.token
+        }
+    });
+
+    if (!user){
+        req.flash('error', 'Password reset token is invalid or has expired.');
+        return res.redirect('/auth/forgot');
+    }
+
+    user.password = Hash.sha256().update(req.body.password).digest("hex");
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+
+    await user.save();
+
+    SendEmail(user.email, 'You password has been changed', `Hello ${user.name}, this is a confirmation to let you know that the password for your account was recently changed.`);
+    req.flash('success_msg', 'Success! Your password has been changed!!');
+    return res.redirect('/auth/login');
+});
 
 /* GET Login */
 Router.get('/login', isNotLoggedIn, (req,res) => {
@@ -124,7 +231,8 @@ async function register_process(req,res){
             password: Hash.sha256().update(req.body.password).digest("hex")
         });
         req.flash('success_msg', "Account has been created!\n A verification link has been sent to your email");
-        SendEmail(user.email, 'Email Verification (CarlJr)', '' , `Hello ${user.name}, please click on this link to verify your account. <a href="http://127.0.0.1:5000/auth/verify/${user.uuid}">Click To Verify</a>`);
+        SendEmail(user.email, 'Email Verification (CarlJr)', `Hello ${user.name}, please click on this link to verify your account:
+            http://${req.headers.host}/auth/verify/${user.uuid}`)
         return res.redirect('/auth/login');
     } catch(error){
         console.error(`Failed to create a new user: ${req.body.email}`);
