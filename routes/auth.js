@@ -4,6 +4,7 @@ const {User, UserRole} = require('../models/User');
 const Hash = require('hash.js');
 const Passport = require('passport');
 const {isLoggedIn, isNotLoggedIn, isAdmin} = require('../utilities/account_checker');
+const SendEmail = require('../utilities/send_email');
 
 /* GET Login */
 Router.get('/login', isNotLoggedIn, (req,res) => {
@@ -119,9 +120,11 @@ async function register_process(req,res){
         const user = await User.create({
             name: req.body.name, 
             email: req.body.email,
+            eActive: false,
             password: Hash.sha256().update(req.body.password).digest("hex")
         });
-        req.flash('success_msg', "Account has been created!");
+        req.flash('success_msg', "Account has been created!\n A verification link has been sent to your email");
+        SendEmail(user.email, 'Email Verification (CarlJr)', '' , `Hello ${user.name}, please click on this link to verify your account. <a href="http://127.0.0.1:5000/auth/verify/${user.uuid}">Click To Verify</a>`);
         return res.redirect('/auth/login');
     } catch(error){
         console.error(`Failed to create a new user: ${req.body.email}`);
@@ -129,5 +132,36 @@ async function register_process(req,res){
         return res.status(500).end();
     }
 }
+
+Router.get('/verify/:uuid', isNotLoggedIn, async function(req,res){
+    try {
+        const user = await User.findByPk(req.params.uuid);
+        if (user){
+            if (user.eActive == 0){
+                User.update({
+                    eActive: 1
+                },{
+                    where: {
+                        uuid: user.uuid
+                    }
+                })
+                return res.render('verify/verified', {  
+                    success_msg: req.flash('success_msg'),
+                    error: req.flash('error'),
+                    errors: req.flash('errors'),
+                    'title': "Account verified",
+                    'userName': user.name
+                })
+
+            }
+            else {
+                // already validated so ignore the URL
+            }
+        }
+
+    } catch (err){
+
+    }
+});
 
 module.exports = Router;

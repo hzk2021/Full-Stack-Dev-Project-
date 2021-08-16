@@ -20,10 +20,20 @@ Router.get('/', (req,res) => {
         else if (req.user.role == "supplier") {
             return res.render('home/supplierHome', {});
         }
-        return res.render('home/userHome', {});
+        return res.render('home/userHome', {
+            success_msg: req.flash('success_msg'),
+            error: req.flash('error'),
+            errors: req.flash('errors'),
+            'title': "Home"
+        });
     }
     catch (error) {
-        return res.render('home/userHome', {});
+        return res.render('home/userHome', {
+            success_msg: req.flash('success_msg'),
+            error: req.flash('error'),
+            errors: req.flash('errors'),
+            'title': "Home"
+        });
     }
 });
 

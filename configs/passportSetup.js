@@ -22,13 +22,16 @@ const LocalStrategy = new Strategy({usernameField: 'email', passwordField: 'pass
         
         if (!user){
             throw new Error("Invalid user/password");
-        } else{
+        } else if (user.eActive != true){
+            throw new Error("Unverified Email");
+        }
+        else{
            return done(null,user); 
         }
 
     } catch (error){
         console.error(`Failed to authenticate ${email}`);
-        return done(null, false, {message: "Invalid login credentials"});
+        return done(null, false, {message: "Invalid login credentials or Unverified email"});
     }
 
 });
