@@ -11,6 +11,7 @@ const {MenuCategory} = require('../models/MenuCategory');
 const { SupplyCategory } = require('../models/SupplyCategory');
 const { SupplyPerformance } = require('../models/SupplyPerformance');
 const Entry = require('../models/Entry');
+const Address = require('../models/Address')
 
 /* Initialize Database using ORM(Sequelize) */
 const InitializeDB = async function(drop){
@@ -25,6 +26,8 @@ const InitializeDB = async function(drop){
     SupplyCategory.hasMany(Supplies, {foreignKey: 'category_no'});
     Menu.belongsTo(MenuCategory, {foreignKey: 'category_no'});
     Entry.sync();
+    UserModel.User.hasMany(Address, {foreignKey: 'userUUID'});
+    
     // Havent convert to fk for menu cart order
     // UserModel.User.hasMany(Cart, {foreignKey: 'cart_user_id'});
     

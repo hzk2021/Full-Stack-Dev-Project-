@@ -1,0 +1,33 @@
+<style>
+    .addrSpacer {
+        display: inline-block;
+        width: 20%;
+    }
+</style>
+
+<div class="container">
+    <div>
+        <h1>Address Book</h1>
+        <a class="btn btn-primary" href="/user/address/create">
+            Add New Address
+        </a>
+    </div>
+    <br>
+    {{#if addresses}}
+        {{#each addresses}}
+            <br>
+            <div style="border:2px solid #007bff;">
+                <h6 class="addrSpacer">Country: {{this.Country}}</h6>
+                <h6 class="addrSpacer">Address: {{this.Address}}</h6>
+                <h6 class="addrSpacer">City: {{this.City}}</h6>
+                <h6 class="addrSpacer">State: {{this.State}}</h6>
+                <h6 class="addrSpacer">Postal Code: {{this.PostalCode}}</h6>
+                <h6 class="addrSpacer">Phone Number: {{this.PhoneNo}}</h6>
+                <br>
+            </div>
+        {{/each}}
+    {{else}}
+        <div>Uh Oh! You don't have any addresses saved yet.</div>
+    {{/if}}
+
+</div>
