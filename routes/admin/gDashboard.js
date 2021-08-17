@@ -195,29 +195,28 @@ async function getOrderDBData(){
     let order_amounts = {}
 
     let order_dates = {}
-    let order_dateOnly = []
-    let order_revenueOnly = []
 
     try{
         const orders = await Order.findAll({
             order: sequelize.literal('order_dateTime ASC')
         });
+
         for (let i = 0; i < orders.length; i++) {
             if (order_amounts[orders[i].order_id] == undefined){
                 order_amounts[orders[i].order_id] = 0;
             }
 
-            if (order_dates[orders[i].order_dateTime] == undefined){
-                order_dates[orders[i].order_dateTime] = 0;
+            if (order_dates[String(orders[i].order_dateTime).substring(0, 15)] == undefined){
+                order_dates[String(orders[i].order_dateTime).substring(0, 15)] = 0;
             }
-
+            
             order_amounts[orders[i].order_id] = order_amounts[orders[i].order_id] + orders[i].order_item_price * orders[i].order_item_quantity;
             order_ids.push(orders[i].order_id);
-
-            order_dates[orders[i].order_dateTime] += orders[i].order_item_price * orders[i].order_item_quantity;
-
+            
+            order_dates[String(orders[i].order_dateTime).substring(0, 15)] += orders[i].order_item_price * orders[i].order_item_quantity;
         }
         
+        console.log(order_dates);
         unique_order_ids = order_ids.filter((item, i, ar) => ar.indexOf(item) === i);
 
         for (let i = 0; i < unique_order_ids.length; i++) {
@@ -225,19 +224,16 @@ async function getOrderDBData(){
             //order_amounts[unique_order_ids[i]] += 5; // Delivery Fee for each order  
             orders_data['totalAmount'] += order_amounts[unique_order_ids[i]];
         }
-        
-        var tempDate = []
+
+        var order_dateOnly = []
         for (var key in order_dates){
-            tempDate.push(key);
+            order_dateOnly.push(key);
         }
 
-        var tempDateRevenue = []
+        var order_revenueOnly = []
         for (var key in order_dates){
-            tempDateRevenue.push(order_dates[key]);
+            order_revenueOnly.push(order_dates[key])
         }
-
-        order_dateOnly = tempDate.filter((item, i, ar) => ar.indexOf(item) === i);
-        order_revenueOnly = tempDateRevenue;
 
         orders_data['totalOrder'] = unique_order_ids.length;
         orders_data['orderDates'] = order_dateOnly;
