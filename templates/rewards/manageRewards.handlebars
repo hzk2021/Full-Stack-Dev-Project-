@@ -1,86 +1,179 @@
 <div class="card card-body form-sm">
-    <h1 class="display-4">Edit Reward - Day {{#if day_no}}{{ day_no }}{{else}}{{ reward_1st.day_no }}{{/if}}</h1>
-    <p>Fields with <span class="text-danger">*</span> is compulsory</p>
+    <h1 class="display-4">Edit Reward - Day {{ day_no }}</h1>
     <p style="font-weight: bold;">Maximum allowed: 4</p>
     <br>
 
     <form method="POST" action="">
-        {{#if day_no}}
-            <div class="form-group active">
-                <label>Item 1<span class="text-danger">*</span></label>
-                <input type="text" name="name1" class="form-control" value="" required>
-                <br>
+        <div id="InputsDiv">
+            {{#unless rewards}}
+            <div class="input-div">
+                <label>Item 1</label>
+                <div class="form-group input-group">
+                    <input type="text"  name="name1" class="form-control" autocomplete="off" list="menu-items" required>
+                    <br>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDel_1"><i class="fa fa-trash"></i></button>
+                        <!-- The Modal -->
+                        <div class="modal" id="confirmDel_1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                    <h4 class="modal-title">Delete Confirmation</h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to delete field?</p>
+                                        <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Proceed with caution!</p>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                    <button onclick="delInput(1)" type="button" class="btn btn-danger del-butt">Delete</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            {{#for 2 4}}
-            <div class="form-group r-hidden">
-                <label>Item {{this}}</label>
-                <input type="text" name="name{{this}}" class="form-control" value="">
-                <br>
-            </div>
-            {{/for}}
-            <div class="form-group r-hidden" id="lastFormDiv">
-                <label>Item 4</label>
-                <input type="text" name="name4" class="form-control" value="">
-                <br>
-            </div>
-        {{else}}
-            <div class="form-group active">
-                <label>Item 1<span class="text-danger">*</span></label>
-                <input type="text" name="name1" class="form-control" value="{{reward_1st.food_name}}">
-                <br>
-            </div>
-            {{#each rewards_mid}}
-            {{#unless this.food_name}}<div class="form-group r-hidden">{{else}}<div class="form-group active">{{/unless}}
+            {{else}}
+            {{#each rewards}}
+            <div class="input-div">
                 <label>Item {{this.food_no}}</label>
-                <input type="text" name="name{{this.food_no}}" class="form-control" value="{{this.food_name}}">
-                <br>
+                <div class="form-group input-group">
+                    <input type="text"  name="name{{this.food_no}}" class="form-control" value="{{this.food_name}}" autocomplete="off" 
+                    list="menu-items" required>
+                    <br>
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDel_{{this.food_no}}"><i class="fa fa-trash"></i></button>
+                        <!-- The Modal -->
+                        <div class="modal" id="confirmDel_{{this.food_no}}">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                <h4 class="modal-title">Delete Confirmation</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete field?</p>
+                                    <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Proceed with caution!</p>
+                                </div>
+
+                                <div class="modal-footer">
+                                <button onclick="delInput({{this.food_no}})" type="button" class="btn btn-danger del-butt">Delete</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             {{/each}}
-            {{#unless reward_last.food_name}}<div class="form-group r-hidden">{{else}}<div class="form-group active" id="lastFormDiv">{{/unless}}
-                <label>Item 4</label>
-                <input type="text" name="name4" class="form-control" value="{{reward_last.food_name}}">
-                <br>
-            </div>
-        {{/if}}
+            {{/unless}}
+        </div>
+    
+        <button onclick="genMoreInputs();return false;" id="AddMore" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add more items</button>
         <br>
-        <a href="/admin/rewards/rewardsList" class="btn btn-danger">Back to list</a>   
-        <input type="submit" value="Save" class="btn btn-success float-right" style="padding:6px 25px;">
+        <br>
+        <a href="/admin/rewards/list" class="btn btn-danger">Back to list</a>   
+        <input type="submit" value="Submit Changes" class="btn btn-success float-right" style="padding:6px 25px;">
     </form>
+    <datalist id="menu-items">
+        {{#each menu}}
+        {{#each this.dishes}}
+        <option value="{{this}}">{{this}}</option>
+        {{/each}}
+        {{/each}}
+    </datalist>
+    <datalist id="menu-items-categorized">
+        {{#each menu}}
+        <option value="{{this.category}}" readonly>{{this.category}}</option>
+            {{#each this.dishes}}
+            <option value="{{this}}">{{this}}</option>
+            {{/each}}
+        {{/each}}
+    </datalist>
 </div>
 
+<!-- Add more inputs functions -->
 <script>
-    var buttIndex = 0;
-    var buttonGen;
-    window.addEventListener('load', structButton);
-    window.addEventListener('load', genButton);
-
-    function structButton() {
-        buttonGen = document.createElement('button');
-        buttonGen.setAttribute('id', "AddMore");
-        buttonGen.setAttribute('onclick', "genMoreInputs(); return false;");
-        buttonGen.innerText = "+ Add more items";
-        buttonGen.className = "btn btn-light btn-outline-secondary";
-        document.getElementById('AddMore')
-    }
-
-    function genButton() {
-        const totalActive = document.getElementsByClassName("form-group active");
-        if (totalActive.length != 4) {
-            const nextDiv = totalActive[totalActive.length-1];
-            nextDiv.appendChild(buttonGen);
-        }
-    }
-
     function genMoreInputs() {
-        // Remove button from 1st
-        const button = document.getElementById('AddMore');
-        button.remove();
+        // Get the number of inputs
+        var inputsDiv = document.getElementById('InputsDiv');
+        var num = inputsDiv.getElementsByTagName('input').length + 1
+        console.log(num);
 
-        // Open up the next input
-        const hiddens = document.querySelector(".r-hidden");
-        hiddens.classList.remove('r-hidden');
-        hiddens.classList.add("active");
-        // Add button on 2nd  
-        genButton();
+        // Remove add button once it hits max of 4
+        if (num == 4) {
+            document.getElementById('AddMore').style.display = "none";
+        }
+
+        // Set the new form group and append to the form
+        var newDiv = document.createElement('div');
+        newDiv.className = "input-div";
+        newDiv.innerHTML = 
+            `<label>Item ${num}</label>
+            <div class="form-group input-group">
+                <input type="text"  name="name${num}" class="form-control" autocomplete="off" list="menu-items" required>
+                <br>
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDel_${num}"><i class="fa fa-trash"></i></button>
+                    <!-- The Modal -->
+                    <div class="modal" id="confirmDel_${num}">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                <h4 class="modal-title">Delete Confirmation</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p>Are you sure you want to delete field?</p>
+                                    <p class="text-danger font-weight-bold"><i class="fas fa-exclamation-triangle"></i> Proceed with caution!</p>
+                                </div>
+
+                                <div class="modal-footer">
+                                <button onclick="delInput(${num})" type="button" class="btn btn-danger del-butt">Delete</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`
+
+        inputsDiv.appendChild(newDiv);
     }
+
+    function delInput(num) {
+        var allInputs = document.getElementsByClassName('input-div');
+        // Remove the input div
+        allInputs[num-1].remove();
+        // Change label name of inputs under the deleted input
+        for (i=num-1; i<allInputs.length; i++) {
+            allInputs[i].querySelector('label').innerText = "Item "+(i+1);
+            allInputs[i].querySelector('.del-butt').setAttribute('onclick', `delInput(${i+1})`);
+        }
+        // Add more inputs button back when the inputs are no longer at max
+        if (allInputs.length == 3) {
+            document.getElementById('AddMore').style.display = "block";
+        }
+        document.body.classList.remove('modal-open');
+        document.querySelector(".modal-backdrop.show").remove();
+    }
+</script>
+<!-- Input manipulation functions -->
+<script>
+    /*window.addEventListener('load', setInterval(showFilteredItems))
+        function showFilteredItems(inp) {
+            if (inp.value != "") {
+                inp.setAttribute("list", "menu-items");
+            }
+            else {
+                inp.setAttribute("list", "menu-items-categorized");
+            }
+        }*/
 </script>

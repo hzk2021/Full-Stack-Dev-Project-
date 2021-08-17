@@ -4,44 +4,35 @@ const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const {Menu} = require('../../models/Menu');
 const {Cart} = require('../../models/Order');
-const { arrange_rewards } = require('../../utilities/functions');
+const { arrange_rewards, arrange_menu_categories } = require('../../utilities/functions');
 
 // Accessing edit rewards page
 Router.get('/edit/:day_no', async function (req, res) {
     console.log("Admin edit rewards page accessed");
     try {
         const rewards = await RewardsList.findAll({ 
+            attributes: ['food_name', 'food_no'],
             where: { day_no: req.params.day_no },
-            order: [['day_no', 'ASC'], ['food_no', 'ASC']],
+            order: [['food_no', 'ASC']],
             raw: true
         });
+        // Get list of all menu items sorted by category name
+        const menu = await arrange_menu_categories();
         
         // Return no auto-filled values
         if (rewards.length == 0) {
             console.log(`Day ${req.params.day_no} is not registered in database`);
             return res.render('rewards/manageRewards', {
-                day_no: req.params.day_no
+                day_no: req.params.day_no,
+                menu: menu
             });
         }
         else {
-            for (var i in rewards) {
-                i.number = i.day_no / 5;
-            }
-            // Reward 2 and 3 values
-            let rewards_mid = rewards.slice(1,3);
-            var min_put = rewards_mid.length+2
-            for (i=min_put; i<4; i++) {
-                rewards_mid.push({day_no:rewards[0].day_no, food_name:null, food_no:i});
-            }
-            let last_reward = rewards[3];
-            if (last_reward == null) {
-                last_reward = {day_no:rewards[0].day_no, food_name:null, food_no:i}
-            }
             // Returning the original rewards if it has already been added
             return res.render('rewards/manageRewards', {
-                reward_1st: rewards[0],
-                rewards_mid: rewards_mid,
-                reward_last: rewards[3]
+                day_no: req.params.day_no,
+                rewards: rewards,
+                menu: menu
             });
         }
         
@@ -49,6 +40,7 @@ Router.get('/edit/:day_no', async function (req, res) {
     catch (error) {
         console.log("There are errors fetching data of day " + req.params.day_no);
         console.log(error);
+        return res.status(500).end();
     }
 });
 
@@ -130,7 +122,7 @@ Router.post('/edit/:day_no', async function (req, res) {
         return res.status(500).end();
     }
 
-    return res.redirect("/admin/rewards/rewardsList");
+    return res.redirect("/admin/rewards/list");
 });
 
 Router.get('/delete-all/:day_no', async function(req, res) {
@@ -142,7 +134,7 @@ Router.get('/delete-all/:day_no', async function(req, res) {
 });
 
 // Accessing admin rewards page
-Router.get('/rewardsList', async function (req, res) {
+Router.get('/list', async function (req, res) {
     console.log("Admin rewards page accessed");
     // Get all prizes
     const prizes = await RewardsList.findAll({

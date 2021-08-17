@@ -1,4 +1,5 @@
-const Menu = require('../models/Menu');
+const { Menu } = require('../models/Menu');
+const { MenuCategory } = require('../models/MenuCategory')
 const { Supplies } = require('../models/Supplies');
 const { SupplyCategory } = require('../models/SupplyCategory');
 const Sequelize = require('sequelize');
@@ -81,7 +82,6 @@ const arrange_rewards = function (prizes) {
     }
 }
 
-
 const arrange_rewards_noNull = function (prizes) {
     let list = arrange_rewards(prizes);
     let endList = list;
@@ -89,6 +89,83 @@ const arrange_rewards_noNull = function (prizes) {
         if (list[obj].food_name == null) {
             endList.splice(obj, 1);
         }
+    }
+}
+
+// Format: [ {day_no: 5, length: 2, prizes: [Food1, Food2]} ]
+const arrange_rewards_tab = function (prizes) {
+    let sorted_list = [];
+    if (prizes.length == 0) {
+        return sorted_list
+    }
+    let sorted_dict = {day_no: prizes[0].day_no, length:1, prizes:[]};
+    let iterated_values = {};
+    iterated_values[prizes[0].food_name] = 1;
+    
+    for (i=1; i<prizes.length; i++) {
+        if (prizes[i].day_no == sorted_dict.day_no) {
+            if (prizes[i].food_name in iterated_values) {
+                iterated_values[prizes[i].food_name]++;
+            }
+            else {
+                iterated_values[prizes[i].food_name] = 1;
+                sorted_dict.length++;
+            }
+            if (i==prizes.length-1) {
+                for (var key in iterated_values) {
+                    if (iterated_values[key] == 1) {
+                        sorted_dict.prizes.push(key);
+                    }
+                    else {
+                        sorted_dict.prizes.push(key+" x"+iterated_values[key]);
+                    }
+                }
+                sorted_list.push(sorted_dict);
+            }
+        }
+        else {
+            for (var key in iterated_values) {
+                if (iterated_values[key] == 1) {
+                    sorted_dict.prizes.push(key);
+                }
+                else {
+                    sorted_dict.prizes.push(key+" x"+iterated_values[key]);
+                }
+            }
+            sorted_list.push(sorted_dict);
+            sorted_dict = {day_no: prizes[i].day_no, length:1, prizes:[]};
+        }
+    }
+    console.log(sorted_list);
+    return sorted_list;
+}
+
+// Format: { SID:[1,2,3,4,5,6,7], SEA:[1,2,3,4]  }
+const arrange_menu_categories = async function () {
+    const food_list = await Menu.findAll({
+        attributes:['item_name', 'category_no'],
+        order:[['category_no', 'ASC'], ['item_name', 'ASC']],
+        raw: true
+    });
+    const categories = await MenuCategory.findAll({});
+    
+    let sorted_list = [];
+    try {
+        for (var cat in categories) {
+            let sorted_food = {};
+            // Set each category values
+            var cat_items = food_list.filter(food => food.category_no == categories[cat].category_no).map(item => item.item_name);
+            sorted_food['category'] = categories[cat].category_name
+            sorted_food['dishes'] = cat_items;
+            sorted_list.push(sorted_food);
+        }
+        console.log(sorted_list);
+        return sorted_list
+    }      
+    catch (error) {
+        console.log('Courses has yet been yet');
+        console.log(error);
+        return null
     }
 }
 
@@ -177,5 +254,5 @@ const arrange_supplies_by_food_weekNo_full = function (supplies) {
 }
 
 
-module.exports = {arrange_rewards, arrange_rewards_noNull, arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo, 
-                arrange_supplies_by_food_weekNo_full};
+module.exports = {arrange_rewards, arrange_rewards_noNull, arrange_menu_categories, arrange_supplies_menu_checkbox, arrange_supplies_by_food_weekNo, 
+                arrange_supplies_by_food_weekNo_full, arrange_rewards_tab};

@@ -116,14 +116,16 @@
 
 <script>
     window.addEventListener('load', assignDay);
+    {{#unless user}}
     window.addEventListener('load', set_body_modal);
+
+    function set_body_modal() {
+        document.body.classList.add('modal-open');
+    }
+    {{/unless}}
     function assignDay() {
         for (i=0; i<60; i++) {
             document.getElementsByTagName('h3')[i].innerText = "Day "+(i+1);
         }
-    }
-    
-    function set_body_modal() {
-        document.body.classList.add('modal-open');
     }
 </script>

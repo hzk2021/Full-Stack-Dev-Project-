@@ -1,5 +1,43 @@
 <h1 class="display-4">Your Cart</h1>
 <br>
+<!-- Rewards button -->
+<div class="rewards-tab nav-item dropdown float-right">
+    <a class="btn btn-primary nav-link dropdown-toggle float-right" href="#" id="rewardsTab" data-toggle="dropdown">
+      <i class="fa fa-gift" aria-hidden="true"></i> Claim Rewards!</a>
+    <div class="dropdown-menu dropdown-menu-right rewards-container rewards-container" id="rewardsTab" style="clear:right;">
+        {{#if user}}
+        <h3>Your Rewards</h3>
+
+        {{#if prizes_list}}
+        <p>Click on claim to add your reward to cart</p>
+        <hr style="margin-bottom: 0;">
+        <table class="rewards-list">
+          {{#each prizes_list}}
+          <tr id="day{{this.day_no}}">
+            <td><strong>Day {{this.day_no}}</strong></td>
+            <td>
+              {{#each this.prizes}}
+              {{this}}
+              <br>
+              {{/each}}
+            </td>
+            <td><button class="btn btn-success" style="margin-left:15px;" onclick="addReward({{this.day_no}});">Claim!</button></td>
+          </tr>
+          {{/each}}
+        </table>
+        {{else}}
+        <p>You do not have any claimable rewards</p>
+        {{/if}}
+
+        {{else}}
+        <h3>You are not signed in</h3>
+        <p>Log in to your account or sign up for a new account to partake in rewards</p>
+        <a class="btn btn-primary sign" href="">Login</a>
+        <a class="btn btn-outline-secondary sign" href="">Sign Up</a>
+        {{/if}}
+        <a class="btn btn-secondary button-close" href="#" id="rewardsTab2" data-toggle="collapse">Close</a>
+    </div>
+</div>
 <table class="table table-striped">
   <thead>
     <tr>
@@ -9,7 +47,7 @@
       <th></th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id="cart">
     {{#each cart}}
       <tr>
           <td width="50%">{{this.cart_item_name}}</td>
@@ -19,6 +57,18 @@
           </td>           
           <td><a href="/user/cart/delete/{{this.cart_item_name}}" class="btn btn-danger">Delete</a></td> 
       </tr>
+    {{/each}}
+    {{#each cart_prizes}}
+      {{#each this}}
+          <tr class="cartDay{{this.day_no}}">
+            <td width="50%">{{this.cart_item_name}}</td>
+            <td width="50%">{{this.cart_item_price}}</td>
+            <td width="50%">{{this.cart_item_quantity}}</td>
+            {{#if this.len}}           
+            <td rowspan="{{this.len}}"><button onclick="deleteReward({{this.day_no}});" class="btn btn-danger">Delete</a></td> 
+            {{/if}}
+          </tr>
+      {{/each}}
     {{/each}}
   </tbody>
 </table>    
@@ -37,3 +87,86 @@
 </div>
 
 {{/if}}
+<script>
+  async function addReward(day_no) {
+    const response = await fetch('/user/rewards/add-reward-to-cart', {
+      method: "POST",
+      body: JSON.stringify({day_no: parseInt(day_no)}),
+      headers: {
+          "Content-Type": "application/json"
+      }
+    });
+
+    if (response.ok) {
+      let data = await response.json();
+      const tbody = document.querySelector('#cart');
+      // Add reward items to cart
+      for (var i in data.added_items) {
+         var dis = data.added_items[i];
+         console.log(dis);
+         if (i==0) {
+           tbody.innerHTML += 
+         `<tr class="cartDay${day_no}">
+            <td width="50%">${dis.cart_item_name}</td>
+            <td width="50%">${dis.cart_item_price}</td>
+            <td width="50%">${dis.cart_item_quantity}</td>           
+            <td rowspan="${data.added_items.length}"><button onclick="deleteReward(${day_no});" class="btn btn-danger">Delete</a></td> 
+          </tr>`
+          }
+          else {
+            tbody.innerHTML += 
+          `<tr class="cartDay${day_no}">
+            <td width="50%">${dis.cart_item_name}</td>
+            <td width="50%">${dis.cart_item_price}</td>
+            <td width="50%">${dis.cart_item_quantity}</td>            
+          </tr>`
+          }
+        }
+        // Remove from list
+        document.getElementById("day"+day_no).remove();
+      }
+    else {
+      console.error("Failed to update cart with reward "+day_no);
+    }
+  }
+
+  async function deleteReward(day_no) {
+    const response = await fetch('/user/rewards/remove-reward-from-cart', {
+      method: "POST",
+      body: JSON.stringify({day_no: parseInt(day_no)}),
+      headers: {
+          "Content-Type": "application/json"
+      }
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      var all_rows = document.getElementById('cart').getElementsByTagName('tr');
+      // Remove from cart
+      for (i=all_rows.length-1; i >=0; i--) {
+        if (all_rows[i].className == `cartDay${day_no}`) {
+          console.log(all_rows[i]);
+          all_rows[i].remove();
+        }
+      }
+      // Add back into rewards tab
+      var table = document.querySelector('.rewards-list').querySelector('tbody');
+      var row = document.createElement('tr');
+      var day = data.prizes_list[0].day_no;
+      row.id = "day"+day;
+
+      var nameCell = document.createElement('td');
+      for (var i in data.prizes_list[0].prizes) {
+        var name = data.prizes_list[0].prizes[i];
+        nameCell.innerHTML += `${name}<br>`;
+      }
+      row.innerHTML = `<td><strong>Day ${day}</strong></td>`
+      row.appendChild(nameCell);
+      row.innerHTML += `<td><button class="btn btn-success" style="margin-left:15px;" onclick="addReward(${day});">Claim!</button></td>`;
+      table.appendChild(row);
+    }
+    else {
+      console.error("Failed to delete reward from cart"+day_no);
+    }
+  }
+</script>

@@ -53,7 +53,7 @@ Router.get('/dashboard', async function(req, res) {
         order: [['item_name', 'ASC']],
         raw: true
     });
-    // Sorted in the right format for graph to use
+    // Sorted in the right format for graph to use (Function returns array, get index 0)
     sorted_graph_data = await arrange_supplies_by_food_weekNo(items);
 
     return res.render('inventory/suppliesDashboard', {
@@ -94,6 +94,76 @@ Router.get('/viewOrder', async function(req, res) {
     return res.render('inventory/submittedSupplies', {
         allow_change: set_orders.changes_lock
     });
+});
+
+Router.get('/update/:id', async function(req, res) {
+    try {
+        const item = await Supplies.findOne({
+            attributes:['item_name', 'category_no'],
+            where: { item_id:req.params.id },
+            raw: true
+        });
+
+        const categories = await SupplyCategory.findAll({
+            attributes:['category_no', 'category_name'],
+            raw: true
+        });
+
+        // Indicate the selected value
+        for (var cat in categories) {
+            if (categories[cat].category_no == item.category_no) {
+                categories[cat].selected = true
+            }
+        }
+        console.log(categories);
+
+        return res.render('inventory/updateSupply', {
+            item: item,
+            categories: categories,
+            role: req.user.role,
+            error: req.flash('error'),
+            errors: req.flash('errors') 
+        });
+    }
+    catch (error) {
+        console.error("There is error retrieving supplies list");
+        console.error(error);
+        return res.status(500).end();
+    }
+});
+
+Router.post('/update/:id', async function(req, res) {
+    console.log("Updating supply item");
+    let next_value = null;
+    // Validate invalid inputs
+    if (!Number.isInteger(req.body.quantity) && req.body.quantity != null) {
+        req.flash("error", `Next value must be an integer`);
+        return res.redirect('/supplier/update/'+req.params.id);
+    }
+    const existingItem = await Supplies.findOne({ where: {item_name:req.body.name} });
+    if (existingItem != null) {
+        req.flash("error", `Item already existed!`);
+        return res.redirect('/supplier/update/'+req.params.id);
+    }
+
+    // Set next value
+    if (req.body.quantity != null) {
+        next_value = parseInt(req.body.quantity);
+    } 
+    try {
+        const item = await Supplies.update({
+            item_name: req.body.name,
+            category_no: req.body.type,
+            next_value: next_value
+        }, { where: {item_id: req.params.id } })
+    }
+    catch (error) {
+        console.error("An error occured trying to update the item");
+        console.error(error);
+        return res.status(500).end();
+    }
+
+    return res.redirect('/supplier/suppliesList');
 });
 
 // Set dummy values for all items
@@ -264,7 +334,7 @@ Router.get('/debug-set-supplies-values', async function(req, res) {
 });
 
 // Setting final value of supplies order and resetting current week every Monday 12.00am
-const finalizingUpdate = Cron.schedule('* 0 * * Mon', async function(req, res) {
+const finalizingUpdate = Cron.schedule('00 00 00 * * Mon', async function(req, res) {
     await finalize_quantity(); 
 }, {
     scheduled: true,

@@ -44,7 +44,7 @@
         <ul class="li-striped">
           {{#if all_names}}
             {{#each all_names}}
-            <li><a id="select-graph-button" onclick="set_display_name('{{this.item_id}}', '{{this.item_name}}')">{{this.item_name}}</a></li>
+            <li><a id="select-graph-button" onclick="set_display('{{this.item_id}}', '{{this.item_name}}')">{{this.item_name}}</a></li>
             {{/each}}
           {{else}}
             <p>No records found</p>
@@ -179,7 +179,7 @@
 
     }
 
-    function set_display_name(id, name) { 
+    function set_display(id, name) { 
       document.getElementById('selected-graph-item').innerText = name;
       document.getElementById('selected-graph-item-id').value = id;
       document.getElementById('select-form-item').submit();

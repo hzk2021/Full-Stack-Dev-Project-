@@ -210,6 +210,7 @@ Router.get('/update/:id', isSupplier, async function(req, res) {
         return res.render('inventory/updateSupply', {
             item: item,
             categories: categories,
+            role: req.user.role,
             error: req.flash('error'),
             errors: req.flash('errors') 
         });
@@ -267,10 +268,15 @@ Router.get('/viewOrder', isSupplier, async function(req, res) {
         const date_submitted = await SupplyPerformance.findOne({
             attributes: ['date_submitted'],
             where: {week_no: 1}
-        })
+        });
+        var display_date = date_submitted;
+        console.log(display_date);
+        if (display_date != null) {
+            display_date = date_submitted.date_submitted.toISOString().substring(0, 16).replace("T", ",");
+        }
         return res.render('inventory/submittedSupplies', {
             allow_change: set_orders.changes_lock,
-            date_submitted: date_submitted.date_submitted.toISOString().substring(0, 16).replace("T", ",")
+            date_submitted: display_date
         });
     }
 });
@@ -326,30 +332,62 @@ Router.get('/get-supplies', async function(req, res) {
     console.log('Retrieving data for supplies list');
     if (req.user.role == "admin" || req.user.role == "supplier") {
         const filterSearch = req.query.search;
+        // Checks if the current timing allows admin to make changes to predicted value
+        const changes_lock = await Supplies.findOne({
+            attributes: ['changes_lock']
+        });
+        
+        let list_data;
         try {
-            const list_data = await Supplies.findAll({
-                include: [{
-                    model: SupplyCategory,
-                    attributes: ['category_name']
-                }],
-                attributes: ['item_name', 'item_id', 'next_value'],
-                limit: parseInt(req.query.limit),
-                offset: parseInt(req.query.offset),
-                where: {
-                    [Op.or]: {
-                        item_name: { [Op.substring]: filterSearch},
-                        item_id: { [Op.substring]: filterSearch}, 
-                        next_value: { [Op.substring]: filterSearch}, 
-                        "$supply_category.category_name$": { [Op.substring]: filterSearch}
-                    }
-                },
-                subQuery: false,
-                raw: true
-            });
+            if ((req.user.role == "supplier" && changes_lock.changes_lock == true) || 
+            (req.user.role == "admin" && changes_lock.changes_lock == false)) {
+                console.log("Running scenario 1")
+                list_data = await Supplies.findAll({
+                    include: [{
+                        model: SupplyCategory,
+                        attributes: ['category_name']
+                    }],
+                    attributes: ['item_name', 'item_id'],
+                    limit: parseInt(req.query.limit),
+                    offset: parseInt(req.query.offset),
+                    where: {
+                        [Op.or]: {
+                            item_name: { [Op.substring]: filterSearch},
+                            item_id: { [Op.substring]: filterSearch},  
+                            "$supply_category.category_name$": { [Op.substring]: filterSearch}
+                        }
+                    },
+                    subQuery: false,
+                    raw: true
+                });
+            }
+            else {
+                console.log("Running scenario 2")
+                list_data = await Supplies.findAll({
+                    include: [{
+                        model: SupplyCategory,
+                        attributes: ['category_name']
+                    }],
+                    attributes: ['item_name', 'item_id', 'next_value'],
+                    limit: parseInt(req.query.limit),
+                    offset: parseInt(req.query.offset),
+                    where: {
+                        [Op.or]: {
+                            item_name: { [Op.substring]: filterSearch},
+                            item_id: { [Op.substring]: filterSearch}, 
+                            next_value: { [Op.substring]: filterSearch}, 
+                            "$supply_category.category_name$": { [Op.substring]: filterSearch}
+                        }
+                    },
+                    subQuery: false,
+                    raw: true
+                });
+            }
 
             return res.json({
                 rows: list_data,
             });
+
         }
         catch (error) {
             console.error("Error retrieving the data for generating tables");
