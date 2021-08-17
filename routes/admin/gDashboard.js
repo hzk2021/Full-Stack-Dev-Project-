@@ -24,6 +24,26 @@ Router.get('/', async function(req, res){
     })
 });
 
+Router.get('/chart', async function(req,res){
+    const users_data = await getUserDBData();
+    const suppliers_data = await getSupplierDBData();
+    const admins_data = await getAdminDBData();
+    const feedbacks_data = await getFeedbackDBData();
+    const entries_data = await getEntryDBData();
+
+    return res.render('dashboard/showChart', {
+        'userCount': users_data['count'],
+        'verifiedUserCount': users_data['verifiedCount'],
+        'notVerifiedUserCount': users_data['notVerifiedCount'],
+        'supplierCount': suppliers_data['count'],
+        'adminCount': admins_data['count'],
+        'positiveFeedback' : feedbacks_data['positive'],
+        'negativeFeedback' : feedbacks_data['negative'],
+        'entryCount' : entries_data['count'],
+        'normalTemp' : entries_data['normal'],
+        'abnormalTemp' : entries_data['abnormal']
+    })
+});
 
 async function getUserDBData(){
     users_data = {
@@ -139,7 +159,7 @@ async function getEntryDBData(){
                 entries_data['abnormal'] += 1;
             }
             else{
-                entries_data[normal] += 1;
+                entries_data['normal'] += 1;
             }
 
             entries_data['count'] += 1
