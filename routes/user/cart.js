@@ -2,11 +2,13 @@ const Express = require('express');
 const Router = Express.Router();
 const {Cart} = require('../../models/Cart');
 const {UserRewards} = require('../../models/UserRewards');
+const {RewardsList} = require('../../models/RewardsList');
 const {Order} = require('../../models/Order');
 const { Sequelize, Op } = require('sequelize');
 const {Menu} = require('../../models/Menu');
 const {SupplyPerformance} = require('../../models/SupplyPerformance');
 const { Supplies } = require('../../models/Supplies');
+const {arrange_rewards_tab} = require('../../utilities/functions');
 
 //Retrieve cart items
 Router.get('/', async function(req, res){
@@ -23,11 +25,34 @@ Router.get('/', async function(req, res){
         const deliveryFee = 5
         const total = subtotal + deliveryFee
         console.log(cart);
+
+        // Below is for rewards
+        // Get user rewards
+        let rewards;
+        let prizes_list;
+        try {
+            rewards = await RewardsList.findAll({
+                include: [{
+                    model: UserRewards,
+                    where: {uuid:req.user.uuid, claimed: false}
+                }],
+                attributes: ['day_no', 'food_name'],
+                order: [['day_no', 'ASC']],
+                raw:true
+            });
+            prizes_list = await arrange_rewards_tab(rewards);
+        }
+        catch (error) {
+            console.log(error)
+            console.error("User is not logged in");
+        }
+ 
         return res.render('cart/cart', {
             cart: cart,
             subtotal: subtotal.toFixed(2),
             deliveryFee: deliveryFee.toFixed(2),
             total: total.toFixed(2),
+            prizes_list: prizes_list
         });    
     }
     catch (error) {

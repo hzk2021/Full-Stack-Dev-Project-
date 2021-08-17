@@ -5,11 +5,11 @@
 <form method="POST" action="">
     <div class="form-group">
         <label for="name">Item Name</label>
-        <input type="text" name="name" class="form-control" value="{{item.item_name}}">
+        <input type="text" name="name" class="form-control" value="{{item.item_name}}" {{#ifc role '==' 'admin'}}readonly{{/ifc}}>
     </div>
     <div class="form-group" style="width:40%">
         <label for="type">Category</label>
-        <select name="type" id="type" class="form-control">
+        <select name="type" id="type" class="form-control" {{#ifc role '==' 'admin'}}disabled{{/ifc}}>
             {{#each categories}}
             <option class="cat-option" value="{{this.category_no}}" {{#if this.selected}}selected{{/if}}>{{this.category_name}}</option>
             {{/each}}
@@ -18,7 +18,7 @@
     <div class="form-group">
         <label for="quantity">Next Order Quantity</label>
         {{#if next_orders}}
-        <input type="number" name="quantity" class="form-control" value="{{next_orders}}" style="width:40%">
+        <input type="number" name="quantity" class="form-control" value="{{next_orders}}" style="width:40%" {{#ifc role '==' 'supplier'}}readonly{{/ifc}}>
         {{else}}
         <input type="number" name="quantity" class="form-control" value="" style="width:40%" placeholder="- Not generated yet -" disabled>
         {{/if}}

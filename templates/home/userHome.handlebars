@@ -50,7 +50,7 @@
         <p>We love feedback! Your feedback are valuable to us as it allow us to learn of areas where customers are satisfied with
         and areas that we needed improvement on. Don't hesitate to say out whatever is in your head, send us a feedback now!</p>
         {{#ifc userRole '==' 'user'}}
-        <a class="btn btn-primary" href="/createPost">Post A Feedback</a>
+        <a class="btn btn-primary" href="/user/feedback/create">Post A Feedback</a>
         {{else}}
         <a class="btn btn-outline-dark col-xs-6" href="/auth/login">Login OR Sign Up For Membership</a>
         {{/ifc}}

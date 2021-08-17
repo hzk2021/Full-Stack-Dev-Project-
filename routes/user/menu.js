@@ -19,20 +19,7 @@ Router.get('/', async function (req, res) {
             attributes: ['category_no', 'category_name'],
             raw: true
         }); 
-
-        // Below is for rewards
-        // Get user rewards
-        const rewards =  null;
-        try {
-                rewards = UserRewards.findAll({where:{uuid:req.user.uuid}});
-        }
-        catch (error) {
-            console.log(error)
-            console.error("User is not logged in");
-        }
-
-        console.log("items", items);   
-        console.log("categories", categories);   
+ 
         return res.render('menu/menuPublic', {
             items: items,
             categories:categories
