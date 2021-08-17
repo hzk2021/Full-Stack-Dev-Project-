@@ -38,13 +38,20 @@ SupplyPerformance.init({
         defaultValue: 0
     },
     date_submitted: {
-        type: Sequelize.DATE,
+        type: Sequelize.DATE(),
         allowNull: true,
-        defaultValue: null
+        defaultValue: Sequelize.NOW
     },
 },  {
         sequelize: Database.sequelize,
         modelName: 'supply_performances',
+        hooks: {
+            afterUpdate: auto_update_timestamp
+        }
 });
+
+function auto_update_timestamp(user, options){
+    user.date_submitted = Sequelize.literal('CURRENT_TIMESTAMP');
+}
 
 module.exports = {SupplyPerformance};

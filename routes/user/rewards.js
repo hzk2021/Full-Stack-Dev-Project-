@@ -4,24 +4,29 @@ const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const {Order} = require('../../models/Order');
 const {Cart} = require('../../models/Cart');
-const { Op } = require('sequelize');
-const { arrange_rewards, arrange_rewards_noNull, arrange_rewards_tab } = require('../../utilities/functions');
+const { Sequelize, Op } = require('sequelize');
+const { arrange_rewards, arrange_user_rewards, arrange_rewards_tab } = require('../../utilities/functions');
 
 
 Router.get('', async function (req, res) {
     console.log("Rewards page viewed");
-    var total_orders = 0
+    var total_orders = 0;
     try {
-        total_orders = await Order.count({ 
-            where: { uuid: req.user.uuid },
-            col: 'order_id',
+        total_orders = await Order.aggregate('order_id', 'count', { 
+            distinct: true,
+            where: { order_user_id: req.user.uuid }
         });
     }
     catch (TypeError) {
         console.log("User accessed with no account");
     }
-    const full_rows = Math.floor(total_orders / 5);
-    const leftover = { Reached: total_orders - full_rows * 5, Unreached: 4 - (total_orders - full_rows * 5) };
+    // Rewards resets to 1 when exceeds 60
+    var display_total = total_orders;
+    while (display_total > 60) {
+        display_total -= 60;
+    }
+    const full_rows = Math.floor(display_total / 5);
+    const leftover = { Reached: display_total - full_rows * 5, Unreached: 4 - (display_total - full_rows * 5) };
     // Retrieve full prizes list with length of 12 (Null values filled in for unregistered prize days)
     const prizes = await RewardsList.findAll({
         attributes: ['day_no', 'food_name'],
@@ -29,20 +34,19 @@ Router.get('', async function (req, res) {
         raw: true
     });
 
-    const prizes_list = arrange_rewards(prizes);
+    const prizes_list = await arrange_rewards(prizes);
 
     // Retrieve prizes of the user
     let user_prizes_list = [];
     try {
-        user_prizes_list = await UserRewards.findAll({
+        user_prizes_list = await RewardsList.findAll({
             include: [{
-                model: RewardsList,
-                attributes: ['day_no', 'food_name'],
-                order: [['day_no', 'ASC'], ['food_no', 'ASC']]
+                model: UserRewards,
+                attributes: ['claimed'],
+                where: { uuid: req.user.uuid }
             }],
-            attributes: ['claimed'],
-            where: { uuid: req.user.uuid },
-            order: [['day_no', 'ASC']],
+            attributes: ['day_no', 'food_name'],
+            order: [['day_no', 'ASC'], ['food_no', 'ASC']],
             raw: true
         });
     }
@@ -51,10 +55,11 @@ Router.get('', async function (req, res) {
         console.error(error);
     }
 
-    const user_prizes = await arrange_rewards_noNull(user_prizes_list);
+    const user_prizes = await arrange_user_rewards(user_prizes_list);
+    console.log(user_prizes);
 
-    const middle = prizes_list[leftover.Reached];
-    const not_reached = prizes_list.slice(leftover.Reached + 1, prizes_list.length);
+    const middle = prizes_list[user_prizes.length];
+    const not_reached = prizes_list.slice(user_prizes.length + 1, prizes_list.length);
     return res.render('rewards/rewardsPage', {
         total_orders: total_orders,
         leftover: leftover,

@@ -188,11 +188,14 @@ Router.post('/suppliesList/:id', isSupplier, async function(req, res) {
 
 Router.get('/update/:id', isSupplier, async function(req, res) {
     try {
-        const item = await Supplies.findOne({
-            attributes:['item_name', 'category_no'],
+        let item = await Supplies.findOne({
+            attributes:['item_name', 'category_no', 'next_value', 'changes_lock'],
             where: { item_id:req.params.id },
             raw: true
         });
+        if (item.changes_lock == true) {
+            item.next_value = null;
+        }
 
         const categories = await SupplyCategory.findAll({
             attributes:['category_no', 'category_name'],
@@ -271,7 +274,7 @@ Router.get('/viewOrder', isSupplier, async function(req, res) {
         });
         var display_date = date_submitted;
         console.log(display_date);
-        if (display_date != null) {
+        if (display_date.date_submitted != null) {
             display_date = date_submitted.date_submitted.toISOString().substring(0, 16).replace("T", ",");
         }
         return res.render('inventory/submittedSupplies', {

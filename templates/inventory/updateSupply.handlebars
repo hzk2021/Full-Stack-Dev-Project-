@@ -17,8 +17,8 @@
     </div>
     <div class="form-group">
         <label for="quantity">Next Order Quantity</label>
-        {{#if next_orders}}
-        <input type="number" name="quantity" class="form-control" value="{{next_orders}}" style="width:40%" {{#ifc role '==' 'supplier'}}readonly{{/ifc}}>
+        {{#if item.next_value}}
+        <input type="number" name="quantity" class="form-control" value="{{item.next_value}}" style="width:40%" {{#ifc role '==' 'supplier'}}readonly{{/ifc}}>
         {{else}}
         <input type="number" name="quantity" class="form-control" value="" style="width:40%" placeholder="- Not generated yet -" disabled>
         {{/if}}

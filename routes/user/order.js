@@ -388,99 +388,103 @@ Router.get('/orderComplete/:orderID', async function(req, res){
         console.error(error);
         return res.status(500).end();
     }
-    // // Inventory operations below
-    // const orders = await Cart.findAll({
-    //     attributes: ['cart_user_id', 'cart_item_name', 'cart_item_quantity'],
-    //     where: { cart_user_id: req.user.uuid },
-    //     raw: true
-    // });
-    // let add_quantity = {};
-    // // To get total amount to add into the inventory stock level record
-    // for (var food in orders) {
-    //     var item = orders[food];
-    //     // Get the food ingredient list
-    //     let ingredients = await Menu.findOne({
-    //         attributes: ['item_ingredients'],
-    //         where: { item_name: item.cart_item_name }
-    //     });
-    //     var ingredients_list = ingredients.item_ingredients.split(',');
-    //     // Accumulate the amount for each ingredient
-    //     for (var supply in ingredients_list) {
-    //         var key = await Supplies.findOne({
-    //             attributes: ['item_id'],
-    //             where: {
-    //                 item_name: ingredients_list[supply]
-    //             }
-    //         });
-    //         if (supply in add_quantity) {
-    //             add_quantity[key.item_id] += parseInt(orders[food].cart_item_quantity);
-    //         }
-    //         else {
-    //             add_quantity[key.item_id] = parseInt(orders[food].cart_item_quantity);
-    //         }
-    //     }
-    // }
-    // console.log(add_quantity);
-    // // Update stock used and stock left for each supply item
-    // for (var supply in add_quantity) {
-    //     const addSupplies = await SupplyPerformance.increment('stock_used', {
-    //         by: add_quantity[supply],
-    //         where: { item_id:supply, week_no: 1 }
-    //     });
-    //     const reduceSupplies = await SupplyPerformance.decrement('current_stock_lvl', {
-    //         by: add_quantity[supply],
-    //         where: { item_id:supply, week_no: 1 }
-    //     });
-    // }
+    // Inventory operations below
+    const orders = await Cart.findAll({
+        attributes: ['cart_user_id', 'cart_item_name', 'cart_item_quantity'],
+        where: { cart_user_id: req.user.uuid },
+        raw: true
+    });
+    let add_quantity = {};
+    // To get total amount to add into the inventory stock level record
+    for (var food in orders) {
+        var item = orders[food];
+		if (item.cart_item_name.includes("(Reward")) {
+			item.cart_item_name = item.cart_item_name.replace(item.cart_item_name.substr(-12, 12), '');
+		}
+		console.log(item.cart_item_name);
+        // Get the food ingredient list
+        let ingredients = await Menu.findOne({
+            attributes: ['item_ingredients'],
+            where: { item_name: item.cart_item_name }
+        });
+        var ingredients_list = ingredients.item_ingredients.split(',');
+        // Accumulate the amount for each ingredient
+        for (var supply in ingredients_list) {
+            var key = await Supplies.findOne({
+                attributes: ['item_id'],
+                where: {
+                    item_name: ingredients_list[supply]
+                }
+            });
+            if (supply in add_quantity) {
+                add_quantity[key.item_id] += parseInt(orders[food].cart_item_quantity);
+            }
+            else {
+                add_quantity[key.item_id] = parseInt(orders[food].cart_item_quantity);
+            }
+        }
+    }
+    console.log(add_quantity);
+    // Update stock used and stock left for each supply item
+    for (var supply in add_quantity) {
+        const addSupplies = await SupplyPerformance.increment('stock_used', {
+            by: add_quantity[supply],
+            where: { item_id:supply, week_no: 1 }
+        });
+        const reduceSupplies = await SupplyPerformance.decrement('current_stock_lvl', {
+            by: add_quantity[supply],
+            where: { item_id:supply, week_no: 1 }
+        });
+    }
 
-    // // Rewards operations below
-    // // Marking rewards to be claimed
-    // // Get rewards (identified by price = $0 )
-    // const rewards = await Cart.findAll({
-    //     attributes: ['cart_item_name'],
-    //     where: {
-    //         uuid: req.user.uuid, 
-    //         cart_item_price: 0
-    //     }
-    // });
-    // // Store the days that were claimed
-    // let day_nos = [];
-    // for (var r in rewards) {
-    //     var re_day_no = parseInt(rewards[r].cart_item_name.substring(-3, 2));
-    //     if (!day_nos.includes(re_day_no)) {
-    //         day_nos.push(re_day_no);
-    //     }
-    // }
-    // // Mark the rewards claimed
-    // const claimedReward = await UserRewards.update({
-    //     claimed: true
-    // }, { where: {
-    //     uuid: req.user.uuid,
-    //     day_no :{[Op.in]: day_nos}
-    // }});
+    // Rewards operations below
+    // Marking rewards to be claimed
+    // Get rewards (identified by price = $0 )
+    const rewards = await Cart.findAll({
+        attributes: ['cart_item_name'],
+        where: {
+            uuid: req.user.uuid, 
+            cart_item_price: 0
+        }
+    });
+    // Store the days that were claimed
+    let day_nos = [];
+    for (var r in rewards) {
+        var re_day_no = parseInt(rewards[r].cart_item_name.substring(-3, 2));
+        if (!day_nos.includes(re_day_no)) {
+            day_nos.push(re_day_no);
+        }
+    }
+    // Mark the rewards claimed
+    const claimedReward = await UserRewards.update({
+        claimed: true
+    }, { where: {
+        uuid: req.user.uuid,
+        day_no :{[Op.in]: day_nos}
+    }});
     
-    // // Adding reward if user has hit checkpoint
-    // // Count number of orders by the user according to the order id 
-    // const total_orders = await Order.count({ 
-    //     attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('order_id')), 'order_id']],
-    //     where: { uuid: req.user.uuid }
-    // });
-    // console.log("Total orders:"+total_orders);
+    // Adding reward if user has hit checkpoint
+    // Count number of orders by the user according to the order id 
+    const total_orders = await Order.aggregate('order_id', 'count', { 
+        distinct: true,
+        where: { order_user_id: req.user.uuid }
+    });
+    console.log("Total orders:"+total_orders);
 
-    // // Add if orders reached multiple of 5
-    // if (total_orders % 5 == 0 && total_orders != 0) {
-    //     try {
-    //         const add_reward = await UserRewards.create({
-    //             uuid: req.user.uuid,
-    //             day_no: total_orders
-    //         });
-    //         console.log(`Successfully added reward to user:${req.user.uuid}'s rewards list`);
-    //     }
-    //     catch (error) {
-    //         console.error("An error occured");
-    //         console.error(error);
-    //     }
-    // }
+    // Add if orders reached multiple of 5
+    if (total_orders % 5 == 0 && total_orders != 0) {
+        try {
+            const add_reward = await UserRewards.create({
+                uuid: req.user.uuid,
+                day_no: total_orders
+            });
+            console.log(`Successfully added reward to user:${req.user.uuid}'s rewards list`);
+        }
+        catch (error) {
+            console.error("An error occured");
+            console.error(error);
+        }
+    }
 	const dtime = 10;
 	const etime = 20;
 	res.render('order/orderComplete', {
