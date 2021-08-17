@@ -7,7 +7,7 @@ const {Cart} = require('../../models/Cart');
 
 //Retrieve Public Menu
 Router.get('/', async function (req, res) {
-    console.log("Public menu page accessed");
+    console.log("Admin menu page accessed");
     try {
         // Get all menu items
         const items = await Menu.findAll({
@@ -18,8 +18,21 @@ Router.get('/', async function (req, res) {
         const categories = await MenuCategory.findAll({
             attributes: ['category_no', 'category_name'],
             raw: true
-        }); 
- 
+        });
+
+        // Below is for rewards
+        // Get user rewards
+        const rewards =  null;
+        try {
+                rewards = UserRewards.findAll({where:{uuid:req.user.uuid}});
+        }
+        catch (error) {
+            console.log(error)
+            console.error("User is not logged in");
+        }
+
+        console.log("items", items);   
+        console.log("categories", categories);   
         return res.render('menu/menuPublic', {
             items: items,
             categories:categories
@@ -32,6 +45,7 @@ Router.get('/', async function (req, res) {
         return res.status(500).end();
     }
 
+    
 });
 
 module.exports = Router;

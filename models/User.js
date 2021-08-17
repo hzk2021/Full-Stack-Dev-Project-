@@ -17,11 +17,15 @@ class User extends Model{
     get eActive() { return String(this.getDataValue("eActive")); }
     get dateCreated() { return new Date(this.getDataValue("dateCreated")); }
     get dateUpdated() { return new Date(this.getDataValue("dateUpdated")); }
+    get resetPasswordToken() { return new String(this.getDataValue("resetPasswordToken")); }
+    get resetPasswordExpires() { return new parseInt(this.getDataValue("resetPasswordExpires")); }
 
     set uuid(uuid) { this.setDataValue("uuid", uuid); }
     set name(name) { this.setDataValue("name", name); }
     set email(email) { this.setDataValue("email", email); }
     set eActive(b00l) { this.setDataValue('eActive', b00l); }
+    set resetPasswordToken(token) { this.setDataValue("resetPasswordToken", token); }
+    set resetPasswordExpires(timetick) { this.setDataValue('resetPasswordExpires', timetick); }
     
 }
 
@@ -63,6 +67,12 @@ User.init({
         type: Sequelize.DATE(),
         allowNull: false,
         defaultValue: Sequelize.NOW
+    },
+    resetPasswordToken: {
+        type: Sequelize.STRING(50),
+    },
+    resetPasswordExpires: {
+        type: Sequelize.DATE()
     }
 }, {
     sequelize: Database.sequelize,

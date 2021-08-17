@@ -11,14 +11,14 @@
 <h1 class="display-4">Menu</h1>
 
 <!-- Nav tabs -->
-<ul class="nav nav-tabs" role="tablist">
+<ul class="nav nav-tabs">
   {{!-- filler nav tab --}}
   <li class="active">
       <a class="nav-link active" data-toggle="tab" href="#CC">cc</a>
   </li>
   {{#each categories}}
     <li class="nav-item">
-      <a class="nav-link" data-toggle="tab" data-bs-target="#{{this.category_no}}">{{this.category_name}}</a>
+      <a class="nav-link" data-toggle="tab" href="#C{{this.category_no}}">{{this.category_name}}</a>
     </li>
   {{/each}}
 </ul>
@@ -26,7 +26,7 @@
 <!-- Tab panes -->
 {{!-- filler category --}}
 <div class="tab-content">
-  <div class="tab-pane container-fluid active" id="1">
+  <div class="tab-pane container-fluid active" id="CC">
     <br>
     <br>
     <div>
@@ -59,9 +59,7 @@
   </div>
 
   {{#each categories}}
-  {{!-- this part not working --}}
-  Category: {{this.category_name}}
-  <div class="tab-pane container-fluid active" id="{{this.category_no}}"> 
+<div class="tab-pane container-fluid" id="C{{this.category_no}}"> 
     <br>
     <br>
     <div>
@@ -86,7 +84,6 @@
               <td>{{this.item_description}}</td>
               <td>{{this.item_ingredients}}</td>
               <td><a href="/user/cart/addToCart/{{this.item_name}}" class="btn btn-warning">Add to cart</a></td>
-            </tr>
           {{/ifc}}
         {{/each}}
         </tbody>

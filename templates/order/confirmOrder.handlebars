@@ -1,0 +1,43 @@
+<br>
+<h1 class="display-4">Order details</h1>
+<br>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th width="50%">Item</th>
+      <th width="50%">Price</th>
+      <th width="50%">Quantity</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each cart}}
+      <tr>
+          <td width="50%">{{this.cart_item_name}}</td>
+          <td width="50%">{{this.cart_item_price}}</td>
+          <td width="50%">
+            {{this.cart_item_quantity}}
+          </td>           
+      </tr>
+    {{/each}}
+  </tbody>
+</table>    
+
+{{#if cart}}
+  <div style="float: right;">
+    <pre><p>Subtotal            S$ {{subtotal}}</p></pre>
+    <pre><p>Delivery Fee        S$ {{deliveryFee}}</p></pre>
+    <pre><P><b>Total               S$ {{total}}</b></P></pre>
+  </div>
+{{else}}
+<div style="text-align: center;">
+  <h2>You have no items in you cart.</h2>
+  <a href="/user/menu" class="btn btn-success">ADD SOME ITEMS</a>
+</div>
+
+{{/if}}
+          
+  <div><a class="btn btn-secondary" href="/user/cart">Cancel</a></div>
+  <div class="text-right"><a class="btn btn-success btn-submit" href="/user/order/payment">Confirm Order</a></div>
+
+</form>

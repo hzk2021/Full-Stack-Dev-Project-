@@ -10,6 +10,8 @@ Router.get('/', async function(req, res){
 
     return res.render('dashboard/gDashboard', {
         'userCount': users_data['count'],
+        'verifiedUserCount': users_data['verifiedCount'],
+        'notVerifiedUserCount': users_data['notVerifiedCount'],
         'supplierCount': suppliers_data['count'],
         'adminCount': admins_data['count'],
     })
@@ -18,7 +20,8 @@ Router.get('/', async function(req, res){
 
 async function getUserDBData(){
     users_data = {
-
+        verifiedCount: 0,
+        notVerifiedCount: 0
     }
 
     try{
@@ -28,6 +31,14 @@ async function getUserDBData(){
             }
         });
         users_data['count'] = users.length
+        users.forEach(u => {
+            if (u.eActive == 1){
+                users_data['verifiedCount'] += 1
+            }else{
+                users_data['notVerifiedCount'] += 1
+            }
+        });
+
     } catch(err){
 
     }
@@ -53,7 +64,6 @@ async function getSupplierDBData(){
 
     return suppliers_data;
 }
-
 
 async function getAdminDBData(){
     admins_data = {
