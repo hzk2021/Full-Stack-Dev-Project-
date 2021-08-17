@@ -2,7 +2,9 @@ const Express = require('express');
 const { User } = require('../../models/User');
 const Feedback = require('../../models/Feedback');
 const Entry = require('../../models/Entry');
-const { Op } = require('sequelize');
+const { Order } = require('../../models/Order');
+const { Op, fn, col} = require('sequelize');
+const { sequelize } = require('../../configs/database');
 const Router = Express.Router();
 
 Router.get('/', async function(req, res){
@@ -11,6 +13,7 @@ Router.get('/', async function(req, res){
     const admins_data = await getAdminDBData();
     const feedbacks_data = await getFeedbackDBData();
     const entries_data = await getEntryDBData();
+    const orders_data = await getOrderDBData();
 
     return res.render('dashboard/gDashboard', {
         'userCount': users_data['count'],
@@ -20,7 +23,9 @@ Router.get('/', async function(req, res){
         'adminCount': admins_data['count'],
         'positiveFeedback' : feedbacks_data['positive'],
         'negativeFeedback' : feedbacks_data['negative'],
-        'entryCount' : entries_data['count']
+        'entryCount' : entries_data['count'],
+        'totalOrder': orders_data['totalOrder'],
+        'totalAmount': orders_data['totalAmount']
     })
 });
 
@@ -170,6 +175,43 @@ async function getEntryDBData(){
     }
 
     return entries_data;
+}
+
+
+async function getOrderDBData(){
+    orders_data = {
+        'totalOrder' : 0,
+        'totalAmount': 0,
+    }
+
+    let order_ids = []
+    let unique_order_ids = []
+    let order_amounts = {}
+
+    try{
+        const orders = await Order.findAll();
+        for (let i = 0; i < orders.length; i++) {
+            if (order_amounts[orders[i].order_id] == undefined){
+                order_amounts[orders[i].order_id] = 0;
+            }
+            order_amounts[orders[i].order_id] = order_amounts[orders[i].order_id] + orders[i].order_item_price * orders[i].order_item_quantity;
+            order_ids.push(orders[i].order_id);
+        }
+        
+        unique_order_ids = order_ids.filter((item, i, ar) => ar.indexOf(item) === i);
+
+        for (let i = 0; i < unique_order_ids.length; i++) {
+            order_amounts[unique_order_ids[i]] += 5; // Delivery Fee for each order  
+            orders_data['totalAmount'] += order_amounts[unique_order_ids[i]];
+        }
+
+        orders_data['totalOrder'] = unique_order_ids.length;
+
+    } catch(err){
+        console.error(err);
+    }
+
+    return orders_data;
 }
 
 module.exports = Router;
