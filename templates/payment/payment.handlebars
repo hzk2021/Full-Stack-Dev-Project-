@@ -30,6 +30,7 @@
 <div>
 	<button type="button" id='cancel' class="btn btn-outline-secondary" onclick="orderCancel();">Cancel</button>
 	<button type="button" id='tryAgain' class="btn btn-outline-primary" style="display: none;" onclick="generate_qr_code(null); hideDisplay('tryAgain', 'qr_code'); hideDisplay('orderTimeout', 'orderPayment');">Try again</button>
+	<a href="/user/order/orderComplete/{{orderID}}" id='orderComplete' class="btn btn-primary" style="display: block;"></a>
 </div>
 
 <script>
@@ -47,7 +48,7 @@
 		orderPayment.style.display = "none"; 
 		let orderTimeout = document.getElementById('orderTimeout');
 		orderTimeout.style.display = 'none';
-		setTimeout("window.location = 'http://localhost:5000/user/order/orderComplete';", 3000);
+		setTimeout("window.location = 'http://localhost:5000/user/order/confirmOrder';", 4000);
 	}
 
 	function orderTimeout() {
@@ -56,6 +57,9 @@
 		tryAgain.style.display = "inline-block"; 
 	}
 
+	function orderComplete() {
+		console.log('onclick event to trigger link')
+	}
 	
 
 
@@ -98,7 +102,7 @@
 	 **/
 	async function ping_transaction_status(attempt, transaction) {
 
-		if (attempt > 3) {
+		if (attempt > 10) {
 			orderTimeout();
 			return void_transaction(transaction);
 		}
@@ -136,7 +140,8 @@
 				case 1: 
 					console.log(`Payment succeeded`);
 					hideDisplay('orderPayment', 'orderSuccess');	
-					setTimeout("window.location = 'http://localhost:5000/user/order';", 300);
+					orderComplete(); // yet to be done
+					//setTimeout("window.location = 'http://localhost:5000/user/order/orderComplete/'con;", 4000);
 
 				break;
 

@@ -140,7 +140,6 @@ Router.post('/payment',async function(req, res) {
 		const stan     = ++nets_stan;
 
 		// Create nets stan
-		console.log('nini',req.body);
 		const today = new Date();
 		const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
 		const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
@@ -318,107 +317,172 @@ Router.post('/void',async function(req, res) {
 });
 // ___________________________________________________________________________________________________________________________________________________________________________________________
 
-
-Router.get('/orderComplete', async function(req, res){
-    console.log("Order completed");
-    console.log("===================");
-	const dtime = 30;
-	var etime = dtime + 10
-
-    // Inventory operations below
-    const orders = await Cart.findAll({
-        attributes: ['cart_user_id', 'cart_item_name', 'cart_item_quantity'],
-        where: { cart_user_id: req.user.uuid },
-        raw: true
-    });
-    let add_quantity = {};
-    // To get total amount to add into the inventory stock level record
-    for (var food in orders) {
-        var item = orders[food];
-        // Get the food ingredient list
-        let ingredients = await Menu.findOne({
-            attributes: ['item_ingredients'],
-            where: { item_name: item.cart_item_name }
+// Order success page
+Router.get('/orderComplete/:orderID', async function(req, res){
+    console.log("Order create page");
+	
+	// Delete all payment requests leaving final transaciton
+	try {
+        const payment = await Payment.findAll({
+            where: { payment_user_id: req.user.uuid, payment_order_id: req.params.orderID },
+            attributes: ['payment_stan'],
+            raw: true
         });
-        var ingredients_list = ingredients.item_ingredients.split(',');
-        // Accumulate the amount for each ingredient
-        for (var supply in ingredients_list) {
-            var key = await Supplies.findOne({
-                attributes: ['item_id'],
-                where: {
-                    item_name: ingredients_list[supply]
-                }
-            });
-            if (supply in add_quantity) {
-                add_quantity[key.item_id] += parseInt(orders[food].cart_item_quantity);
-            }
-            else {
-                add_quantity[key.item_id] = parseInt(orders[food].cart_item_quantity);
-            }
-        }
+		let nets_stan = 0;
+		for (let i in payment) {
+			if (payment[i].payment_stan > nets_stan) {
+				nets_stan = payment[i].payment_stan;
+			}
+		}
+		const deletePayment = await Payment.destroy({
+			where:{ 
+				payment_user_id: req.user.uuid,
+				payment_order_id: req.params.orderID,
+				payment_stan: {
+					[Sequelize.Op.not]: nets_stan
+				}
+			}
+		});
+	   
+	   console.log("Successfully cleared payment requests");
     }
-    console.log(add_quantity);
-    // Update stock used and stock left for each supply item
-    for (var supply in add_quantity) {
-        const addSupplies = await SupplyPerformance.increment('stock_used', {
-            by: add_quantity[supply],
-            where: { item_id:supply, week_no: 1 }
-        });
-        const reduceSupplies = await SupplyPerformance.decrement('current_stock_lvl', {
-            by: add_quantity[supply],
-            where: { item_id:supply, week_no: 1 }
-        });
+    catch (error) {
+        console.log("Error fetching " + req.params.item_name + " from menu");
+        console.log(error);
     }
+	
+	// Create orders
+	try {
+		// Check if order exisits to prevent double create
+		const order = await Order.findAll({
+            where: { order_user_id: req.user.uuid, order_id: req.params.orderID }
+        });
+		// Retrieve cart items
+		const cart = await Cart.findAll({
+            where: { cart_user_id: req.user.uuid },
+            attributes: ['cart_item_name', 'cart_item_price', 'cart_item_quantity'],
+            raw: true
+        });
+		// Get date time
+		const today = new Date();
+		const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+		const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+		const dateTime = date+' '+time;
 
-    // Rewards operations below
-    // Marking rewards to be claimed
-    // Get rewards (identified by price = $0 )
-    const rewards = await Cart.findAll({
-        attributes: ['cart_item_name'],
-        where: {
-            uuid: req.user.uuid, 
-            cart_item_price: 0
-        }
-    });
-    // Store the days that were claimed
-    let day_nos = [];
-    for (var r in rewards) {
-        var re_day_no = parseInt(rewards[r].cart_item_name.substring(-3, 2));
-        if (!day_nos.includes(re_day_no)) {
-            day_nos.push(re_day_no);
-        }
+		if (order.length == 0) {
+			for (let i in cart){	
+				const createOrder = await Order.create({
+					order_id: req.params.orderID,
+					order_item_name: cart[i].cart_item_name,
+					order_item_price: cart[i].cart_item_price,
+					order_item_quantity: cart[i].cart_item_quantity,
+					order_dateTime: dateTime,
+					order_user_id: req.user.uuid,
+				});
+			}
+			console.log("Successfully created new order object");
+		}
     }
-    // Mark the rewards claimed
-    const claimedReward = await UserRewards.update({
-        claimed: true
-    }, { where: {
-        uuid: req.user.uuid,
-        day_no :{[Op.in]: day_nos}
-    }});
+    catch (error) {
+        console.error("An error occured while trying to create the order object");
+        console.error(error);
+        return res.status(500).end();
+    }
+    // // Inventory operations below
+    // const orders = await Cart.findAll({
+    //     attributes: ['cart_user_id', 'cart_item_name', 'cart_item_quantity'],
+    //     where: { cart_user_id: req.user.uuid },
+    //     raw: true
+    // });
+    // let add_quantity = {};
+    // // To get total amount to add into the inventory stock level record
+    // for (var food in orders) {
+    //     var item = orders[food];
+    //     // Get the food ingredient list
+    //     let ingredients = await Menu.findOne({
+    //         attributes: ['item_ingredients'],
+    //         where: { item_name: item.cart_item_name }
+    //     });
+    //     var ingredients_list = ingredients.item_ingredients.split(',');
+    //     // Accumulate the amount for each ingredient
+    //     for (var supply in ingredients_list) {
+    //         var key = await Supplies.findOne({
+    //             attributes: ['item_id'],
+    //             where: {
+    //                 item_name: ingredients_list[supply]
+    //             }
+    //         });
+    //         if (supply in add_quantity) {
+    //             add_quantity[key.item_id] += parseInt(orders[food].cart_item_quantity);
+    //         }
+    //         else {
+    //             add_quantity[key.item_id] = parseInt(orders[food].cart_item_quantity);
+    //         }
+    //     }
+    // }
+    // console.log(add_quantity);
+    // // Update stock used and stock left for each supply item
+    // for (var supply in add_quantity) {
+    //     const addSupplies = await SupplyPerformance.increment('stock_used', {
+    //         by: add_quantity[supply],
+    //         where: { item_id:supply, week_no: 1 }
+    //     });
+    //     const reduceSupplies = await SupplyPerformance.decrement('current_stock_lvl', {
+    //         by: add_quantity[supply],
+    //         where: { item_id:supply, week_no: 1 }
+    //     });
+    // }
+
+    // // Rewards operations below
+    // // Marking rewards to be claimed
+    // // Get rewards (identified by price = $0 )
+    // const rewards = await Cart.findAll({
+    //     attributes: ['cart_item_name'],
+    //     where: {
+    //         uuid: req.user.uuid, 
+    //         cart_item_price: 0
+    //     }
+    // });
+    // // Store the days that were claimed
+    // let day_nos = [];
+    // for (var r in rewards) {
+    //     var re_day_no = parseInt(rewards[r].cart_item_name.substring(-3, 2));
+    //     if (!day_nos.includes(re_day_no)) {
+    //         day_nos.push(re_day_no);
+    //     }
+    // }
+    // // Mark the rewards claimed
+    // const claimedReward = await UserRewards.update({
+    //     claimed: true
+    // }, { where: {
+    //     uuid: req.user.uuid,
+    //     day_no :{[Op.in]: day_nos}
+    // }});
     
-    // Adding reward if user has hit checkpoint
-    // Count number of orders by the user according to the order id 
-    const total_orders = await Order.count({ 
-        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('order_id')), 'order_id']],
-        where: { uuid: req.user.uuid }
-    });
-    console.log("Total orders:"+total_orders);
+    // // Adding reward if user has hit checkpoint
+    // // Count number of orders by the user according to the order id 
+    // const total_orders = await Order.count({ 
+    //     attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('order_id')), 'order_id']],
+    //     where: { uuid: req.user.uuid }
+    // });
+    // console.log("Total orders:"+total_orders);
 
-    // Add if orders reached multiple of 5
-    if (total_orders % 5 == 0 && total_orders != 0) {
-        try {
-            const add_reward = await UserRewards.create({
-                uuid: req.user.uuid,
-                day_no: total_orders
-            });
-            console.log(`Successfully added reward to user:${req.user.uuid}'s rewards list`);
-        }
-        catch (error) {
-            console.error("An error occured");
-            console.error(error);
-        }
-    }
-
+    // // Add if orders reached multiple of 5
+    // if (total_orders % 5 == 0 && total_orders != 0) {
+    //     try {
+    //         const add_reward = await UserRewards.create({
+    //             uuid: req.user.uuid,
+    //             day_no: total_orders
+    //         });
+    //         console.log(`Successfully added reward to user:${req.user.uuid}'s rewards list`);
+    //     }
+    //     catch (error) {
+    //         console.error("An error occured");
+    //         console.error(error);
+    //     }
+    // }
+	const dtime = 10;
+	const etime = 20;
 	res.render('order/orderComplete', {
 		dtime : dtime,
 		etime : etime
