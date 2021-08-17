@@ -24,6 +24,9 @@ Router.post('/forgot', async function (req,res,next) {
             email: req.body.email,
             eActive: {
                 [Op.eq]: 1
+            },
+            uuid: {
+                [Op.not]: '00000000-0000-0000-000000000000'
             }
         }
     });
@@ -192,10 +195,6 @@ async function register_process(req,res){
     let errors = [];
     
     try {
-        if (!regexName.test(req.body.name)) {
-            errors.push({text: "Invalid name provided! It must be minimum 3 characters and starts with an alphabet."});
-        }
-
         if (!regexEmail.test(req.body.email)){
             errors.push({text: "Invalid email provided!"});
         }
