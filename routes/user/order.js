@@ -15,6 +15,7 @@ const Moment = require('moment');
 const { nets_api_key, nets_api_skey, nets_api_gateway } = require('./payment-config.js');
 const { Payment } = require('../../models/Payment');
 const uuid = require('uuid');
+const { RewardsList } = require('../../models/RewardsList');
 
 let   nets_stan     = 0;	//	Counter id for nets, keep this in database
 
@@ -474,6 +475,17 @@ Router.get('/orderComplete/:orderID', async function(req, res){
     // Add if orders reached multiple of 5
     if (total_orders % 5 == 0 && total_orders != 0) {
         try {
+			const reward_exists = await RewardsList.findOne({
+				where: {day_no: total_orders}
+			});
+			// If user reached a reward that has not been set, create a new reward item
+			// Ensure promise to user that the reward will be given once set
+			if (reward_exists == null) {
+				const make_null_day = await RewardsList.create({
+					day_no: total_orders,
+					food_no: 1
+				});
+			}
             const add_reward = await UserRewards.create({
                 uuid: req.user.uuid,
                 day_no: total_orders
