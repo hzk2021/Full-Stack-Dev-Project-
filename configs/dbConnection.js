@@ -7,6 +7,7 @@ const {Supplies} = require('../models/Supplies');
 const {Cart} = require('../models/Cart');
 const {Order} = require('../models/Order');
 const {Menu} = require('../models/Menu');
+const {Payment} = require('../models/Payment');
 const {MenuCategory} = require('../models/MenuCategory');
 const { SupplyCategory } = require('../models/SupplyCategory');
 const { SupplyPerformance } = require('../models/SupplyPerformance');

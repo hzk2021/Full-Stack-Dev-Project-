@@ -5,7 +5,7 @@ const {UserRewards} = require('../../models/UserRewards');
 const {Order} = require('../../models/Order');
 const {Cart} = require('../../models/Cart');
 const { Op } = require('sequelize');
-const { arrange_rewards, arrange_rewards_noNull } = require('../../utilities/functions');
+const { arrange_rewards, arrange_rewards_noNull, arrange_rewards_tab } = require('../../utilities/functions');
 
 
 Router.get('', async function (req, res) {
@@ -64,49 +64,108 @@ Router.get('', async function (req, res) {
     });
 });
 
-Router.get('/add-reward-to-cart/:day_no', async function (req, res) {
+Router.post('/add-reward-to-cart', async function (req, res) {
     // Get all food from the day
-    const reward = await UserRewards.findAll({
-        attributes: ['food_name'],
-        where: {day_no:req.params.day_no},
+    const reward = await RewardsList.findAll({
+        attributes: ['day_no', 'food_name'],
+        where: {day_no:req.body.day_no},
         raw: true
     });
+    console.log(reward);
+    const cart_id = await Cart.findOne({
+        attributes: ['cart_item_id'],
+        where: {cart_user_id: req.user.uuid}
+    })
 
     // Adding all reward food into cart
-    let found_quant;
-    let cart;
+    added_array = [];
+    var day_no = req.body.day_no.toLocaleString('en-US', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+    });
+    
     for (var obj in reward) {
-        // Check if the item has already been added
-        found_quant = await Cart.findOne({
-            attributes: ['cart_item_quantity'],
-            where: {cart_item_name: reward[obj].food_name+" (Reward "+reward.day_no.ToFixed(2)+")"}
-        });
         // Adding the item into the cart
-        if (found_quant == null) {
-            cart = await Cart.create({
-                cart_item_name: obj.food_name+" (Reward "+reward.day_no.ToFixed(2)+")",
-                cart_item_price: 0,
-                cart_item_quantity: 1
+        if (added_array.includes(reward[obj].food_name)) {
+            cart = await Cart.increment('cart_item_quantity', {
+                where: {
+                    cart_item_name: reward[obj].food_name+" (Reward "+day_no+")",
+                    cart_user_id: req.user.uuid 
+                }
             });
         }
         // Else add on to the quantity of the item
         else {
-            cart = await Cart.increment('cart_item_quantity', {
-                where: {cart_item_name: reward[obj].food_name+" (Reward "+reward.day_no.ToFixed(2)+")" 
-                }
+            cart = await Cart.create({
+                cart_user_id: req.user.uuid,
+                cart_item_id: cart_id.cart_item_id,
+                cart_item_name: reward[obj].food_name+" (Reward "+day_no+")",
+                cart_item_price: 0,
+                cart_item_quantity: 1
             });
+            added_array.push(reward[obj].food_name);
         }
     }
-
-    return res.redirect('/user/cart');
-});
-
-Router.get('/remove-reward-from-cart/:day_no', async function (req, res) {
-    const removeReward = await Cart.destroy({where:{
-        [Op.like]: '% (Reward '+req.params.day_no.ToFixed(2)+')'
+    // Mark the rewards claimed
+    const claimed = await UserRewards.update({
+        claimed: true
+    }, {where: {
+        day_no: req.body.day_no,
+        uuid: req.user.uuid
     }});
 
-    return res.redirect('/user/cart');
+    // Get all the newly added items
+    const added_items = await Cart.findAll({
+        attributes: ['cart_item_name', 'cart_item_price', 'cart_item_quantity'],
+        where: { 
+            cart_user_id: req.user.uuid,
+            cart_item_name: { [Op.substring]: "(Reward "+day_no+")" }
+        },
+        raw: true
+    });
+
+    return res.json({
+        added_items: added_items
+    });
+});
+
+Router.post('/remove-reward-from-cart', async function (req, res) {
+    // Remove from cart
+    var day_no = req.body.day_no.toLocaleString('en-US', {
+        minimumIntegerDigits: 2,
+        useGrouping: false
+    });
+    try {
+        const removeReward = await Cart.destroy({where:{
+            cart_item_name: {[Op.substring]: '(Reward '+day_no+')'}
+        }});
+        // Mark the rewards unclaimed
+        const unclaim = await UserRewards.update({
+            claimed: false
+        }, {where: {day_no: req.body.day_no}});
+    }
+    catch (error) {
+        console.error("An error occurred trying to remove reward from cart");
+        console.error(error);
+    }
+    // Get user rewards (For rewards tab)
+    const rewards = await RewardsList.findAll({
+        include: [{
+            model: UserRewards,
+            where: {
+                uuid:req.user.uuid,
+                day_no: req.body.day_no
+            },
+            order: [['day_no', 'ASC']]
+        }],
+        attributes: ['day_no', 'food_name'],
+        raw: true
+    });
+    const prizes_list = await arrange_rewards_tab(rewards);
+
+    return res.json({
+        prizes_list: prizes_list
+    });
 })
 
 module.exports = Router;

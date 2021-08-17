@@ -4,11 +4,12 @@
 <div id='orderPayment' style="display: block;">
 	<p>Order Total: S$ {{total}}</p>
 	<input type="hidden" id="price" name="amount" value="{{totalCents}}">
+	<input type="hidden" id="orderID" name="orderID" value="{{orderID}}">
 	<button type="button" id='scanButton' class="btn btn-outline-primary" style='display: block'; onclick="generate_qr_code(null); hideDisplay('scanButton', 'qr_code');">Scan to pay</button>
 	<img src="null" id="qr_code" style="display: none;">
 </div>
 <div id='orderSuccess' style="display: none; text-align:center;">
-	<h2>Transaction success: Your order has been sent</h2>
+	<h2>Transaction success: Your order is being sent</h2>
 	<br>
 	<p>redirecting you to your orders...</p>
 </div>
@@ -46,7 +47,7 @@
 		orderPayment.style.display = "none"; 
 		let orderTimeout = document.getElementById('orderTimeout');
 		orderTimeout.style.display = 'none';
-		setTimeout("window.location = 'http://localhost:5000/user/order/confirmOrder';", 3000);
+		setTimeout("window.location = 'http://localhost:5000/user/order/orderComplete';", 3000);
 	}
 
 	function orderTimeout() {
@@ -69,7 +70,8 @@
 			},
 			method: "POST",
 			body:   JSON.stringify({
-				amount: document.getElementById("price").value
+				amount: document.getElementById("price").value,
+				orderID: document.getElementById("orderID").value
 			})
 		});
 		if (response.ok) {
