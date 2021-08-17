@@ -5,6 +5,7 @@ const Entry = require('../../models/Entry');
 const { Order } = require('../../models/Order');
 const { Op, fn, col} = require('sequelize');
 const { sequelize } = require('../../configs/database');
+const { getKeyByValue } = require('../../utilities/helperFunctions');
 const Router = Express.Router();
 
 Router.get('/', async function(req, res){
@@ -35,6 +36,7 @@ Router.get('/chart', async function(req,res){
     const admins_data = await getAdminDBData();
     const feedbacks_data = await getFeedbackDBData();
     const entries_data = await getEntryDBData();
+    const orders_data = await getOrderDBData();
 
     return res.render('dashboard/showChart', {
         'userCount': users_data['count'],
@@ -46,7 +48,9 @@ Router.get('/chart', async function(req,res){
         'negativeFeedback' : feedbacks_data['negative'],
         'entryCount' : entries_data['count'],
         'normalTemp' : entries_data['normal'],
-        'abnormalTemp' : entries_data['abnormal']
+        'abnormalTemp' : entries_data['abnormal'],
+        'orderDates': orders_data['orderDates'],
+        'revenuePerDate': orders_data['revenuePerDate']
     })
 });
 
@@ -188,24 +192,55 @@ async function getOrderDBData(){
     let unique_order_ids = []
     let order_amounts = {}
 
+    let order_dates = {}
+    let order_dateOnly = []
+    let order_revenueOnly = []
+
     try{
-        const orders = await Order.findAll();
+        const orders = await Order.findAll({
+            order: sequelize.literal('order_dateTime ASC')
+        });
         for (let i = 0; i < orders.length; i++) {
             if (order_amounts[orders[i].order_id] == undefined){
                 order_amounts[orders[i].order_id] = 0;
             }
+
+            if (order_dates[orders[i].order_dateTime] == undefined){
+                order_dates[orders[i].order_dateTime] = 0;
+            }
+
             order_amounts[orders[i].order_id] = order_amounts[orders[i].order_id] + orders[i].order_item_price * orders[i].order_item_quantity;
             order_ids.push(orders[i].order_id);
+
+            order_dates[orders[i].order_dateTime] += orders[i].order_item_price * orders[i].order_item_quantity;
+
         }
         
         unique_order_ids = order_ids.filter((item, i, ar) => ar.indexOf(item) === i);
 
         for (let i = 0; i < unique_order_ids.length; i++) {
-            order_amounts[unique_order_ids[i]] += 5; // Delivery Fee for each order  
+            order_amounts[unique_order_ids[i]] += 0; // without Delivery Fee for each order  
+            //order_amounts[unique_order_ids[i]] += 5; // Delivery Fee for each order  
             orders_data['totalAmount'] += order_amounts[unique_order_ids[i]];
         }
+        
+        var tempDate = []
+        for (var key in order_dates){
+            tempDate.push(key);
+        }
+
+        var tempDateRevenue = []
+        for (var key in order_dates){
+            tempDateRevenue.push(order_dates[key]);
+        }
+
+        order_dateOnly = tempDate.filter((item, i, ar) => ar.indexOf(item) === i);
+        order_revenueOnly = tempDateRevenue;
 
         orders_data['totalOrder'] = unique_order_ids.length;
+        orders_data['orderDates'] = order_dateOnly;
+        orders_data['revenuePerDate'] = order_revenueOnly;
+
 
     } catch(err){
         console.error(err);

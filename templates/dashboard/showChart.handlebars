@@ -89,16 +89,33 @@ var responsiveOptions = [
 new Chartist.Pie('#chart1', data1, options, responsiveOptions);
 new Chartist.Pie('#chart2', data2, options, responsiveOptions);
 
+const datesFull = '{{orderDates}}';
+const dates = datesFull.split(',');
+
+for (var i = 0; i < dates.length; i++){
+    dates[i] = (new Date(dates[i])).toLocaleDateString();
+}
+
+const revenueFull = '{{revenuePerDate}}'
+const revenues = revenueFull.split(',');
+
 new Chartist.Line('#chart3', {
-  labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+  labels: dates,
   series: [
-    [12, 9, 7, 8, 5]
+    revenues
   ]
 }, {
   fullWidth: false,
   width: 1300,
   chartPadding: {
     right: 40
+  }, 
+  low: Math.floor(Math.min.apply(Math, revenues)),
+  high: Math.floor(Math.max.apply(Math, revenues) * 1.5),
+  axisY: {
+      labelInterpolationFnc: function(value) {
+          return Math.floor(value);
+      }
   }
 });
 
