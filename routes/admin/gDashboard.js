@@ -26,7 +26,8 @@ Router.get('/', async function(req, res){
         'negativeFeedback' : feedbacks_data['negative'],
         'entryCount' : entries_data['count'],
         'totalOrder': orders_data['totalOrder'],
-        'totalAmount': orders_data['totalAmount']
+        'totalAmount': orders_data['totalAmount'],
+        'title': "Admin Dashboard"
     })
 });
 
@@ -50,7 +51,8 @@ Router.get('/chart', async function(req,res){
         'normalTemp' : entries_data['normal'],
         'abnormalTemp' : entries_data['abnormal'],
         'orderDates': orders_data['orderDates'],
-        'revenuePerDate': orders_data['revenuePerDate']
+        'revenuePerDate': orders_data['revenuePerDate'],
+        'title': "Admin Dashboard (Graph)"
     })
 });
 
