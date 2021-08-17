@@ -8,6 +8,7 @@ const sqlSession = require('./configs/dbSession');
 const LocalsMiddleware = require('./utilities/locals_object');
 const MainRoutes = require('./routes/main');
 const registerHelper = require('./utilities/register_helpers');
+const BodyParser = require('body-parser');
 
 const Server = Express();
 const Port = process.env.PORT || 5000;
@@ -33,6 +34,8 @@ Server.use(Flash());
 PassportSetup.InitializePassport(Server);
 sqlDB.InitializeDB(false);
 Server.use(LocalsMiddleware);
+Server.use(BodyParser.urlencoded({ extended: false }));
+Server.use(BodyParser.json());
 
 Server.use('/', MainRoutes); // Main
 registerHelper.RegisterHelpers(); // Registering custom handlebars

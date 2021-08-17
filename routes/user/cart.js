@@ -14,7 +14,7 @@ const {arrange_rewards_tab} = require('../../utilities/functions');
 Router.get('/', async function(req, res){
     console.log("Confirm order page accessed");
     try {
-        const cart = await Cart.findAll({
+        let cart = await Cart.findAll({
             where: { cart_user_id: req.user.uuid},
             attributes: ['cart_item_name', 'cart_item_price', 'cart_item_quantity'],
             raw: true
@@ -31,27 +31,59 @@ Router.get('/', async function(req, res){
 		const total = subtotal + deliveryFee;
 
         // Below is for rewards
-        // Get user rewards
         let prizes_list;
+        let cart_prizes = [];
         try {
+            // Get user rewards (For rewards tab)
             const rewards = await RewardsList.findAll({
                 include: [{
                     model: UserRewards,
                     where: {
                         uuid:req.user.uuid,
                         claimed: false
-                    }
+                    },
+                    order: [['day_no', 'ASC']]
                 }],
                 attributes: ['day_no', 'food_name'],
-                where:{uuid:req.user.uuid},
                 raw: true
             });
-
             prizes_list = await arrange_rewards_tab(rewards);
+            console.log(prizes_list);
+            // Get list of prizes in cart
+            
+            var check_no;
+            var rewards_group = [];
+            for (i=0; i<cart.length; i++) {
+                if (cart[i].cart_item_name.includes("(Reward")) {
+                    var name = cart[i].cart_item_name;
+                    if (check_no == null) {
+                        check_no = name.substr(-3, 2);
+                    }
+                    if (name.substr(-3, 2) == check_no) {
+                        cart[i].day_no = parseInt(check_no);
+                        rewards_group.push(cart[i]);
+                        if (i == cart.length-1) {
+                            cart_prizes.push(rewards_group);
+                        }
+                    }
+                    else {
+                        cart_prizes.push(rewards_group);
+                        check_no = name.substr(-3, 2);
+                        cart[i].day_no = parseInt(check_no);
+                        rewards_group = [cart[i]];
+                    }
+                    cart.splice(i, 1);
+                    i--;
+                }
+            }
+            for (var i in cart_prizes) {
+                cart_prizes[i][0].len = cart_prizes[i].length
+            }
+            console.log(cart_prizes); 
         }
         catch (error) {
-            console.log(error)
-            console.error("User is not logged in");
+            console.error("User is not logged in or has no rewards yet");
+            console.error(error);
         }
 		
         return res.render('cart/cart', {
@@ -59,7 +91,8 @@ Router.get('/', async function(req, res){
             subtotal: subtotal.toFixed(2),
             deliveryFee: deliveryFee.toFixed(2),
             total: total.toFixed(2),
-            prizes_list: prizes_list
+            prizes_list: prizes_list,
+            cart_prizes: cart_prizes
         });    
     }
     catch (error) {

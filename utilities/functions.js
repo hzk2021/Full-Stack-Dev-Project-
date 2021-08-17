@@ -92,8 +92,12 @@ const arrange_rewards_noNull = function (prizes) {
     }
 }
 
+// Format: [ {day_no: 5, length: 2, prizes: [Food1, Food2]} ]
 const arrange_rewards_tab = function (prizes) {
     let sorted_list = [];
+    if (prizes.length == 0) {
+        return sorted_list
+    }
     let sorted_dict = {day_no: prizes[0].day_no, length:1, prizes:[]};
     let iterated_values = {};
     iterated_values[prizes[0].food_name] = 1;
