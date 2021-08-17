@@ -1,0 +1,136 @@
+<div class="container">
+    
+    <div class="row">
+        <div class="col-md-12 page-header">
+          <a class="btn btn-warning floater" href="/admin/dashboard">
+              Go Back
+          </a>
+        </div>
+
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-md-6 page-header border-add">
+            <h1>Feedbacks</h1>
+            <div class="ct-chart ct-octave" id="chart1"></div>
+            <p class="padd-left">Positive <span class="greenlabel">‎‎‏‏‎ ‎</span></p>
+            <p class="padd-left">Negative <span class="redlabel">‏‏‎ ‎</span></p>
+        </div>
+
+        <div class="col-md-6 page-header border-add border-remove-left">
+            <h1>Entries</h1>
+            <div class="ct-chart ct-octave" id="chart2"></div>
+            <p class="padd-left">Normal <span class="greenlabel">‎‎‏‏‎ ‎</span></p>
+            <p class="padd-left">Abnormal <span class="redlabel">‏‏‎ ‎</span></p>
+        </div>
+    </div>
+    <br>
+    <div class="row border-add">
+        <div class="col-md-12 page-header">
+            <h1>Revenue</h1>
+            <div class="ct-chart ct-octave" id="chart3"></div>
+
+        </div>
+    </div>
+
+</div>
+
+<div class="ct-chart ct-octave" id="chart1"></div>
+<div class="ct-chart ct-octave	" id="chart2"></div>
+
+<script>
+var data1 = {
+  series: [{value: {{positiveFeedback}}, className: 'green'}, {value: {{negativeFeedback}}, className: 'red'}],
+  labels: ["Positive", "Negative"]
+};
+
+var data2 = {
+  series: [{value: {{normalTemp}}, className: 'green'}, {value: {{abnormalTemp}}, className: 'red'}],
+  labels: ["Positive", "Negative"]
+};
+
+var options = {
+  labelInterpolationFnc: function(value) {
+    return value[0]
+  }
+};
+
+var responsiveOptions = [
+  ['screen and (min-width: 640px)', {
+    chartPadding: 9999,
+    labelOffset: 100,
+    labelDirection: 'explode',
+    labelInterpolationFnc: function(value) {
+      return value;
+    }
+  }],
+  ['screen and (min-width: 1024px)', {
+    labelOffset: 9999,
+    chartPadding: 20
+  }]
+];
+
+new Chartist.Pie('#chart1', data1, options, responsiveOptions);
+new Chartist.Pie('#chart2', data2, options, responsiveOptions);
+
+new Chartist.Line('#chart3', {
+  labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+  series: [
+    [12, 9, 7, 8, 5]
+  ]
+}, {
+  fullWidth: false,
+  width: 1300,
+  chartPadding: {
+    right: 40
+  }
+});
+
+</script>
+
+<style>
+    .green{
+        fill: green;
+    }
+
+    .red {
+        fill: red;
+    }
+
+    .ct-label {
+        color: red;
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        font-size: 15px;
+    }
+
+    .padd-left {
+        padding-left: 26%;
+        display: inline-block;
+    }
+
+    .greenlabel {
+        display: block;
+        margin: auto;
+        width: 25%;
+        height: 15px;
+        background: green;
+    }
+
+
+    .redlabel {
+        display: block;
+        margin: auto;
+        width: 25%;
+        height: 15px;
+        background: red;
+    }
+
+    .border-add {
+        border: 1px solid black;
+    }
+
+    .border-remove-left {
+        border-left: none;
+    }
+
+</style>

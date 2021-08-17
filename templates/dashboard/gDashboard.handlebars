@@ -2,22 +2,133 @@
     .card.card-stats {
         margin-bottom: 20px;
     }
+
+    .floater {
+      float:right;
+    }
+    
 </style>
 
 <div class="container">
+  
     <div class="row">
-        <div class="col-md-12 page-header">
-            <div class="page-pretitle">Overview</div>
-            <h2 class="page-title">Dashboard</h2>
+        <div class="col-md-6 page-header">
+            <h1 class="page-title">Dashboard</h1>
         </div>
+
+        <div class="col-md-6 page-header">
+          <a class="btn btn-warning floater" href="/admin/dashboard/chart">
+              Show Graphs
+          </a>
+        </div>
+
     </div>
 
     <div class="header pb-6">
       <div class="container-fluid">
         <div class="header-body">
           <br>
+
+          <h3>Statistics</h3>
           <!-- Card stats -->
           <div class="row">
+
+            <div class="col-xl-4 col-md-6">
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Revenue</h5>
+                      <span class="h2 font-weight-bold mb-0">$5392</span>
+                    </div>
+                    <div class="col-auto">
+                        
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-xl-4 col-md-6">
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Total Orders</h5>
+                      <span class="h2 font-weight-bold mb-0">210</span>
+                    </div>
+                    <div class="col-auto">
+                        
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-xl-4 col-md-6">
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Store Entries</h5>
+                      <span class="h2 font-weight-bold mb-0">{{entryCount}}</span>
+                    </div>
+                    <div class="col-auto">
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <h3>Feedbacks</h3>
+          <!-- Card stats -->
+          <div class="row">
+            <div class="col-xl-6 col-md-6">
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Positive</h5>
+                      <span class="h2 font-weight-bold mb-0">{{positiveFeedback}}</span>
+                    </div>
+                    <div class="col-auto">
+                        
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-xl-6 col-md-6">
+              <div class="card card-stats">
+                <!-- Card body -->
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <h5 class="card-title text-uppercase text-muted mb-0">Negative</h5>
+                      <span class="h2 font-weight-bold mb-0">{{negativeFeedback}}</span>
+                    </div>
+                    <div class="col-auto">
+                        
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <h3>Accounts</h3>
+          <!-- Card stats -->
+          <div class="row">
+            
             <div class="col-xl-3 col-md-6">
               <div class="card card-stats">
                 <!-- Card body -->
@@ -51,22 +162,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-xl-3 col-md-6">
-              <div class="card card-stats">
-                <!-- Card body -->
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-0">Temp Users</h5>
-                      <span class="h2 font-weight-bold mb-0">{{notVerifiedUserCount}}</span>
-                    </div>
-                    <div class="col-auto">
 
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
             <div class="col-xl-3 col-md-6">
               <div class="card card-stats">
                 <!-- Card body -->
