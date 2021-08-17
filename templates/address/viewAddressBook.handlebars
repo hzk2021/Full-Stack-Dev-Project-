@@ -1,0 +1,64 @@
+<style>
+    .addrBStyle {
+        border: 2px solid #007bff;
+        margin: 1%;
+    }
+    .sidebyside {
+        float: left;
+        margin: 5px;
+        margin-left: 0;
+    }
+
+    .sidebyside::after{
+        float: none;
+    }
+</style>
+
+<div class="container">
+    <div>
+        <h1>Address Book</h1>
+        <a class="btn btn-primary" href="/user/address/create">
+            Add New Address
+        </a>
+    </div>
+    <br>
+
+    {{#if addresses}}
+    
+    {{else}}
+        <div>Uh Oh! You don't have any addresses saved yet.</div>
+    {{/if}}
+
+    
+    {{#grouped_each 2 addresses}}
+    <div class="row">
+        {{#each this }}
+        <div class="col-sm-4 addrBStyle">
+            <h6>Country: {{this.Country}}</h6>
+            <h6>Address: {{this.Address}}</h6>
+            <h6>City: {{this.City}}</h6>
+            <h6>State: {{this.State}}</h6>
+            <h6>Postal Code: {{this.PostalCode}}</h6>
+            <h6>Phone Number: {{this.PhoneNo}}</h6>
+
+            <a href="/user/address/update/{{this.addressID}}/{{this.Country}}/{{this.Address}}/{{this.City}}/{{this.State}}/{{this.PostalCode}}/{{this.PhoneNo}}" class="btn btn-warning sidebyside">Update</a>
+            <button id="DeleteReqButton" type="submit" class="btn btn-danger sidebyside" onclick="confirmDelete('{{this.addressID}}', this)"> Delete
+        </div>
+        {{/each}}
+    </div>
+    {{/grouped_each}}
+
+</div>
+
+<script>
+   function confirmDelete(value, object){
+       bootbox.confirm("Are you sure you want to delete this address?", function(result){
+           if (result == true){
+               document.body.innerHTML += `<form id="deleteReqForm" action="/user/address/delete/${value}" method="POST">
+               <input type="submit" value="Delete" class="btn btn-danger"> </form>`
+
+              document.getElementById("deleteReqForm").submit();
+           }
+       });
+   }
+</script>

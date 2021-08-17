@@ -14,12 +14,18 @@ class User extends Model{
     get name() { return String(this.getDataValue("name")); }
     get role(){ return String(this.getDataValue("role")); }
     get email() { return String(this.getDataValue("email")); }
+    get eActive() { return String(this.getDataValue("eActive")); }
     get dateCreated() { return new Date(this.getDataValue("dateCreated")); }
     get dateUpdated() { return new Date(this.getDataValue("dateUpdated")); }
+    get resetPasswordToken() { return new String(this.getDataValue("resetPasswordToken")); }
+    get resetPasswordExpires() { return new parseInt(this.getDataValue("resetPasswordExpires")); }
 
     set uuid(uuid) { this.setDataValue("uuid", uuid); }
     set name(name) { this.setDataValue("name", name); }
-    set email(email) { this.setDataValue("email", email)}
+    set email(email) { this.setDataValue("email", email); }
+    set eActive(b00l) { this.setDataValue('eActive', b00l); }
+    set resetPasswordToken(token) { this.setDataValue("resetPasswordToken", token); }
+    set resetPasswordExpires(timetick) { this.setDataValue('resetPasswordExpires', timetick); }
     
 }
 
@@ -36,6 +42,11 @@ User.init({
     email: {
         type: Sequelize.STRING(128),
         allowNull: false
+    },
+    eActive: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        default: false
     },
     role: {
         type: Sequelize.ENUM,
@@ -56,6 +67,12 @@ User.init({
         type: Sequelize.DATE(),
         allowNull: false,
         defaultValue: Sequelize.NOW
+    },
+    resetPasswordToken: {
+        type: Sequelize.STRING(50),
+    },
+    resetPasswordExpires: {
+        type: Sequelize.DATE()
     }
 }, {
     sequelize: Database.sequelize,
@@ -82,6 +99,7 @@ async function generate_root_account(){
             uuid    : "00000000-0000-0000-000000000000",
             name    : "root",
             email   : "root@mail.com",
+            eActive : true,
             role    : UserRole.Admin,
             password: Hash.sha256().update("P@ssw0rd").digest("hex")
         };

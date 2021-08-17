@@ -24,6 +24,7 @@ Router.get('/list-data', async function(req,res) {
         [Op.or]: {
             "uuid": { [Op.substring]: filterSearch} ,
             "email": { [Op.substring]: filterSearch} ,
+            "eActive": {[Op.substring]: filterSearch},
             "name": { [Op.substring]: filterSearch} ,
             "role": { [Op.substring]: filterSearch}
         }
@@ -100,6 +101,7 @@ Router.post('/create', async function(req,res) {
         const user = await User.create({
             name: req.body.name, 
             email: req.body.email,
+            eActive: true,
             role: req.body.role,
             password: Hash.sha256().update(req.body.password).digest("hex")
         });

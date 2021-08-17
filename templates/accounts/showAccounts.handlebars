@@ -25,6 +25,7 @@
     <tr>
       <th data-field="uuid">UUID</th>
       <th data-field="email">Email</th>
+      <th data-formatter="Verified">Verified</th>
       <th data-field="name">Name</th>
       <th data-field="role">Role</th>
       <th data-field="dateCreated">CreatedAt</th>
@@ -36,6 +37,14 @@
 
 <script>
 
+  function Verified(value,row){
+    if (row.eActive == 1){
+      return `<span> True </span>`
+    }else{
+      return `<span> False </span>`
+    }
+  }
+  
   function Delete(value, row){
     return `<button id="DeleteSelectedAccButton" type="submit" class="btn btn-danger" onclick="confirmDeleteAccount('${row.uuid}', this)"> Delete`
   }
