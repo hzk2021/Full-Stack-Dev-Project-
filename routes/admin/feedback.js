@@ -21,7 +21,6 @@ Router.get('/list-users-feedbacks', async function(req, res) {
 
     const condition = {
         [Op.or]: {
-            "byUser": { [Op.substring]: filterSearch},
             "feedbackID" : { [Op.substring]: filterSearch}, 
             "type": { [Op.substring]: filterSearch},
             "rating": { [Op.substring]: filterSearch},
