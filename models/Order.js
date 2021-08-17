@@ -30,7 +30,7 @@ Order.init({
         defaultValue: 1
     },
     order_dateTime: {
-        type: Sequelize.TIME(),
+        type: Sequelize.DATE(),
         allowNull: false,
         defaultValue: Sequelize.NOW
     },

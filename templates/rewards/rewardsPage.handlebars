@@ -8,7 +8,7 @@
             <h4>Login or sign up for membership</h4>
             <a class="btn btn-primary sign" href="/auth/login">Login</a>
             <br>
-            <a class="btn btn-outline-secondary sign" href="/auth/createUser">Sign up for membership</a>
+            <a class="btn btn-outline-secondary sign" href="/auth/register">Sign up for membership</a>
         </div>
     </div>
 </div>
@@ -20,35 +20,38 @@
 
 <div id="rewardsUser" class="rewards-table-container" style="width: 100%;">
 <table>
-    <!-- Rows that user has progressed -->
     <tbody>
-    {{#each user_prizes}}
+        <!-- Rows that user has progressed -->
+        {{#each user_prizes}}
         <tr>
             {{#for 0 4}}
             <td>
                 <div class="normal normal-day-cell">
                     <h3>Day </h3>
-                    <img class="completed-icon" src="DayCompleted.png" alt="Completed">
+                    <img class="completed-icon" src="/img/DayCompleted.png" alt="Completed">
                 </div>
             </td>
             {{/for}}
             <td>
-                <a href="/user/menu/menuPublic"><div class="normal reward reward-day-cell">
+                <a href="/user/menu"><div class="normal reward reward-day-cell">
                     <h3>Day </h3>
+                    {{#if this.food_name}}
                     <h5>{{ this.food_name }}</h5>
                     <h5>{{ this.food_name2 }}</h5>
                     <h5>{{ this.food_name3 }}</h5>
                     <h5>{{ this.food_name4 }}</h5>
-                    <img class="completed-icon" src="DayCompleted.png" alt="Completed">
-                    {{#if this.claimed}}
+                    {{else}}
+                    <h4><span class="text-danger">(Not specified yet)</span></h4>
+                    {{/if}}
+                    {{#if this.food_name}}
                     <p>Click to order and claim it!</p>
                     {{else}}
-                    <p>Prize claimed</p>
+                    <p>Reward has not been decided. Check back soon!</p>
                     {{/if}}
                 </div></a>
             </td>
         </tr>
-    {{/each}}
+        {{/each}}
         <!-- Final row with reached days -->
         <tr>
             <!-- Reached cells -->
@@ -56,7 +59,7 @@
             <td>
                 <div class="normal normal-day-cell">
                     <h3>Day </h3>
-                    <img class="completed-icon" src="DayCompleted.png" alt="">
+                    <img class="completed-icon" src="/img/DayCompleted.png" alt="Completed">
                 </div>
             </td>
             {{/for}}
@@ -77,7 +80,7 @@
                     <h5>{{ middle.food_name3 }}</h5>
                     <h5>{{ middle.food_name4 }}</h5>
                     {{else}}
-                    <h4>(Not specified yet)</h4>
+                    <h4><span class="text-danger">(Not specified yet)</span></h4>
                     {{/if}}
                     <p>Not claimable yet</p>
                 </div>
@@ -103,7 +106,7 @@
                     <h5>{{ this.food_name3 }}</h5>
                     <h5>{{ this.food_name4 }}</h5>
                     {{else}}
-                    <h4>(Not specified yet)</h4>
+                    <h4><span class="text-danger">(Not specified yet)</span></h4>
                     {{/if}}
                     <p>Not claimable yet</p>
                 </div>
