@@ -12,24 +12,18 @@ Order.init({
         primaryKey: true,
         default: Sequelize.DataTypes.UUIDV4
     },
-    order_id: {
-        type: Sequelize.CHAR(6),
-        allowNull: false
-    },
-    order_item: {
+    order_item_name: {
         type: Sequelize.STRING(64),
         allowNull: false
     },
-    order_price: {
+    cart_item_price: {
         type: Sequelize.DECIMAL(10,2),
         allowNull: false
     },
-    order_item_quantity: {
-        type: Sequelize.TINYINT(2),
-        allowNull: false
-    },
-    item_description: {
-        type: Sequelize.STRING(64)
+    cart_item_quantity: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 1
     },
     order_time: {
         type: Sequelize.TIME(),
