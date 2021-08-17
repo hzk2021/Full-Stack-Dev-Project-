@@ -1,0 +1,189 @@
+<br>
+<h1 class="display-4">Order payment (NETS QR)</h1>
+<br>
+<div id='orderPayment' style="display: block;">
+	<p>Order Total: S$ {{total}}</p>
+	<input type="hidden" id="price" name="amount" value="{{totalCents}}">
+	<button type="button" id='scanButton' class="btn btn-outline-primary" style='display: block'; onclick="generate_qr_code(null); hideDisplay('scanButton', 'qr_code');">Scan to pay</button>
+	<img src="null" id="qr_code" style="display: none;">
+</div>
+<div id='orderSuccess' style="display: none; text-align:center;">
+	<h2>Transaction success: Your order has been sent</h2>
+	<br>
+	<p>redirecting you to your orders...</p>
+</div>
+<div id='orderCancel' style="display: none; text-align:center;">
+	<h2>Transaction cancelled: Please try again</h2>
+	<br>
+	<p>redirecting you to back to order confirmation...</p>
+</div>
+<div id='orderTimeout' style="display: none; text-align:center;">
+	<h2>Transaction timeout: Please try again</h2>
+	<br>
+</div>
+
+{{!-- <div style="float: right;"> 
+	<p>Time left: x</p>
+</div> --}}
+
+<div>
+	<button type="button" id='cancel' class="btn btn-outline-secondary" onclick="orderCancel();">Cancel</button>
+	<button type="button" id='tryAgain' class="btn btn-outline-primary" style="display: none;" onclick="generate_qr_code(null); hideDisplay('tryAgain', 'qr_code'); hideDisplay('orderTimeout', 'orderPayment');">Try again</button>
+</div>
+
+<script>
+	function hideDisplay(a, b) {
+		let d = document.getElementById(a);
+		d.style.display = "none"; 
+
+		let h = document.getElementById(b);
+		h.style.display = "block"; 
+	}
+	
+	function orderCancel() {
+		hideDisplay('qr_code', 'orderCancel');
+		let orderPayment = document.getElementById('orderPayment');
+		orderPayment.style.display = "none"; 
+		let orderTimeout = document.getElementById('orderTimeout');
+		orderTimeout.style.display = 'none';
+		setTimeout("window.location = 'http://localhost:5000/user/order/confirmOrder';", 3000);
+	}
+
+	function orderTimeout() {
+		hideDisplay('orderPayment', 'orderTimeout');
+		let tryAgain = document.getElementById('tryAgain');
+		tryAgain.style.display = "inline-block"; 
+	}
+
+	
+
+
+	/**
+	 * Make a request to generate the QR code
+	 * @param {InputEvent} event
+	 **/
+	async function generate_qr_code(event) {
+		const response = await fetch("/user/order/payment", {
+			headers: {
+				"Content-Type": "application/json"
+			},
+			method: "POST",
+			body:   JSON.stringify({
+				amount: document.getElementById("price").value
+			})
+		});
+		if (response.ok) {
+			const content = await response.json();
+			preview_qr_code(content.qr_code);
+
+			//	Start auto ping
+			setTimeout(ping_transaction_status, 1000, 0, content);
+		}
+	}
+	
+	/**
+	 * Displays the QR code
+	 * @param {string} qr_code
+	 **/
+	function preview_qr_code(qr_code) {
+		document.getElementById("qr_code").src = `data:image;base64,${qr_code}`;
+	}
+
+	/**
+	 * Make a HTTP request to query the generated transaction
+	 * @param {JSON}   transaction
+	 * @param {number} attempt
+	 **/
+	async function ping_transaction_status(attempt, transaction) {
+
+		if (attempt > 3) {
+			orderTimeout();
+			return void_transaction(transaction);
+		}
+			
+
+		await document.getElementById("cancel").addEventListener("click", function() {
+ 			return void_transaction(transaction);
+		});
+
+		try {
+			const response = await fetch("/user/order/query", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					txn_identifier:   transaction.txn_identifier,
+					transaction_date: transaction.transaction_date,
+					transaction_time: transaction.transaction_time,
+					stan:             transaction.stan,
+					amount:           transaction.amount
+				})
+			});
+
+			if (!response.ok) { throw new Error ("Failed to query transaction"); }
+			const content = await response.json();
+			const status  = content.status;
+			
+			switch (status) {
+				case 0:
+					console.log(`Awaiting for payment: ${attempt}`);
+					return setTimeout(ping_transaction_status, 1000, attempt + 1, transaction);
+				break;
+
+				case 1: 
+					console.log(`Payment succeeded`);
+					hideDisplay('orderPayment', 'orderSuccess');	
+					setTimeout("window.location = 'http://localhost:5000/user/order';", 300);
+
+				break;
+
+				case -1:
+					console.log(`Payment cancelled`);
+				break;
+			}
+		}
+		catch (error) {
+			console.error(error);
+			console.error(`Failed to ping transaction :${transaction.txn_identifier}`);
+		}
+	}
+
+
+	async function void_transaction(transaction) {
+		try {
+			const response = await fetch("/user/order/void", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					txn_identifier:   transaction.txn_identifier,
+					transaction_date: transaction.transaction_date,
+					transaction_time: transaction.transaction_time,
+					stan:             transaction.stan,
+					amount:           transaction.amount
+				})
+			});
+
+			if (!response.ok) { throw new Error ("Failed to void transaction"); }
+			const content = await response.json();
+			const status  = content.status;
+			
+			switch (status) {
+				case 1:
+					console.log(`Transaction cancelled successfully`);
+					
+				break;
+
+				default:
+					console.log(`No action required`);
+				break;
+			}
+		}
+		catch (error) {
+			console.error(error);
+			console.error(`Failed to void transaction :${transaction.txn_identifier}`);
+		}
+	}
+</script>

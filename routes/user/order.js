@@ -1,26 +1,628 @@
 const Express = require('express');
 const Router = Express.Router();
+const {Cart} = require('../../models/Cart');
+const {UserRewards} = require('../../models/UserRewards');
+const {Order} = require('../../models/Order');
+const { Sequelize, Op } = require('sequelize');
+const {Menu} = require('../../models/Menu');
+const {SupplyPerformance} = require('../../models/SupplyPerformance');
+const { Supplies } = require('../../models/Supplies');
 
-Router.get('/onlineMenu', async function(req, res) {
-    return res.render('orders/menu', {
-        prizes_list: ["Coca-cola", "Beef Chili Cheese Fries"]
-    })
-})
+const Axios = require('axios');
+const FileSys = require('fs');
+const Hash = require('hash.js');
+const Moment = require('moment');
+const { nets_api_key, nets_api_skey, nets_api_gateway } = require('./payment-config.js');
 
-Router.get('/cart', async function(req, res) {
-    var subtotal = 0
-    let order_list = [{food:"Chargrilled Chicken Club", price:11.90}]
-    for (var i in order_list) {
-        subtotal += 11.90
+let   nets_stan     = 0;	//	Counter id for nets, keep this in database
+
+// Retrieve order details
+Router.get('/confirmOrder', async function(req, res) {
+    console.log("Confirm order page accessed");
+    try {
+        const cart = await Cart.findAll({
+            where: { cart_user_id: req.user.uuid},
+            attributes: ['cart_item_name', 'cart_item_price', 'cart_item_quantity'],
+            raw: true
+        });
+
+        // Calculate Subtotal, Delivery fee, Total
+		let subtotal = 0
+		for (let i in cart) {
+			subtotal += cart[i].cart_item_price * cart[i].cart_item_quantity;
+		};
+
+		const deliveryFee = 5;
+
+		const total = subtotal + deliveryFee;
+		
+        return res.render('order/confirmOrder', {
+            cart: cart,
+            subtotal: subtotal.toFixed(2),
+            deliveryFee: deliveryFee.toFixed(2),
+            total: total.toFixed(2),
+        });    
     }
-    total = subtotal + 4.00
-    return res.render('orders/cart', {
-        order_list: order_list,
-        order_rewards_list:{food:"Coca-cola"},
-        subtotal: subtotal.toFixed(2),
-        delivery_price: 4.00.toFixed(2),
-        total: total.toFixed(2)
-    })
-})
+    catch (error) {
+        console.error("An error occured while trying to retrieve the cart items");
+        console.error(error);
+        return res.status(500).end();
+    }
+});
+
+
+// Insert payment here -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/**
+ * Signs the payload with the secret key
+ * @param {{}} payload 
+ * @returns {string} Signature
+ */
+ function generate_signature(payload) {
+	// 1. signature = json + secret (Concatenate payload and secret)
+	const content = JSON.stringify(payload) + nets_api_skey;
+	// 2. signature = sha265(signature)SHA-256 Hash 
+	// 3. signature = uppercase(signature)Convert to Uppercase 
+	const hash    = Hash.sha256().update(content).digest('hex').toUpperCase();
+	// 4. signature = base64encode(signature)Base64 encode
+	return (Buffer.from(hash, 'hex').toString('base64'));
+}
+
+// Retrieve order total to generate NETS QR code
+Router.get('/payment', async function(req, res) {
+	try {
+		console.log("Payment page accessed");
+        const cart = await Cart.findAll({
+            where: { cart_user_id: req.user.uuid},
+            attributes: ['cart_item_price', 'cart_item_quantity'],
+            raw: true
+        });
+
+        // Calculate subtotal, delivery fee, total, total in cents
+		let subtotal = 0
+		for (let i in cart) {
+			subtotal += cart[i].cart_item_price * cart[i].cart_item_quantity;
+		};
+
+		const deliveryFee = 5;
+
+		const total = subtotal + deliveryFee;
+		const totalCents = total * 100;
+		
+        return res.render('payment/payment', {
+            total: total.toFixed(2),
+			totalCents: Math.round(totalCents),
+        });    
+    }
+    catch (error) {
+        console.error("An error occured while trying to retrieve the cart items");
+        console.error(error);
+        return res.status(500).end();
+    }
+});
+
+// Generate NETS QR code
+Router.post('/payment',async function(req, res) {
+	try {
+		if (!req.body.amount)
+			throw Error("missing required parameter `amount`");
+	}
+	catch (error) {
+		console.error(`Bad request`);
+		console.error(error);
+		return res.sendStatus(400);
+	}
+
+	//	Load the constant JSON request 
+	try {
+		const amount   = parseInt(req.body.amount);	//	Assume in cents
+		const datetime = new Date();				//	Current date and time
+
+		const payload  = JSON.parse(FileSys.readFileSync(`${process.cwd()}/res/nets/nets-qr-request.json`));
+		const stan     = ++nets_stan;
+		
+		//	Ensures that nets_stat is between 0 ~ 999999
+		if (nets_stan >= 1000000)
+			nets_stan = 0;
+
+		//	Just update these stuff
+		payload.stan             = stan.toString().padStart(6, '0');
+		payload.amount           = amount;
+		payload.npx_data.E201    = amount;
+		payload.transaction_date = Moment(datetime).format("MMDD");
+		payload.transaction_time = Moment(datetime).format("HHmmss");
+
+		//	Sign the payload
+		const signature = generate_signature(payload);
+		const response = await Axios.post(nets_api_gateway.request, payload, {
+			headers: {
+				"Content-Type": "application/json",
+				"KeyId":        nets_api_key,
+				"Sign":         signature
+			}
+		});
+
+		if (response.status != 200)
+			throw new Error("Failed request to NETs");
+
+		if (response.data.response_code != '00') {
+			throw new Error("Failed to request for QR Code");
+		}
+
+		console.log('chicken',response.data.stan);
+
+		return res.json({
+			"txn_identifier":   response.data.txn_identifier,
+			"amount":           response.data.amount,
+			"stan":             response.data.stan,
+			"transaction_date": response.data.transaction_date,
+			"transaction_time": response.data.transaction_time,
+			"qr_code":          response.data.qr_code
+		});
+	}
+	catch (error) {
+		console.error(`Failed to generate QR code for payment`);
+		console.error(error);
+		return res.sendStatus(500);
+	}
+});
+
+
+Router.post('/query',async function(req, res) {
+	try {
+
+	}
+	catch (error) {
+		console.error(`Bad request`);
+		console.error(error);
+		return res.sendStatus(400);
+	}
+
+	try {
+		const payload  = JSON.parse(FileSys.readFileSync(`${process.cwd()}/res/nets/nets-qr-query.json`));
+		
+		payload.txn_identifier   = req.body.txn_identifier;
+		payload.stan             = req.body.stan;
+		payload.transaction_date = req.body.transaction_date;
+		payload.transaction_time = req.body.transaction_time;
+		payload.npx_data.E201    = req.body.amount;
+		
+		const signature = generate_signature(payload);
+		const response  = await Axios.post(nets_api_gateway.query, payload, {
+			headers: {
+				"Content-Type": "application/json",
+				"KeyId":        nets_api_key,
+				"Sign":         signature
+			}
+		});
+
+		if (response.status != 200) 
+			throw new Error(`Failed to query transaction: ${payload.txn_identifier}`);
+		
+		switch (response.data.response_code) {
+			//	Pending
+			case "09":
+				return res.json({
+					status : 0
+				});
+
+			//	Success
+			case "00":
+				return res.json({
+					status : 1
+				});
+
+			//	Failed
+			default:
+				return res.json({
+					status : -1
+				});
+		}
+	}
+	catch (error) {
+		console.error(`Failed to query transaction`);
+		console.error(error);
+		return res.sendStatus(500);
+	}
+});
+
+// Void nets 
+Router.post('/void',async function(req, res) {
+	try {
+
+	}
+	catch (error) {
+		console.error(`Bad request`);
+		console.error(error);
+		return res.sendStatus(400);
+	}
+
+	try {
+		const payload  = JSON.parse(FileSys.readFileSync(`${process.cwd()}/res/nets/nets-qr-void.json`));
+		
+		payload.txn_identifier   = req.body.txn_identifier;
+		payload.stan             = req.body.stan;
+		payload.transaction_date = req.body.transaction_date;
+		payload.transaction_time = req.body.transaction_time;
+		payload.amount           = req.body.amount;
+		
+		const signature = generate_signature(payload);
+		const response  = await Axios.post(nets_api_gateway.void, payload, {
+			headers: {
+				"Content-Type": "application/json",
+				"KeyId":        nets_api_key,
+				"Sign":         signature
+			}
+		});
+
+		if (response.status != 200) 
+			throw new Error(`Failed to query transaction: ${payload.txn_identifier}`);
+		
+		console.log(response.data);
+
+		switch (response.data.response_code) {
+			//	Success
+			case "00":
+				return res.json({
+					status : 1
+				});
+			case "68":
+				return res.json({
+					status : 0
+				});
+			//	Skip?
+			default:
+				return res.json({
+					status : -1
+				});
+		}
+	}
+	catch (error) {
+		console.error(`Failed to void transaction`);
+		console.error(error);
+		return res.sendStatus(500);
+	}	
+});
+// ___________________________________________________________________________________________________________________________________________________________________________________________
+
+
+Router.get('/orderComplete', async function(req, res){
+    console.log("Order completed");
+    console.log("===================");
+	const dtime = 30;
+	var etime = dtime + 10
+
+    // Inventory operations below
+    const orders = await Cart.findAll({
+        attributes: ['cart_user_id', 'cart_item_name', 'cart_item_quantity'],
+        where: { cart_user_id: req.user.uuid },
+        raw: true
+    });
+    let add_quantity = {};
+    // To get total amount to add into the inventory stock level record
+    for (var food in orders) {
+        var item = orders[food];
+        // Get the food ingredient list
+        let ingredients = await Menu.findOne({
+            attributes: ['item_ingredients'],
+            where: { item_name: item.cart_item_name }
+        });
+        var ingredients_list = ingredients.item_ingredients.split(',');
+        // Accumulate the amount for each ingredient
+        for (var supply in ingredients_list) {
+            var key = await Supplies.findOne({
+                attributes: ['item_id'],
+                where: {
+                    item_name: ingredients_list[supply]
+                }
+            });
+            if (supply in add_quantity) {
+                add_quantity[key.item_id] += parseInt(orders[food].cart_item_quantity);
+            }
+            else {
+                add_quantity[key.item_id] = parseInt(orders[food].cart_item_quantity);
+            }
+        }
+    }
+    console.log(add_quantity);
+    // Update stock used and stock left for each supply item
+    for (var supply in add_quantity) {
+        const addSupplies = await SupplyPerformance.increment('stock_used', {
+            by: add_quantity[supply],
+            where: { item_id:supply, week_no: 1 }
+        });
+        const reduceSupplies = await SupplyPerformance.decrement('current_stock_lvl', {
+            by: add_quantity[supply],
+            where: { item_id:supply, week_no: 1 }
+        });
+    }
+
+    // Rewards operations below
+    // Marking rewards to be claimed
+    // Get rewards (identified by price = $0 )
+    const rewards = await Cart.findAll({
+        attributes: ['cart_item_name'],
+        where: {
+            uuid: req.user.uuid, 
+            cart_item_price: 0
+        }
+    });
+    // Store the days that were claimed
+    let day_nos = [];
+    for (var r in rewards) {
+        var re_day_no = parseInt(rewards[r].cart_item_name.substring(-3, 2));
+        if (!day_nos.includes(re_day_no)) {
+            day_nos.push(re_day_no);
+        }
+    }
+    // Mark the rewards claimed
+    const claimedReward = await UserRewards.update({
+        claimed: true
+    }, { where: {
+        uuid: req.user.uuid,
+        day_no :{[Op.in]: day_nos}
+    }});
+    
+    // Adding reward if user has hit checkpoint
+    // Count number of orders by the user according to the order id 
+    const total_orders = await Order.count({ 
+        attributes: [[Sequelize.fn('DISTINCT', Sequelize.col('order_id')), 'order_id']],
+        where: { uuid: req.user.uuid }
+    });
+    console.log("Total orders:"+total_orders);
+
+    // Add if orders reached multiple of 5
+    if (total_orders % 5 == 0 && total_orders != 0) {
+        try {
+            const add_reward = await UserRewards.create({
+                uuid: req.user.uuid,
+                day_no: total_orders
+            });
+            console.log(`Successfully added reward to user:${req.user.uuid}'s rewards list`);
+        }
+        catch (error) {
+            console.error("An error occured");
+            console.error(error);
+        }
+    }
+
+	res.render('order/orderComplete', {
+		dtime : dtime,
+		etime : etime
+	});
+});
+
 
 module.exports = Router;
+
+// Router.get("/generate",  page_generate);
+// Router.post("/generate", nets_generate);
+// Router.post("/query",    nets_query);
+// Router.post("/void",     nets_void);
+
+// let   nets_stan     = 0;	//	Counter id for nets, keep this in database
+
+// /**
+//  * Draws the example page that will create the QR Code
+//  * @param {import('express').Request} req 
+//  * @param {import('express').Response} res 
+//  */
+// async function page_generate(req, res) {
+// 	return res.render('payment/payment');
+// }
+
+// /**
+//  * Signs the payload with the secret key
+//  * @param {{}} payload 
+//  * @returns {string} Signature
+//  */
+// function generate_signature(payload) {
+// 	// 1. signature = json + secret (Concatenate payload and secret)
+// 	const content = JSON.stringify(payload) + nets_api_skey;
+// 	// 2. signature = sha265(signature)SHA-256 Hash 
+// 	// 3. signature = uppercase(signature)Convert to Uppercase 
+// 	const hash    = Hash.sha256().update(content).digest('hex').toUpperCase();
+// 	// 4. signature = base64encode(signature)Base64 encode
+// 	return (Buffer.from(hash, 'hex').toString('base64'));
+// }
+
+// /**
+//  * Generates a NETs QR code to be scanned. With specified price in CENTS
+//  * @param {import('express').Request} req 
+//  * @param {import('express').Response} res 
+//  */
+// async function nets_generate(req, res) {
+// 	try {
+// 		if (!req.body.amount)
+// 			throw Error("missing required parameter `amount`");
+// 	}
+// 	catch (error) {
+// 		console.error(`Bad request`);
+// 		console.error(error);
+// 		return res.sendStatus(400);
+// 	}
+
+// 	//	1. Load the constant JSON request 
+
+// 	try {
+// 		const amount   = parseInt(req.body.amount);	//	Assume in cents
+// 		const datetime = new Date();				//	Current date and time
+
+// 		const payload  = JSON.parse(FileSys.readFileSync(`${process.cwd()}/res/nets/nets-qr-request.json`));
+// 		const stan     = ++nets_stan;
+		
+// 		//	Ensures that nets_stat is between 0 ~ 999999
+// 		if (nets_stan >= 1000000)
+// 			nets_stan = 0;
+
+// 		//console.log(payload);
+
+// 		//	Just update these stuff
+// 		payload.stan             = stan.toString().padStart(6, '0');
+// 		payload.amount           = amount;
+// 		payload.npx_data.E201    = amount;
+
+// 		payload.transaction_date = Moment(datetime).format("MMDD");
+// 		//`${datetime.getMonth().toString().padStart(2, '0')}${datetime.getDay().toString().padStart(2, '0')}`;
+// 		payload.transaction_time = Moment(datetime).format("HHmmss");
+// 		//datetime.toTimeString().split(' ')[0].replace(':', '').replace(':', '');
+
+// 		//	Sign the payload
+// 		const signature = generate_signature(payload);
+// 		console.log('neyma', nets_api_gateway.request)
+// 		const response = await Axios.post(nets_api_gateway.request, payload, {
+// 			headers: {
+// 				"Content-Type": "application/json",
+// 				"KeyId":        nets_api_key,
+// 				"Sign":         signature
+// 			}
+// 		});
+
+// 		if (response.status != 200)
+// 			throw new Error("Failed request to NETs");
+
+// 		if (response.data.response_code != '00') {
+// 			throw new Error("Failed to request for QR Code");
+// 		}
+
+// 		console.log(response.data);
+// 		return res.json({
+// 			"txn_identifier":   response.data.txn_identifier,
+// 			"amount":           response.data.amount,
+// 			"stan":             response.data.stan,
+// 			"transaction_date": response.data.transaction_date,
+// 			"transaction_time": response.data.transaction_time,
+// 			"qr_code":          response.data.qr_code
+// 		});
+// 	}
+// 	catch (error) {
+// 		console.error(`Failed to generate QR code for payment`);
+// 		console.error(error);
+// 		return res.sendStatus(500);
+// 	}
+// }
+
+// /**
+//  * Query a created transaction status. Whether its completed or in progress or cancelled
+//  * @param {import('express').Request} req 
+//  * @param {import('express').Response} res 
+//  */
+// async function nets_query(req, res) {
+// 	try {
+
+// 	}
+// 	catch (error) {
+// 		console.error(`Bad request`);
+// 		console.error(error);
+// 		return res.sendStatus(400);
+// 	}
+
+// 	try {
+// 		const payload  = JSON.parse(FileSys.readFileSync(`${process.cwd()}/res/nets/nets-qr-query.json`));
+		
+// 		payload.txn_identifier   = req.body.txn_identifier;
+// 		payload.stan             = req.body.stan;
+// 		payload.transaction_date = req.body.transaction_date;
+// 		payload.transaction_time = req.body.transaction_time;
+// 		payload.npx_data.E201    = req.body.amount;
+		
+// 		const signature = generate_signature(payload);
+// 		const response  = await Axios.post(nets_api_gateway.query, payload, {
+// 			headers: {
+// 				"Content-Type": "application/json",
+// 				"KeyId":        nets_api_key,
+// 				"Sign":         signature
+// 			}
+// 		});
+
+// 		if (response.status != 200) 
+// 			throw new Error(`Failed to query transaction: ${payload.txn_identifier}`);
+		
+// 		switch (response.data.response_code) {
+// 			//	Pending
+// 			case "09":
+// 				return res.json({
+// 					status : 0
+// 				});
+
+// 			//	Okay
+// 			case "00":
+// 				return res.json({
+// 					status : 1
+// 				});
+
+// 			//	Failed
+// 			default:
+// 				return res.json({
+// 					status : -1
+// 				});
+// 		}
+// 	}
+// 	catch (error) {
+// 		console.error(`Failed to query transaction`);
+// 		console.error(error);
+// 		return res.sendStatus(500);
+// 	}
+// }
+
+// /**
+//  * Cancel a specified transaction
+//  * @param {import('express').Request} req 
+//  * @param {import('express').Response} res 
+//  */
+// async function nets_void(req, res) {
+// 	try {
+
+// 	}
+// 	catch (error) {
+// 		console.error(`Bad request`);
+// 		console.error(error);
+// 		return res.sendStatus(400);
+// 	}
+
+// 	try {
+// 		const payload  = JSON.parse(FileSys.readFileSync(`${process.cwd()}/res/nets/nets-qr-void.json`));
+		
+// 		payload.txn_identifier   = req.body.txn_identifier;
+// 		payload.stan             = req.body.stan;
+// 		payload.transaction_date = req.body.transaction_date;
+// 		payload.transaction_time = req.body.transaction_time;
+// 		payload.amount           = req.body.amount;
+// 		// payload.npx_data.E201    = req.body.amount;
+		
+// 		const signature = generate_signature(payload);
+// 		const response  = await Axios.post(nets_api_gateway.void, payload, {
+// 			headers: {
+// 				"Content-Type": "application/json",
+// 				"KeyId":        nets_api_key,
+// 				"Sign":         signature
+// 			}
+// 		});
+
+// 		if (response.status != 200) 
+// 			throw new Error(`Failed to query transaction: ${payload.txn_identifier}`);
+		
+// 		console.log(response.data);
+
+// 		switch (response.data.response_code) {
+// 			//	Okay
+// 			case "00":
+// 				return res.json({
+// 					status : 1
+// 				});
+// 			case "68":
+// 				return res.json({
+// 					status : 0
+// 				});
+// 			//	Skip?
+// 			default:
+// 				return res.json({
+// 					status : -1
+// 				});
+// 		}
+// 	}
+// 	catch (error) {
+// 		console.error(`Failed to void transaction`);
+// 		console.error(error);
+// 		return res.sendStatus(500);
+// 	}
+// }
