@@ -48,7 +48,6 @@ Router.get('/', async function(req, res){
                 raw: true
             });
             prizes_list = await arrange_rewards_tab(rewards);
-            console.log(prizes_list);
             // Get list of prizes in cart
             
             var check_no;

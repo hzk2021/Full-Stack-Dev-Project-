@@ -6,7 +6,6 @@ const Cron = require('node-cron');
 const {Supplies} = require('../../models/Supplies');
 const {SupplyCategory} = require('../../models/SupplyCategory');
 const {SupplyPerformance} = require('../../models/SupplyPerformance');
-const {isSupplier} = require('../../utilities/account_checker');
 const { arrange_supplies_by_food_weekNo, arrange_supplies_by_food_weekNo_full } = require('../../utilities/functions');
 
 Router.get('/dashboard', async function(req, res) {
@@ -99,10 +98,13 @@ Router.get('/viewOrder', async function(req, res) {
 Router.get('/update/:id', async function(req, res) {
     try {
         const item = await Supplies.findOne({
-            attributes:['item_name', 'category_no'],
+            attributes:['item_name', 'category_no', 'next_value', 'changes_lock'],
             where: { item_id:req.params.id },
             raw: true
         });
+        if (item.changes_lock == false) {
+            item.next_value = null;
+        }
 
         const categories = await SupplyCategory.findAll({
             attributes:['category_no', 'category_name'],
@@ -306,15 +308,12 @@ async function set_quantity() {
                 }
             });
         }
-        // Reset next_value to indicate no changes to be allowed
+        // Lock the table back
         const set_orders_null = await Supplies.update({
             changes_lock: false,
         }, {where: {}});
         // Set date submitted
-        const current_time = new Date();
-        const date_submitted = await SupplyPerformance.update({
-            date_submitted: current_time.toISOString()
-        }, {where: { week_no: 1 }});
+        const date_submitted = await SupplyPerformance.update({week_no:1}, {where: { week_no: 1 }});
     }
     catch (error) {
         console.error("An error occurred trying to update values");

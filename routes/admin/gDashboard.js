@@ -2,7 +2,10 @@ const Express = require('express');
 const { User } = require('../../models/User');
 const Feedback = require('../../models/Feedback');
 const Entry = require('../../models/Entry');
-const { Op } = require('sequelize');
+const { Order } = require('../../models/Order');
+const { Op, fn, col} = require('sequelize');
+const { sequelize } = require('../../configs/database');
+const { getKeyByValue } = require('../../utilities/helperFunctions');
 const Router = Express.Router();
 
 Router.get('/', async function(req, res){
@@ -11,6 +14,7 @@ Router.get('/', async function(req, res){
     const admins_data = await getAdminDBData();
     const feedbacks_data = await getFeedbackDBData();
     const entries_data = await getEntryDBData();
+    const orders_data = await getOrderDBData();
 
     return res.render('dashboard/gDashboard', {
         'userCount': users_data['count'],
@@ -20,7 +24,10 @@ Router.get('/', async function(req, res){
         'adminCount': admins_data['count'],
         'positiveFeedback' : feedbacks_data['positive'],
         'negativeFeedback' : feedbacks_data['negative'],
-        'entryCount' : entries_data['count']
+        'entryCount' : entries_data['count'],
+        'totalOrder': orders_data['totalOrder'],
+        'totalAmount': orders_data['totalAmount'],
+        'title': "Admin Dashboard"
     })
 });
 
@@ -30,6 +37,7 @@ Router.get('/chart', async function(req,res){
     const admins_data = await getAdminDBData();
     const feedbacks_data = await getFeedbackDBData();
     const entries_data = await getEntryDBData();
+    const orders_data = await getOrderDBData();
 
     return res.render('dashboard/showChart', {
         'userCount': users_data['count'],
@@ -41,7 +49,10 @@ Router.get('/chart', async function(req,res){
         'negativeFeedback' : feedbacks_data['negative'],
         'entryCount' : entries_data['count'],
         'normalTemp' : entries_data['normal'],
-        'abnormalTemp' : entries_data['abnormal']
+        'abnormalTemp' : entries_data['abnormal'],
+        'orderDates': orders_data['orderDates'],
+        'revenuePerDate': orders_data['revenuePerDate'],
+        'title': "Admin Dashboard (Graph)"
     })
 });
 
@@ -170,6 +181,70 @@ async function getEntryDBData(){
     }
 
     return entries_data;
+}
+
+
+async function getOrderDBData(){
+    orders_data = {
+        'totalOrder' : 0,
+        'totalAmount': 0,
+    }
+
+    let order_ids = []
+    let unique_order_ids = []
+    let order_amounts = {}
+
+    let order_dates = {}
+
+    try{
+        const orders = await Order.findAll({
+            order: sequelize.literal('order_dateTime ASC')
+        });
+
+        for (let i = 0; i < orders.length; i++) {
+            if (order_amounts[orders[i].order_id] == undefined){
+                order_amounts[orders[i].order_id] = 0;
+            }
+
+            if (order_dates[String(orders[i].order_dateTime).substring(0, 15)] == undefined){
+                order_dates[String(orders[i].order_dateTime).substring(0, 15)] = 0;
+            }
+            
+            order_amounts[orders[i].order_id] = order_amounts[orders[i].order_id] + orders[i].order_item_price * orders[i].order_item_quantity;
+            order_ids.push(orders[i].order_id);
+            
+            order_dates[String(orders[i].order_dateTime).substring(0, 15)] += orders[i].order_item_price * orders[i].order_item_quantity;
+        }
+        
+        console.log(order_dates);
+        unique_order_ids = order_ids.filter((item, i, ar) => ar.indexOf(item) === i);
+
+        for (let i = 0; i < unique_order_ids.length; i++) {
+            order_amounts[unique_order_ids[i]] += 0; // without Delivery Fee for each order  
+            //order_amounts[unique_order_ids[i]] += 5; // Delivery Fee for each order  
+            orders_data['totalAmount'] += order_amounts[unique_order_ids[i]];
+        }
+
+        var order_dateOnly = []
+        for (var key in order_dates){
+            order_dateOnly.push(key);
+        }
+
+        var order_revenueOnly = []
+        for (var key in order_dates){
+            order_revenueOnly.push(order_dates[key])
+        }
+
+        orders_data['totalOrder'] = unique_order_ids.length;
+        orders_data['orderDates'] = order_dateOnly;
+        orders_data['revenuePerDate'] = order_revenueOnly;
+
+
+    } catch(err){
+        console.error(err);
+    }
+
+    return orders_data;
 }
 
 module.exports = Router;
