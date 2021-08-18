@@ -157,6 +157,7 @@ Router.post('/edit/categories', isSupplier, async function(req, res) {
             }
         }
 
+        req.flash("success_msg", `Supply categories updated successfully!`);
         return res.redirect('/supplier/suppliesList');
     }
     catch (error) {
@@ -167,7 +168,7 @@ Router.post('/edit/categories', isSupplier, async function(req, res) {
 });
 
 Router.get('/suppliesList', isSupplier, async function(req, res) {
-    return res.render('inventory/retrieveSupplies', {success_msg: req.flash('success_msg'),});
+    return res.render('inventory/retrieveSupplies', {success_msg: req.flash('success_msg')});
 });
 // Delete operation on supply item
 Router.post('/suppliesList/:id', isSupplier, async function(req, res) {
@@ -177,6 +178,7 @@ Router.post('/suppliesList/:id', isSupplier, async function(req, res) {
             where: {item_id: req.params.id}
         });
 
+        req.flash("success_msg", `Supply ${id} deleted successfully!`);
         return res.redirect('/supplier/suppliesList');
     }
     catch (error) {
@@ -256,6 +258,7 @@ Router.post('/update/:id', isSupplier, async function(req, res) {
         return res.status(500).end();
     }
 
+    req.flash("success_msg", `Supply ${req.params.id} updated successfully!`);
     return res.redirect('/supplier/suppliesList');
 });
 

@@ -52,7 +52,6 @@ const arrange_rewards = function (prizes) {
                 }
                 // If no add as another reward
                 if (!isInside && prizes[i].food_name != null) {
-                    console.log(prizes[i].food_name);
                     merged_prizes[merged_i]['food_name'+day_track] = prizes[i]['food_name'];
                 }
                 day_track++;
@@ -130,7 +129,8 @@ const arrange_user_rewards = function (prizes) {
                     }
                 }
                 // If no add as another reward
-                if (!isInside) {
+                if (!isInside && prizes[i].food_name != null) {
+                    console.log(prizes[i].food_name);
                     merged_prizes[merged_i]['food_name'+day_track] = prizes[i]['food_name'];
                 }
                 day_track++;

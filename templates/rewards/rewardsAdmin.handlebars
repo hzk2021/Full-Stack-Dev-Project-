@@ -18,8 +18,8 @@
           </div>  
           
           <div class="row d-flex justify-content-center">
-            <div style="margin-right:2.5%;" class="col-xs-4"><a class="btn btn-warning re-edit" href="/admin/rewards/edit/"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a></div>
-            <div class="col-xs-4"><a class="btn btn-danger del-all" href="/admin/rewards/delete-all/"><i class="fa fa-trash" aria-hidden="true"></i> Clear</a></div>
+            <div style="margin-right:2.5%;" class="col-xs-4"><a class="btn btn-warning re-edit" href="/admin/rewards/edit/{{this.day_no}}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a></div>
+            <div class="col-xs-4"><a class="btn btn-danger del-all" href="/admin/rewards/delete-all/{{this.day_no}}"><i class="fa fa-trash" aria-hidden="true"></i> Clear</a></div>
           </div>
         </div>
       </td>
@@ -28,7 +28,7 @@
         <div class="normal normal-day-cell" style="height:240px;">
         <h3>Day {{this.day_no}}</h3>
         <h4 class="text-danger">(Item(s) not specified)</h4>
-        <a class="btn btn-success re-edit admin-edit" href="/admin/rewards/edit/"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
+        <a class="btn btn-success re-edit admin-edit" href="/admin/rewards/edit/{{this.day_no}}"><i class="fa fa-plus" aria-hidden="true"></i> Add</a>
         </div>
       </td>
       {{/if}}
@@ -37,15 +37,3 @@
     {{/each}}
   </table>
 </div>
-
-<script>
-  function assignLink() {
-    var hrefs = document.getElementsByClassName("re-edit");
-    var hrefs_del = document.getElementsByClassName("del-all");
-    for (i=0; i<12; i++) {
-      hrefs[i].href += (i+1)*5;
-      hrefs_del[i].href += (i+1)*5;
-    }
-  }
-  assignLink();
-</script>
