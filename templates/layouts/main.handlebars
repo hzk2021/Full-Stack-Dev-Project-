@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+	
 <head>
 	<!-- Required meta tags -->
 	<meta charset="utf-8">
@@ -47,6 +48,17 @@
 	<link rel="stylesheet" href="/css/formsCss.css">
 
 	<title>{{title}}</title>
+
+	<style>
+		.footer {
+			clear: both;
+			height: 10%;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			margin-top: 100px;
+		}
+	</style>
 </head>
 <body>
 	{{#ifc userRole '==' 'admin'}} 
@@ -80,6 +92,140 @@
 			rootSelector: '[data-toggle=confirmation]',
 		});
 	</script>
+	<footer class="footer bg-dark text-center text-lg-start">
+  <!-- Grid container -->
+  <div class="container p-4">
+    <!--Grid row-->
+    <div class="row">
+      <!--Grid column 1-->
+      <div class="col-lg col-md-6 mb-4 mb-md-0">
+        <ul class="list-unstyled mb-0">
+          <li>
+            <a href="/" class="text-muted">Home</a>
+          </li>
+		  	{{#ifc userRole '==' 'admin'}} 
+				<li>
+					<a href="/admin/rewards/list" class="text-muted">View Rewards List</a>
+				</li>
+				<li>
+					<a href="/admin/accounts/create" class="text-muted">Add New Account</a>
+				</li>
+			{{/ifc}}
+
+		  	{{#ifc userRole '!=' 'supplier'}} 
+				<li>
+					<a href="/menuPublic" class="text-muted">Menu</a>
+				</li>
+			{{/ifc}}
+		  	{{#ifc userRole '==' 'user'}} 
+				<li>
+					<a href="/rewardsPage" class="text-muted">View Rewards Progress</a>
+				</li>
+			{{/ifc}}
+
+		  	{{#ifc userRole '==' 'supplier'}} 
+			  	  <li>
+	            	<a href="/user/profile/edit" class="text-muted">Edit Profile</a>
+				  </li>
+			{{/ifc}}
+        </ul>
+      </div>
+      <!--Grid column 1-->
+
+      <!--Grid column 2-->
+      <div class="col-lg col-md-6 mb-4 mb-md-0">
+        <ul class="list-unstyled">
+		  	{{#ifc userRole '==' 'admin'}} 
+              <li>
+                <a href="/admin/menu" class="text-muted">Menu</a>
+              </li>
+              <li>
+                <a href="/admin/menu/create" class="text-muted">Add Item to Menu</a>
+              </li>
+			  <li>
+				<a href="/admin/accounts/list" class="text-muted">Retrieve Users</a>
+			  </li>
+			{{/ifc}}
+        </ul>
+      </div>
+      <!--Grid column 2-->
+
+      <!--Grid column 3-->
+      <div class="col-lg col-md-6 mb-4 mb-md-0">
+        <ul class="list-unstyled mb-0">
+		  	{{#ifc userRole '==' 'admin'}} 
+				<li>
+					<a href="/admin/dashboard" class="text-muted">View Performance</a>
+				</li>
+				<li>
+					<a href="/admin/dashboard/chart" class="text-muted">View Statistics</a>
+				</li>
+			{{/ifc}}
+
+		  	{{#ifc userRole '==' 'supplier'}} 
+	            <a href="/supplier/inventory/viewOrder" class="text-muted"></a>
+			{{/ifc}}
+            <a class="navbar-brand" href="/"><img src="/img/carl's-jr-logo.png" height="30px"></a>
+        </ul>
+      </div>
+      <!--Grid column 3-->
+
+        <!--Grid column 4-->
+      <div class="col-lg col-md-6 mb-4 mb-md-0">
+
+        <ul class="list-unstyled mb-0">
+          <li>
+		  	{{#ifc userRole '==' 'admin'}} 
+				<li>
+					<a href="/admin/feedback/list" class="text-muted">View All Reviews</a>
+				</li>
+				<li>
+					<a href="/admin/feedback/list" class="text-muted">Comment On Reviews</a>
+				</li>
+				<li>
+					<a href="/admin/entry/show" class="text-muted">View Entries</a>
+				</li>
+			{{/ifc}}
+          </li>
+        </ul>
+      </div>
+      <!--Grid column 4-->
+
+      <!--Grid column 5-->
+      <div class="col-lg col-md-6 mb-4 mb-md-0">
+        <ul class="list-unstyled">
+			{{#ifc userRole '==' 'user'}}
+				<li>
+					<a href="/user/feedback/create" class="text-muted">Post A Feedback</a>
+				</li>
+				<li>
+					<a href="/user/feedback/list" class="text-muted">View Posts</a>
+				</li>
+			{{/ifc}}
+
+		  	{{#ifc userRole '==' 'supplier'}} 
+			  	  <li>
+	            	<a href="/supplier/suppliesList" class="text-muted">Manage list</a>
+				  </li>
+
+				  <li>
+ 					<a href="/supplier/viewOrder" class="text-muted">View week's order</a>
+				  </li>
+			{{/ifc}}
+        </ul>
+      </div>
+      <!--Grid column 5-->
+    </div>
+    <!--Grid row-->
+  </div>
+  <!-- Grid container -->
+
+  <!-- Copyright -->
+  <div class="text-center p-3 text-muted">
+    Â© 2021 Carl Karcher Enterprises Inc. All rights reserved.
+  </div>
+  <!-- Copyright -->
+</footer>
 
 </body>
 </html>

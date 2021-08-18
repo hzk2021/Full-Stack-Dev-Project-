@@ -4,6 +4,7 @@ const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const {Order} = require('../../models/Order');
 const {Cart} = require('../../models/Cart');
+const {Menu} = require('../../models/Menu');
 const { Sequelize, Op } = require('sequelize');
 const { arrange_rewards, arrange_user_rewards, arrange_rewards_tab } = require('../../utilities/functions');
 
@@ -52,7 +53,6 @@ Router.get('', async function (req, res) {
     }
     catch (error) {
         console.error("Unable to get user progress. Reasons: User is not logged in/User has no rewards");
-        console.error(error);
     }
 
     const user_prizes = await arrange_user_rewards(user_prizes_list);
@@ -79,19 +79,14 @@ Router.post('/add-reward-to-cart', async function (req, res) {
         },
         raw: true
     });
-    console.log(reward);
-    const cart_id = await Cart.findOne({
-        attributes: ['cart_item_id'],
-        where: {cart_user_id: req.user.uuid}
-    })
-
+    
     // Adding all reward food into cart
     added_array = [];
     var day_no = req.body.day_no.toLocaleString('en-US', {
         minimumIntegerDigits: 2,
         useGrouping: false
     });
-    
+    let cart;
     for (var obj in reward) {
         // Adding the item into the cart
         if (added_array.includes(reward[obj].food_name)) {
@@ -104,14 +99,21 @@ Router.post('/add-reward-to-cart', async function (req, res) {
         }
         // Else add on to the quantity of the item
         else {
+            const food_name = await RewardsList.findOne({
+                attributes: ['food_name'],
+                where: {day_no: req.body.day_no}
+            });
+            const menu = await Menu.findOne({ 
+                attributes: ['uuid'],
+                where: { item_name: food_name.food_name} 
+            });
             cart = await Cart.create({
                 cart_user_id: req.user.uuid,
-                cart_item_id: cart_id.cart_item_id,
+                cart_item_id: menu.uuid,
                 cart_item_name: reward[obj].food_name+" (Reward "+day_no+")",
                 cart_item_price: 0,
-                cart_item_quantity: 1
             });
-            added_array.push(reward[obj].food_name);
+            added_array.push(reward[obj].food_name);   
         }
     }
     // Mark the rewards claimed

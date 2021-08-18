@@ -99,6 +99,7 @@ Router.post('/edit/:day_no', async function (req, res) {
         return res.status(500).end();
     }
 
+    req.flash('success_msg', `Successfully updated Day ${req.params.day_no}!`);
     return res.redirect("/admin/rewards/list");
 });
 
@@ -107,6 +108,7 @@ Router.get('/delete-all/:day_no', async function(req, res) {
         food_name: null
     },{where:{day_no:req.params.day_no}});
     console.log(`All instances of day ${req.params.day_no} is deleted`);
+    req.flash('success_msg', `Successfully cleared Day ${req.params.day_no}!`);
     return res.redirect('/admin/rewards/list/');
 });
 
@@ -117,7 +119,6 @@ Router.get('/list', async function (req, res) {
     const prizes = await RewardsList.findAll({
         attributes: ['day_no', 'food_name'],
         order: [['day_no', 'ASC'], ['food_no', 'ASC']],
-        where: {food_name: {[Op.ne]: null}},
         raw: true
     });
     
@@ -131,7 +132,8 @@ Router.get('/list', async function (req, res) {
         prizes_list.push(merged_prizes.splice(0, 4));
     }
     return res.render('rewards/rewardsAdmin', {
-        prizes_list: prizes_list
+        prizes_list: prizes_list,
+        success_msg: req.flash('success_msg')
     });
 });
 
