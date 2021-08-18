@@ -51,7 +51,8 @@ const arrange_rewards = function (prizes) {
                     }
                 }
                 // If no add as another reward
-                if (!isInside) {
+                if (!isInside && prizes[i].food_name != null) {
+                    console.log(prizes[i].food_name);
                     merged_prizes[merged_i]['food_name'+day_track] = prizes[i]['food_name'];
                 }
                 day_track++;
@@ -203,6 +204,10 @@ const arrange_rewards_tab = function (prizes) {
                 sorted_list.push(sorted_dict);
             }
         }
+    }
+    if (prizes.length == 1) {
+        sorted_dict.prizes.push(prizes[0].food_name);
+        sorted_list.push(sorted_dict);
     }
     console.log(sorted_list);
     return sorted_list;

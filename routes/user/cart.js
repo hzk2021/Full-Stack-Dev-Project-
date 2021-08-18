@@ -45,9 +45,10 @@ Router.get('/', async function(req, res){
                     order: [['day_no', 'ASC']]
                 }],
                 attributes: ['day_no', 'food_name'],
-                where: {food_name: {[Op.ne]: null}},
+                where: {food_name: {[Op.not]: null}},
                 raw: true
             });
+            
             prizes_list = await arrange_rewards_tab(rewards);
             // Get list of prizes in cart
             
