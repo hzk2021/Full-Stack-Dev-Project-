@@ -16,9 +16,71 @@ const { nets_api_key, nets_api_skey, nets_api_gateway } = require('./payment-con
 const { Payment } = require('../../models/Payment');
 const uuid = require('uuid');
 
-let   nets_stan     = 0;	//	Counter id for nets, keep this in database
+// View order page - Retrieve user's orders
+Router.get('/', async function(req, res) {
+    console.log("Confirm order page accessed");
+    try {
+        const order = await Order.findAll({
+            where: { order_user_id: req.user.uuid},
+            attributes: ['order_id','order_item_name', 'order_item_price', 'order_item_quantity', 'order_dateTime'],
+            raw: true
+        });
+		
+		// List of user's order ids
+		let distinctOrder = [];
+		for (let i in order) {
+			if (!(distinctOrder.includes(order[i].order_id))){
+				distinctOrder.push(order[i].order_id);
+			}
+		}
 
-// Retrieve order details
+		let distinctOrderList = [];  // List of user's orders
+
+		// Calculate Subtotal, Delivery fee, Total for each order
+		for (let i in distinctOrder) {
+			let subtotal = 0;
+			const deliveryFee = 5;
+			let date = '', time = '';
+
+			for (let j in order) {
+				if (order[j].order_id == distinctOrder[i]){
+					subtotal += order[j].order_item_price * order[j].order_item_quantity;
+					if (date == '' && time == '') {
+						// Calculate dateTime
+						let dt = order[j].order_dateTime.toISOString()
+						date = dt.slice(0,10);
+						time = dt.slice(11,16);
+					}
+				}
+			}
+			
+			const orderNum = parseInt(i) + 1;
+			const total = subtotal + deliveryFee;
+			const dateTime = date+' | '+time;
+			let distinctOrderObj = {
+					order_id : distinctOrder[i],
+					order_no: orderNum.toString().padStart(5, '0'),
+					order_dateTime : dateTime,
+					subtotal: subtotal.toFixed(2),
+					deliveryFee: deliveryFee.toFixed(2),
+					total: total.toFixed(2),
+				}
+			distinctOrderList.push(distinctOrderObj);
+		}
+
+        return res.render('order/order', {
+            order: order,
+			distinctOrderList: distinctOrderList,
+        });    
+    }
+    catch (error) {
+        console.error("An error occured while trying to retrieve the user's orders");
+        console.error(error);
+        return res.status(500).end();
+    }
+});
+
+// Confirm order page - Retrieve user's cart
 Router.get('/confirmOrder', async function(req, res) {
     console.log("Confirm order page accessed");
     try {
@@ -52,8 +114,7 @@ Router.get('/confirmOrder', async function(req, res) {
     }
 });
 
-
-// Insert payment here -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Transaction processing -----------------------------------------------------------------------------------------
 /**
  * Signs the payload with the secret key
  * @param {{}} payload 
@@ -315,7 +376,7 @@ Router.post('/void',async function(req, res) {
 		return res.sendStatus(500);
 	}	
 });
-// ___________________________________________________________________________________________________________________________________________________________________________________________
+// ----------------------------------------------------------------------------------------------------------------
 
 // Order success page
 Router.get('/orderComplete/:orderID', async function(req, res){
@@ -347,7 +408,7 @@ Router.get('/orderComplete/:orderID', async function(req, res){
 	   console.log("Successfully cleared payment requests");
     }
     catch (error) {
-        console.log("Error fetching " + req.params.item_name + " from menu");
+        console.log("Error fetching or destroying payment requests");
         console.log(error);
     }
 	
@@ -364,13 +425,14 @@ Router.get('/orderComplete/:orderID', async function(req, res){
             raw: true
         });
 		// Get date time
-		const today = new Date();
-		const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-		const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+		let today = new Date();
+		let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+		let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 		const dateTime = date+' '+time;
 
 		if (order.length == 0) {
 			for (let i in cart){	
+				console.log('king', dateTime)
 				const createOrder = await Order.create({
 					order_id: req.params.orderID,
 					order_item_name: cart[i].cart_item_name,
@@ -388,6 +450,22 @@ Router.get('/orderComplete/:orderID', async function(req, res){
         console.error(error);
         return res.status(500).end();
     }
+
+	// Clear user's cart
+	try {
+		const clearCart = await Cart.destroy({
+			where:{ 
+				cart_user_id: req.user.uuid,
+			}
+		});
+	   
+	   console.log("Successfully cleared cart");
+    }
+    catch (error) {
+        console.log("Error fetching or destroying cart items");
+        console.log(error);
+    }
+
     // // Inventory operations below
     // const orders = await Cart.findAll({
     //     attributes: ['cart_user_id', 'cart_item_name', 'cart_item_quantity'],

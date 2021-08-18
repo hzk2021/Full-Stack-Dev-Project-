@@ -1,0 +1,82 @@
+<style>
+p {
+    margin: 0;
+}
+
+pre{
+    margin: 0;
+}
+
+.outer {
+    margin: auto;
+    width: 60%;
+    padding: 10px;
+}
+
+.center {
+    margin: auto;
+    margin-bottom: 1.5cm;
+    width: 60%;
+    border: 2px solid lightslategray;
+    padding: 10px;
+}
+
+.costs {
+    float: right;
+}
+
+.item{
+    margin: auto;
+    width: 100%;
+}
+
+.items{
+    padding: 10%;;
+}
+
+hr { 
+    display: block; height: 1px;
+    border: 0; border-top: 1px solid lightslategray;
+    margin: 1em 0; padding: 0; 
+}
+</style>
+
+<h1 class="display-4">Your Orders</h1>
+<br>
+<div class="outer">
+{{#each distinctOrderList}}
+    <div class="center">
+        <p>Order No #{{this.order_no}}</p>
+        <p>Order Date &nbsp;{{this.order_dateTime}}</p>
+        <hr>
+        <div class="items">
+            {{#each ../order}}
+                {{#ifc this.order_id '==' ../this.order_id}}
+                    <div class="item">
+                        <table>
+                            <tbody>
+                            <tr>
+                                <td style="width: 3cm; text-align:left;">{{this.order_item_quantity}} </td>
+                                <td style="width: 8cm; text-align:left;">{{this.order_item_name}}</td>
+                                <td style="width: 5cm; text-align:left;" id='total'>S$ {{this.order_item_price}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {{/ifc}}
+            {{/each}}
+        </div>
+        
+        <div class="costs">
+            <pre><p>Subtotal         S$ {{this.subtotal}}</p></pre>
+            <pre><p>Delivery charge  S$ {{this.deliveryFee}}</p></pre>
+            <pre><p>Order total      S$ <b>{{this.total}}</b></p></pre>
+        </div>
+        <br>
+        <br>
+        <br>
+    </div>
+{{/each}}
+</div>
+
+
