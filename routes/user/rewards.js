@@ -31,6 +31,7 @@ Router.get('', async function (req, res) {
     const prizes = await RewardsList.findAll({
         attributes: ['day_no', 'food_name'],
         order: [['day_no', 'ASC'], ['food_no', 'ASC']],
+        where: {food_name: {[Op.ne]: null}},
         raw: true
     });
 
@@ -47,6 +48,7 @@ Router.get('', async function (req, res) {
             }],
             attributes: ['day_no', 'food_name'],
             order: [['day_no', 'ASC'], ['food_no', 'ASC']],
+            where: {food_name: {[Op.ne]: null}},
             raw: true
         });
     }
@@ -73,7 +75,10 @@ Router.post('/add-reward-to-cart', async function (req, res) {
     // Get all food from the day
     const reward = await RewardsList.findAll({
         attributes: ['day_no', 'food_name'],
-        where: {day_no:req.body.day_no},
+        where: {
+            day_no:req.body.day_no,
+            where: {food_name: {[Op.ne]: null}}
+        },
         raw: true
     });
     console.log(reward);
@@ -164,6 +169,7 @@ Router.post('/remove-reward-from-cart', async function (req, res) {
             order: [['day_no', 'ASC']]
         }],
         attributes: ['day_no', 'food_name'],
+        where: {food_name: {[Op.ne]: null}},
         raw: true
     });
     const prizes_list = await arrange_rewards_tab(rewards);

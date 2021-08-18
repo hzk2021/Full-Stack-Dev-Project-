@@ -68,7 +68,7 @@
     data-search="true"
     data-toolbar="#toolbar"
     data-toolbar-align="left"
-    data-url="/supplier/get-data"
+    data-url="get-data"
     data-pagination= "true"
     data-side-pagination= "server"
     data-filter-control="true"
@@ -76,10 +76,10 @@
     data-show-refresh="true">
     <thead>
       <tr>
-        <th data-field="item_name">Product Name</th>
-        <th data-field="supply_category.category_name">Category</th>
-        <th data-field="supply_performances.stock_used">Stock Used</th>
-        <th data-field="supply_performances.current_stock_lvl">Stock Left</th>
+        <th data-field="item_name" data-filter-control="input" data-sortable="true">Product Name</th>
+        <th data-field="supply_category.category_name" data-filter-control="input" data-sortable="true">Category</th>
+        <th data-field="supply_performances.stock_used" data-filter-control="input" data-sortable="true">Stock Used</th>
+        <th data-field="supply_performances.current_stock_lvl" data-filter-control="input" data-sortable="true">Stock Left</th>
       </tr>
     </thead>
   </table>

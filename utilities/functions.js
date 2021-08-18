@@ -187,6 +187,7 @@ const arrange_rewards_tab = function (prizes) {
             }
         }
         else {
+            // Adding the food into the list
             for (var key in iterated_values) {
                 if (iterated_values[key] == 1) {
                     sorted_dict.prizes.push(key);
@@ -196,7 +197,11 @@ const arrange_rewards_tab = function (prizes) {
                 }
             }
             sorted_list.push(sorted_dict);
-            sorted_dict = {day_no: prizes[i].day_no, length:1, prizes:[]};
+            sorted_dict = {day_no: prizes[i].day_no, length:1, prizes:[prizes[i].food_name]};
+            iterated_values = {};
+            if (i==prizes.length-1) {
+                sorted_list.push(sorted_dict);
+            }
         }
     }
     console.log(sorted_list);
@@ -298,6 +303,9 @@ const arrange_supplies_by_food_weekNo = function (supplies) {
                 item_dict.name = supplies[i].item_name;
                 item_dict.id = supplies[i].item_id;
                 item_dict.values = [supplies[i]['supply_performances.stock_used']];
+                if (i == supplies.length-1) {
+                    items_list.push(item_dict);
+                }
             }
             
         }

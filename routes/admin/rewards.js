@@ -1,5 +1,6 @@
 const Express = require('express');
 const Router = Express.Router();
+const { Op } = require('sequelize');
 const {RewardsList} = require('../../models/RewardsList');
 const {UserRewards} = require('../../models/UserRewards');
 const {Menu} = require('../../models/Menu');
@@ -10,9 +11,12 @@ const { arrange_rewards, arrange_menu_categories } = require('../../utilities/fu
 Router.get('/edit/:day_no', async function (req, res) {
     console.log("Admin edit rewards page accessed");
     try {
-        const rewards = await RewardsList.findAll({ 
+        let rewards = await RewardsList.findAll({ 
             attributes: ['food_name', 'food_no'],
-            where: { day_no: req.params.day_no },
+            where: { 
+                day_no: req.params.day_no,
+                food_name: {[Op.ne]: null}
+            },
             order: [['food_no', 'ASC']],
             raw: true
         });
@@ -47,73 +51,46 @@ Router.get('/edit/:day_no', async function (req, res) {
 // Post when changes are submitted
 Router.post('/edit/:day_no', async function (req, res) {
     console.log("Executing edit rewards POST");
-    let errors = [];
-    // Change RewardsList to Menu model when Menu model is ready
-    try {
-        var inp_count = 1;
-        for (var inp in req.body) {
-            if (req.body[inp] != "") {
-                // Checks if food exists in menu
-                const reward = await Menu.findOne({ where: { item_name: req.body[inp] } });
-                if (reward == null) {
-                    errors = errors.concat({text:`Item ${inp_count}: Food item not found in menu`});
-                }
-            }
-            // Delete inputs left empty if any
-            else {
-                const delReward = await RewardsList.destroy({ where: {
-                    day_no: req.params.day_no, 
-                    food_no: inp_count
-                } });
-            }
-            inp_count++;
-        }
-
-        if (errors.length > 0) {
-            throw new Error(`There are ${errors.length} in updating reward item(s)`);
-        }
-    }
-    catch (error) {
-        console.error('Failed to create/update reward');
-        console.error(error);
-        return res.render('rewards/manageRewards', { 
-            day_no: req.params.day_no,
-            errors: errors,
-         });
-    }
-    console.log("Items are identified. Executing create/update");
-    // Create/Update executions
-    
     try {
         var count = 1;
+        // Create/Update executions
+        console.log(req.body);
         for (var inp in req.body) {
             // Inserting inputs that are not empty into database
-            if (req.body[inp] != "") {
-                const reward = await RewardsList.findOne({ 
-                    where: { 
-                        day_no: req.params.day_no,
-                        food_no: count
-                     } 
-                });
-                if (reward != null) {
-                    const updateReward = await RewardsList.update({
-                        food_name: req.body[inp],
-                    }, { where:{ 
-                        day_no:req.params.day_no,
-                        food_no: count 
-                    }});
-                    console.log(`Successfully updated reward ${count}: ${req.body[inp]}`);
-                }
-                else {
-                    const createReward = await RewardsList.create({
-                        day_no: req.params.day_no,
-                        food_name: req.body[inp],
-                        food_no: count
-                    });
-                    console.log(`Successfully created reward ${count}: ${req.body[inp]}`);
-                }
-                count++;
+            const reward = await RewardsList.findOne({ 
+                where: { 
+                    day_no: req.params.day_no,
+                    food_no: count
+                } 
+            });
+            if (reward != null) {
+                const updateReward = await RewardsList.update({
+                    food_name: req.body[inp],
+                }, { where:{ 
+                    day_no:req.params.day_no,
+                    food_no: count 
+                }});
+                console.log(`Successfully updated reward ${count}: ${req.body[inp]}`);
             }
+            else {
+                const createReward = await RewardsList.create({
+                    day_no: req.params.day_no,
+                    food_name: req.body[inp],
+                    food_no: count
+                });
+                console.log(`Successfully created reward ${count}: ${req.body[inp]}`);
+            }
+            count++;
+        }
+        // Delete operation
+        for (i=count; i<=4; i++) {
+            const delReward = await RewardsList.update({
+                food_name: null
+            }, {where: {
+                day_no: req.params.day_no,
+                food_no: i
+            }});
+            console.log(`Successfully deleted reward`);
         }
     }
     catch (error) {
@@ -126,11 +103,11 @@ Router.post('/edit/:day_no', async function (req, res) {
 });
 
 Router.get('/delete-all/:day_no', async function(req, res) {
-    const delAll = await RewardsList.destroy({
-        where:{day_no:req.params.day_no}
-    });
+    const delAll = await RewardsList.update({
+        food_name: null
+    },{where:{day_no:req.params.day_no}});
     console.log(`All instances of day ${req.params.day_no} is deleted`);
-    return res.redirect('/admin/rewards/rewardsList/');
+    return res.redirect('/admin/rewards/list/');
 });
 
 // Accessing admin rewards page
@@ -140,6 +117,7 @@ Router.get('/list', async function (req, res) {
     const prizes = await RewardsList.findAll({
         attributes: ['day_no', 'food_name'],
         order: [['day_no', 'ASC'], ['food_no', 'ASC']],
+        where: {food_name: {[Op.ne]: null}},
         raw: true
     });
     

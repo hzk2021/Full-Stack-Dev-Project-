@@ -45,6 +45,7 @@ Router.get('/', async function(req, res){
                     order: [['day_no', 'ASC']]
                 }],
                 attributes: ['day_no', 'food_name'],
+                where: {food_name: {[Op.ne]: null}},
                 raw: true
             });
             prizes_list = await arrange_rewards_tab(rewards);
@@ -70,6 +71,9 @@ Router.get('/', async function(req, res){
                         check_no = name.substr(-3, 2);
                         cart[i].day_no = parseInt(check_no);
                         rewards_group = [cart[i]];
+                        if (i == cart.length-1) {
+                            cart_prizes.push(rewards_group);
+                        }
                     }
                     cart.splice(i, 1);
                     i--;
@@ -138,7 +142,7 @@ Router.post('/addToCart/:item_name', async function (req, res) {
                 cart_item_id: req.body.cart_item_id,
                 cart_item_name: req.body.cart_item_name,
                 cart_item_price: req.body.cart_item_price,
-            });
+            }); 
             console.log("Successfully added item to cart"); 
         }
         else{

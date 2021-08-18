@@ -7,14 +7,14 @@
         <div id="InputsDiv">
             {{#unless rewards}}
             <div class="input-div">
-                <label>Item 1</label>
+                <label>Item </label>
                 <div class="form-group input-group">
-                    <input type="text"  name="name1" class="form-control" autocomplete="off" list="menu-items" required>
+                    <input type="text"  name="name" class="form-control" autocomplete="off" list="menu-items" required>
                     <br>
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDel_1"><i class="fa fa-trash"></i></button>
+                        <button type="button modal-del" class="btn btn-danger" data-toggle="modal" data-target="#confirmDel_"><i class="fa fa-trash"></i></button>
                         <!-- The Modal -->
-                        <div class="modal" id="confirmDel_1">
+                        <div class="modal del-modal" id="confirmDel_">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
@@ -28,7 +28,7 @@
                                     </div>
 
                                     <div class="modal-footer">
-                                    <button onclick="delInput(1)" type="button" class="btn btn-danger del-butt">Delete</button>
+                                    <button onclick="delInput()" type="button" class="btn btn-danger del-butt">Delete</button>
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                     </div>
                                 </div>
@@ -40,15 +40,15 @@
             {{else}}
             {{#each rewards}}
             <div class="input-div">
-                <label>Item {{this.food_no}}</label>
+                <label>Item </label>
                 <div class="form-group input-group">
-                    <input type="text"  name="name{{this.food_no}}" class="form-control" value="{{this.food_name}}" autocomplete="off" 
+                    <input type="text"  name="name" class="form-control" value="{{this.food_name}}" autocomplete="off" 
                     list="menu-items" required>
                     <br>
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDel_{{this.food_no}}"><i class="fa fa-trash"></i></button>
+                        <button type="button" class="modal-del btn btn-danger" data-toggle="modal" data-target="#confirmDel_"><i class="fa fa-trash"></i></button>
                         <!-- The Modal -->
-                        <div class="modal" id="confirmDel_{{this.food_no}}">
+                        <div class="modal del-modal" id="confirmDel_">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                 <div class="modal-header">
@@ -62,7 +62,7 @@
                                 </div>
 
                                 <div class="modal-footer">
-                                <button onclick="delInput({{this.food_no}})" type="button" class="btn btn-danger del-butt">Delete</button>
+                                <button onclick="delInput()" type="button" class="btn btn-danger del-butt">Delete</button>
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                                 </div>
                             </div>
@@ -100,10 +100,31 @@
 
 <!-- Add more inputs functions -->
 <script>
+    window.addEventListener('load', assignNums);
+    function assignNums() {
+        var count = document.getElementsByClassName('input-div').length;
+        var labels = document.getElementsByTagName('label');
+        var inputs = document.getElementsByClassName('form-control');
+        var openModals = document.getElementsByClassName('modal-del');
+        var modals = document.getElementsByClassName('del-modal');
+        var confirmDels = document.getElementsByClassName('del-butt');
+        for (i=0; i<count; i++) {
+            j = i+1;
+            labels[i].innerText += " "+j
+            inputs[i].name += j
+            var dataTargetText = openModals[i].getAttribute('data-target');
+            openModals[i].setAttribute('data-target', dataTargetText+j);
+            modals[i].id += j;
+            console.log(confirmDels[i])
+            confirmDels[i].setAttribute('onclick', `delInput(${j})`);
+        }
+    }
+
     function genMoreInputs() {
         // Get the number of inputs
         var inputsDiv = document.getElementById('InputsDiv');
-        var num = inputsDiv.getElementsByTagName('input').length + 1
+        var inputs = inputsDiv.getElementsByTagName('input')
+        var num = inputs.length + 1
         console.log(num);
 
         // Remove add button once it hits max of 4
@@ -111,18 +132,21 @@
             document.getElementById('AddMore').style.display = "none";
         }
 
+        var num2 = parseInt(inputs[num-2].name.slice(-1)) + 1;
+        console.log(num2)
+
         // Set the new form group and append to the form
         var newDiv = document.createElement('div');
         newDiv.className = "input-div";
         newDiv.innerHTML = 
             `<label>Item ${num}</label>
             <div class="form-group input-group">
-                <input type="text"  name="name${num}" class="form-control" autocomplete="off" list="menu-items" required>
+                <input type="text"  name="name${num2}" class="form-control" autocomplete="off" list="menu-items" required>
                 <br>
                 <div class="input-group-append">
-                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDel_${num}"><i class="fa fa-trash"></i></button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDel_${num2}"><i class="fa fa-trash"></i></button>
                     <!-- The Modal -->
-                    <div class="modal" id="confirmDel_${num}">
+                    <div class="modal" id="confirmDel_${num2}">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">

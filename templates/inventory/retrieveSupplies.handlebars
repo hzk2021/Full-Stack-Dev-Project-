@@ -24,8 +24,8 @@
   <thead>
     <tr>
       <th data-field="item_id" max-width="100px">Product ID</th>
-      <th data-field="item_name">Product Name</th>
-      <th data-field="supply_category.category_name">Category</th>
+      <th data-field="item_name" data-filter-control="input" data-sortable="true">Product Name</th>
+      <th data-field="supply_category.category_name" data-filter-control="input" data-sortable="true">Category</th>
       {{#ifc userRole '==' 'supplier'}} 
       <th>Functions</th>
       {{/ifc}}

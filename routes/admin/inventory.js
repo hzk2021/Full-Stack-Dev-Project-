@@ -168,6 +168,64 @@ Router.post('/update/:id', async function(req, res) {
     return res.redirect('/supplier/suppliesList');
 });
 
+Router.get('/get-data', async function(req, res) {
+    console.log('Retrieving data for supplies table');
+    const filterSearch = req.query.search;
+    
+    var sort_location;
+    if (req.query.sort != null && req.query.order != null) {
+        if (req.query.sort.includes('supply_category')) {
+            var sort_name = req.query.sort.replace('supply_category.', '');
+            sort_location = [[SupplyCategory, sort_name, req.query.order]]
+        }
+        else if (req.query.sort.includes('supply_performances')) {
+            var sort_name = req.query.sort.replace('supply_performances.', '');
+            sort_location = [[SupplyPerformance, sort_name, req.query.order]]
+        }
+        else {
+            sort_location = [[req.query.sort, req.query.order]]
+        }
+        
+    }
+    console.log(sort_location);
+    try {
+        const list_data = await Supplies.findAll({
+            include:[{
+                model: SupplyCategory,
+                attributes: ['category_name'],
+            },
+            {
+                model: SupplyPerformance,
+                attributes: ['stock_used', 'current_stock_lvl'],   
+            }],
+            attributes:['item_name'],
+            order: sort_location,
+            limit: parseInt(req.query.limit),
+            offset: parseInt(req.query.offset),
+            where: {
+                "$supply_performances.week_no$": 1,
+                [Op.or]: {
+                    item_name: { [Op.substring]: filterSearch},
+                    "$supply_performances.stock_used$": { [Op.substring]: filterSearch},
+                    "$supply_performances.current_stock_lvl$": { [Op.substring]: filterSearch},
+                    "$supply_category.category_name$": { [Op.substring]: filterSearch}
+                }
+            },
+            subQuery: false,
+            raw: true
+        });
+
+        return res.json({
+            rows: list_data
+        });
+    }
+    catch (error) {
+        console.error("Error retrieving the data for generating tables");
+        console.error(error);
+        return res.status(500).end();
+    }
+});
+
 // Set dummy values for all items
 Router.get('/debug-set-random', async function(req, res) {
     const all_items = await Supplies.findAll({attributes: ['item_id']});

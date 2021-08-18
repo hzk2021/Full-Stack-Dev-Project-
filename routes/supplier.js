@@ -284,57 +284,27 @@ Router.get('/viewOrder', isSupplier, async function(req, res) {
     }
 });
 
-Router.get('/get-data', async function(req, res) {
-    console.log('Retrieving data for supplies table');
-    if (req.user.role == "admin" || req.user.role == "supplier") {
-        const filterSearch = req.query.search;
-        try {
-            const list_data = await Supplies.findAll({
-                include:[{
-                    model: SupplyCategory,
-                    attributes: ['category_name']
-                },
-                {
-                    model: SupplyPerformance,
-                    attributes: ['stock_used', 'current_stock_lvl'],
-                }],
-                attributes:['item_name'],
-                order: [['item_name', 'DESC']],
-                limit: parseInt(req.query.limit),
-                offset: parseInt(req.query.offset),
-                where: {
-                    "$supply_performances.week_no$": 1,
-                    [Op.or]: {
-                        item_name: { [Op.substring]: filterSearch},
-                        "$supply_performances.stock_used$": { [Op.substring]: filterSearch},
-                        "$supply_performances.current_stock_lvl$": { [Op.substring]: filterSearch},
-                        "$supply_category.category_name$": { [Op.substring]: filterSearch}
-                    }
-                },
-                subQuery: false,
-                raw: true
-            })
-            console.log(list_data);
-
-            return res.json({
-                rows: list_data
-            });
-        }
-        catch (error) {
-            console.error("Error retrieving the data for generating tables");
-            console.error(error);
-            return res.status(500).end();
-        }
-    }
-    else {
-        return res.status(403).end();
-    }
-});
-
 Router.get('/get-supplies', async function(req, res) {
     console.log('Retrieving data for supplies list');
     if (req.user.role == "admin" || req.user.role == "supplier") {
         const filterSearch = req.query.search;
+        var sort_location;
+        if (req.query.sort != null && req.query.order != null) {
+            if (req.query.sort.includes('supply_category')) {
+                var sort_name = req.query.sort.replace('supply_category.', '');
+                sort_location = [[SupplyCategory, sort_name, req.query.order]]
+            }
+            else if (req.query.sort.includes('supply_performances')) {
+                var sort_name = req.query.sort.replace('supply_performances.', '');
+                sort_location = [[SupplyPerformance, sort_name, req.query.order]]
+            }
+            else {
+                sort_location = [[req.query.sort, req.query.order]]
+            }
+        
+        }
+        console.log(sort_location);
+
         // Checks if the current timing allows admin to make changes to predicted value
         const changes_lock = await Supplies.findOne({
             attributes: ['changes_lock']
@@ -342,8 +312,7 @@ Router.get('/get-supplies', async function(req, res) {
         
         let list_data;
         try {
-            if ((req.user.role == "supplier" && changes_lock.changes_lock == true) || 
-            (req.user.role == "admin" && changes_lock.changes_lock == false)) {
+            if (req.user.role == "supplier" && changes_lock.changes_lock == true){
                 console.log("Running scenario 1")
                 list_data = await Supplies.findAll({
                     include: [{
@@ -351,6 +320,7 @@ Router.get('/get-supplies', async function(req, res) {
                         attributes: ['category_name']
                     }],
                     attributes: ['item_name', 'item_id'],
+                    order: sort_location,
                     limit: parseInt(req.query.limit),
                     offset: parseInt(req.query.offset),
                     where: {
@@ -372,6 +342,7 @@ Router.get('/get-supplies', async function(req, res) {
                         attributes: ['category_name']
                     }],
                     attributes: ['item_name', 'item_id', 'next_value'],
+                    order: sort_location,
                     limit: parseInt(req.query.limit),
                     offset: parseInt(req.query.offset),
                     where: {
