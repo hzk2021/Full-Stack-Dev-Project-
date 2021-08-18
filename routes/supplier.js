@@ -289,6 +289,7 @@ Router.get('/viewOrder', isSupplier, async function(req, res) {
 
 Router.get('/get-supplies', async function(req, res) {
     console.log('Retrieving data for supplies list');
+    console.log(req.query);
     if (req.user.role == "admin" || req.user.role == "supplier") {
         const filterSearch = req.query.search;
         var sort_location;
@@ -306,7 +307,20 @@ Router.get('/get-supplies', async function(req, res) {
             }
         
         }
-        console.log(sort_location);
+        const condition = {
+            [Op.or]: {
+                item_name: { [Op.substring]: filterSearch},
+                item_id: { [Op.substring]: filterSearch}, 
+                next_value: { [Op.substring]: filterSearch}, 
+                "$supply_category.category_name$": { [Op.substring]: filterSearch}
+            }
+        }
+        const totalFound = await Supplies.count({
+            include:[{
+                model: SupplyCategory,
+            }],
+            where: condition
+        });
 
         // Checks if the current timing allows admin to make changes to predicted value
         const changes_lock = await Supplies.findOne({
@@ -326,13 +340,7 @@ Router.get('/get-supplies', async function(req, res) {
                     order: sort_location,
                     limit: parseInt(req.query.limit),
                     offset: parseInt(req.query.offset),
-                    where: {
-                        [Op.or]: {
-                            item_name: { [Op.substring]: filterSearch},
-                            item_id: { [Op.substring]: filterSearch},  
-                            "$supply_category.category_name$": { [Op.substring]: filterSearch}
-                        }
-                    },
+                    where: condition,
                     subQuery: false,
                     raw: true
                 });
@@ -348,20 +356,14 @@ Router.get('/get-supplies', async function(req, res) {
                     order: sort_location,
                     limit: parseInt(req.query.limit),
                     offset: parseInt(req.query.offset),
-                    where: {
-                        [Op.or]: {
-                            item_name: { [Op.substring]: filterSearch},
-                            item_id: { [Op.substring]: filterSearch}, 
-                            next_value: { [Op.substring]: filterSearch}, 
-                            "$supply_category.category_name$": { [Op.substring]: filterSearch}
-                        }
-                    },
+                    where: condition,
                     subQuery: false,
                     raw: true
                 });
             }
 
             return res.json({
+                total: totalFound,
                 rows: list_data,
             });
 

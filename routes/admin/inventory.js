@@ -190,6 +190,27 @@ Router.get('/get-data', async function(req, res) {
         
     }
     console.log(sort_location);
+
+    const condition = {
+        "$supply_performances.week_no$": 1,
+        [Op.or]: {
+            item_name: { [Op.substring]: filterSearch},
+            "$supply_performances.stock_used$": { [Op.substring]: filterSearch},
+            "$supply_performances.current_stock_lvl$": { [Op.substring]: filterSearch},
+            "$supply_category.category_name$": { [Op.substring]: filterSearch}
+        }
+    }
+
+    const totalFound = await Supplies.count({
+        include:[{
+            model: SupplyCategory,
+        },
+        {
+            model: SupplyPerformance,   
+        }],
+        where: condition
+    });
+
     try {
         const list_data = await Supplies.findAll({
             include:[{
@@ -204,20 +225,13 @@ Router.get('/get-data', async function(req, res) {
             order: sort_location,
             limit: parseInt(req.query.limit),
             offset: parseInt(req.query.offset),
-            where: {
-                "$supply_performances.week_no$": 1,
-                [Op.or]: {
-                    item_name: { [Op.substring]: filterSearch},
-                    "$supply_performances.stock_used$": { [Op.substring]: filterSearch},
-                    "$supply_performances.current_stock_lvl$": { [Op.substring]: filterSearch},
-                    "$supply_category.category_name$": { [Op.substring]: filterSearch}
-                }
-            },
+            where: condition,
             subQuery: false,
             raw: true
         });
 
         return res.json({
+            total: totalFound,
             rows: list_data
         });
     }
