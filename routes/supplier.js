@@ -279,7 +279,7 @@ Router.get('/viewOrder', isSupplier, async function(req, res) {
         }
         return res.render('inventory/submittedSupplies', {
             allow_change: set_orders.changes_lock,
-            date_submitted: display_date
+            date_submitted: display_date,
         });
     }
 });

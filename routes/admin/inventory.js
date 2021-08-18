@@ -91,7 +91,8 @@ Router.get('/viewOrder', async function(req, res) {
         return res.render('inventory/submittedSupplies', {});
     }
     return res.render('inventory/submittedSupplies', {
-        allow_change: set_orders.changes_lock
+        allow_change: set_orders.changes_lock,
+        success_msg: req.flash('success_msg')
     });
 });
 
@@ -165,7 +166,8 @@ Router.post('/update/:id', async function(req, res) {
         return res.status(500).end();
     }
 
-    return res.redirect('/supplier/suppliesList');
+    req.flash("success_msg", `Order value updated successfully!`);
+    return res.redirect('/admin/inventory/viewOrder');
 });
 
 Router.get('/get-data', async function(req, res) {

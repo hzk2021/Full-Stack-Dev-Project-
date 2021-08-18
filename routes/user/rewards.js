@@ -48,7 +48,6 @@ Router.get('', async function (req, res) {
             }],
             attributes: ['day_no', 'food_name'],
             order: [['day_no', 'ASC'], ['food_no', 'ASC']],
-            where: {food_name: {[Op.ne]: null}},
             raw: true
         });
     }
