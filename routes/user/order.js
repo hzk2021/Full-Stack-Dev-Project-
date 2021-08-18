@@ -16,9 +16,11 @@ const { nets_api_key, nets_api_skey, nets_api_gateway } = require('./payment-con
 const { Payment } = require('../../models/Payment');
 const uuid = require('uuid');
 const { RewardsList } = require('../../models/RewardsList');
+const Address = require('../../models/Address');
+const AccountChecker = require('../../utilities/account_checker');
 
 // View order page - Retrieve user's orders
-Router.get('/', async function(req, res) {
+Router.get('/', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req, res) {
     console.log("Confirm order page accessed");
     try {
         const order = await Order.findAll({
@@ -77,7 +79,7 @@ Router.get('/', async function(req, res) {
     catch (error) {
         console.error("An error occured while trying to retrieve the user's orders");
         console.error(error);
-        return res.status(500).end();
+        return res.redirect('/auth/login');
     }
 });
 
@@ -100,12 +102,23 @@ Router.get('/confirmOrder', async function(req, res) {
 		const deliveryFee = 5;
 
 		const total = subtotal + deliveryFee;
+
+		// Retrieve user's address
+        const address = await Address.findOne({
+            where: { userUUID: req.user.uuid},
+            attributes: ['PhoneNo', 'Address', 'PostalCode', 'Country'],
+            raw: true
+        });
+
+		const username = req.user.name
 		
         return res.render('order/confirmOrder', {
             cart: cart,
             subtotal: subtotal.toFixed(2),
             deliveryFee: deliveryFee.toFixed(2),
             total: total.toFixed(2),
+			username: username,
+			address: address,
         });    
     }
     catch (error) {

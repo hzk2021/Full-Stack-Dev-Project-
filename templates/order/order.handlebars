@@ -43,6 +43,12 @@ hr {
 
 <h1 class="display-4">Your Orders</h1>
 <br>
+{{#ifc distinctOrderList "<" 1}}
+    <div style="text-align: center;">
+        <h2>You have no Orders.</h2>
+        <a href="/user/menu" class="btn btn-success">ADD SOME ITEMS</a>
+    </div>
+{{/ifc}}
 <div class="outer">
 {{#each distinctOrderList}}
     <div class="center">

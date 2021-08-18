@@ -4,6 +4,7 @@ const {UserRewards} = require('../../models/UserRewards');
 const {Menu} = require('../../models/Menu');
 const {MenuCategory} = require('../../models/MenuCategory');
 const {Cart} = require('../../models/Cart');
+const AccountChecker = require('../../utilities/account_checker');
 
 //Retrieve Public Menu
 Router.get('/', async function (req, res) {

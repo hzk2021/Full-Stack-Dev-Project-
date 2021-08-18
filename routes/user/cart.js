@@ -9,9 +9,13 @@ const {Menu} = require('../../models/Menu');
 const {SupplyPerformance} = require('../../models/SupplyPerformance');
 const { Supplies } = require('../../models/Supplies');
 const {arrange_rewards_tab} = require('../../utilities/functions');
+const Address = require('../../models/Address');
+const { User } = require('../../models/User');
+const AccountChecker = require('../../utilities/account_checker');
+
 
 //Retrieve cart items
-Router.get('/', async function(req, res){
+Router.get('/', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req, res){
     console.log("Confirm order page accessed");
     try {
         let cart = await Cart.findAll({
@@ -96,18 +100,18 @@ Router.get('/', async function(req, res){
             deliveryFee: deliveryFee.toFixed(2),
             total: total.toFixed(2),
             prizes_list: prizes_list,
-            cart_prizes: cart_prizes
+            cart_prizes: cart_prizes,
         });    
     }
     catch (error) {
         console.error("An error occured while trying to retrieve the cart items");
         console.error(error);
-        return res.status(500).end();
+        return res.redirect('/auth/login');
     }
 });
 
 // Add item to cart (checks whether cart alrdy has item and adds to qty if it does)
-Router.get('/addToCart/:item_name', async function(req, res){
+Router.get('/addToCart/:item_name', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req, res){
     console.log("Add to cart page accessed");
 	try {
         const menu = await Menu.findOne({ where: { item_name: req.params.item_name} });
