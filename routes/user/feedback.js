@@ -5,7 +5,7 @@ const { Op, Model } = require('sequelize');
 const { uuid } = require('uuid');
 const AccountChecker = require('../../utilities/account_checker');
 
-
+/* Render create feedback template */
 Router.get('/create', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req,res) {
     res.render('feedback/createFeedback', {
         success_msg: req.flash('success_msg'),
@@ -15,6 +15,7 @@ Router.get('/create', AccountChecker.isLoggedIn, AccountChecker.isUser, async fu
     });
 });
 
+/* Post request to create a feedback */
 Router.post('/create',AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req,res){
     let errors = [];
     try {
@@ -52,13 +53,14 @@ Router.post('/create',AccountChecker.isLoggedIn, AccountChecker.isUser, async fu
     }
 });
 
-
+/* Render feedback table template  */
 Router.get('/list', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req,res) {
     return res.render('feedback/viewFeedback', {
         'title': "View My Feedbacks"
     });
 });
 
+/* Retrieve json table (request from bootstrap-table) */
 Router.get('/list-my-feedbacks', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req, res) {
     console.log(req.query);
     const filterSearch = req.query.search;

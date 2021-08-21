@@ -5,6 +5,7 @@ const { Op, Model, json } = require('sequelize');
 const AccountChecker = require('../../utilities/account_checker');
 const HelperFunctions = require('../../utilities/helperFunctions');
 
+/* Render view address template */
 Router.get('/view', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req,res) {
     try {
         const address = await Address.findAll({
@@ -30,6 +31,7 @@ Router.get('/view', AccountChecker.isLoggedIn, AccountChecker.isUser, async func
 
 const country_list = ['Singapore', 'Malaysia', 'Korea', 'China', 'Thailand', 'Taiwan','Indonesia', 'India']
 
+/* Render create address template */
 Router.get('/create', AccountChecker.isLoggedIn, AccountChecker.isUser, async function (req,res) {
     return res.render('address/createAddress',{
         success_msg: req.flash('success_msg'),
@@ -39,6 +41,7 @@ Router.get('/create', AccountChecker.isLoggedIn, AccountChecker.isUser, async fu
     });
 });
 
+/* Post request to create a new address */
 Router.post('/create', AccountChecker.isLoggedIn, AccountChecker.isUser, async function(req,res){
     let errors = [];
 
@@ -86,6 +89,7 @@ Router.post('/create', AccountChecker.isLoggedIn, AccountChecker.isUser, async f
     }
 });
 
+/* Render update address template */
 Router.get('/update/:addressID/:country/:address/:city/:state/:postalcode/:phoneno/', AccountChecker.isLoggedIn, AccountChecker.isUser, async function (req,res) {
     return res.render('address/updateAddress',{
         success_msg: req.flash('success_msg'),
@@ -102,6 +106,7 @@ Router.get('/update/:addressID/:country/:address/:city/:state/:postalcode/:phone
     });
 });
 
+/* Post request to update specific address using addressID as the PK */
 Router.post('/update/:addressID', AccountChecker.isLoggedIn, AccountChecker.isUser, async function (req,res){
     let errors = [];
 
@@ -152,6 +157,7 @@ Router.post('/update/:addressID', AccountChecker.isLoggedIn, AccountChecker.isUs
     }
 });
 
+/* Post request to delete address */
 Router.post('/delete/:addressID', async function (req, res){
     const address_id = req.params.addressID;
     try {

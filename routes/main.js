@@ -37,6 +37,7 @@ Router.get('/', (req,res) => {
     }
 });
 
+/* Any routes not found will come here */
 Router.get('*', (req,res,next) => {
     // let err = new Error('URL not found!');
     // res.statusCode = 404;
