@@ -272,7 +272,9 @@ Router.get('/verify/:uuid', isNotLoggedIn, async function(req,res){
         }
 
     } catch (err){
-
+        console.error(`Failed to create a new user: ${req.body.email}`);
+        console.error(error);
+        return res.status(500).end();
     }
 });
 
