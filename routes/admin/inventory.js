@@ -139,24 +139,15 @@ Router.post('/update/:id', async function(req, res) {
     console.log("Updating supply item");
     let next_value = null;
     // Validate invalid inputs
-    if (!Number.isInteger(req.body.quantity) && req.body.quantity != null) {
-        req.flash("error", `Next value must be an integer`);
-        return res.redirect('/supplier/update/'+req.params.id);
-    }
-    const existingItem = await Supplies.findOne({ where: {item_name:req.body.name} });
-    if (existingItem != null) {
-        req.flash("error", `Item already existed!`);
-        return res.redirect('/supplier/update/'+req.params.id);
+    if (req.body.quantity == null) {
+        req.flash("error", `Next value must not be empty`);
+        return res.redirect('/admin/inventory/update/'+req.params.id);
     }
 
     // Set next value
-    if (req.body.quantity != null) {
-        next_value = parseInt(req.body.quantity);
-    } 
+    next_value = parseInt(req.body.quantity);
     try {
         const item = await Supplies.update({
-            item_name: req.body.name,
-            category_no: req.body.type,
             next_value: next_value
         }, { where: {item_id: req.params.id } })
     }

@@ -107,13 +107,16 @@ Router.post('/add-reward-to-cart', async function (req, res) {
                 attributes: ['uuid'],
                 where: { item_name: food_name.food_name} 
             });
+            const cartExists = await Cart.findOne({
+                cart_user_id: req.user.uuid
+            });
             cart = await Cart.create({
                 cart_user_id: req.user.uuid,
                 cart_item_id: menu.uuid,
                 cart_item_name: reward[obj].food_name+" (Reward "+day_no+")",
                 cart_item_price: 0,
             });
-            added_array.push(reward[obj].food_name);   
+            added_array.push(reward[obj].food_name);  
         }
     }
     // Mark the rewards claimed

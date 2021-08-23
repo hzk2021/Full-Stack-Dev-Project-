@@ -100,30 +100,33 @@
       let data = await response.json();
       const tbody = document.querySelector('#cart');
       // Add reward items to cart
-      for (var i in data.added_items) {
-         var dis = data.added_items[i];
-         console.log(dis);
-         if (i==0) {
-           tbody.innerHTML += 
-         `<tr class="cartDay${day_no}">
-            <td width="50%">${dis.cart_item_name}</td>
-            <td width="50%">${dis.cart_item_price}</td>
-            <td width="50%">${dis.cart_item_quantity}</td>           
-            <td rowspan="${data.added_items.length}"><button onclick="deleteReward(${day_no});" class="btn btn-danger">Delete</a></td> 
-          </tr>`
-          }
-          else {
+      console.log(data.denied);
+      if (data.denied != true) {
+        for (var i in data.added_items) {
+          var dis = data.added_items[i];
+          console.log(dis);
+          if (i==0) {
             tbody.innerHTML += 
           `<tr class="cartDay${day_no}">
-            <td width="50%">${dis.cart_item_name}</td>
-            <td width="50%">${dis.cart_item_price}</td>
-            <td width="50%">${dis.cart_item_quantity}</td>            
-          </tr>`
+              <td width="50%">${dis.cart_item_name}</td>
+              <td width="50%">${dis.cart_item_price}</td>
+              <td width="50%">${dis.cart_item_quantity}</td>           
+              <td rowspan="${data.added_items.length}"><button onclick="deleteReward(${day_no});" class="btn btn-danger">Delete</a></td> 
+            </tr>`
+            }
+            else {
+              tbody.innerHTML += 
+            `<tr class="cartDay${day_no}">
+              <td width="50%">${dis.cart_item_name}</td>
+              <td width="50%">${dis.cart_item_price}</td>
+              <td width="50%">${dis.cart_item_quantity}</td>            
+            </tr>`
+            }
           }
-        }
-        // Remove from list
-        document.getElementById("day"+day_no).remove();
+          // Remove from list
+          document.getElementById("day"+day_no).remove();
       }
+    }
     else {
       console.error("Failed to update cart with reward "+day_no);
     }
