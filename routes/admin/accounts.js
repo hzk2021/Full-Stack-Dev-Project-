@@ -9,13 +9,14 @@ const regexEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@
 const regexName = /^[a-zA-Z][a-zA-Z]{2,}$/;
 const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-
+/* Render the template used to view account management page */
 Router.get('/list', async function(req,res) {
     return res.render('accounts/showAccounts', {
         'title': "Show Accounts"
     });
 });
 
+/* Return the necessary data in json requested by bootstrap-table */
 Router.get('/list-data', async function(req,res) {
     console.log(req.query);
     const filterSearch = req.query.search;
@@ -53,6 +54,7 @@ Router.get('/list-data', async function(req,res) {
     });
 });
 
+/* Render create account form template */
 Router.get('/create', async function(req,res){
     res.render('accounts/createAccount', {
         success_msg: req.flash('success_msg'),
@@ -62,6 +64,7 @@ Router.get('/create', async function(req,res){
     });
 });
 
+/* Post request to create a new account */
 Router.post('/create', async function(req,res) {
     let errors = [];
     
@@ -113,6 +116,7 @@ Router.post('/create', async function(req,res) {
     }
 });
 
+/* Post request to delete a specific account using its uuid */
 Router.post('/delete/:id/', async function(req,res) {
     const user_uuid = req.params.id;
 

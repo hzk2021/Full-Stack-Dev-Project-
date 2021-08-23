@@ -8,6 +8,7 @@ const { sequelize } = require('../../configs/database');
 const { getKeyByValue } = require('../../utilities/helperFunctions');
 const Router = Express.Router();
 
+/* Render general dashboard to show important information */
 Router.get('/', async function(req, res){
     const users_data = await getUserDBData();
     const suppliers_data = await getSupplierDBData();
@@ -31,6 +32,7 @@ Router.get('/', async function(req, res){
     })
 });
 
+/* Render chart template & return the data needed to display */
 Router.get('/chart', async function(req,res){
     const users_data = await getUserDBData();
     const suppliers_data = await getSupplierDBData();
@@ -56,6 +58,7 @@ Router.get('/chart', async function(req,res){
     })
 });
 
+/* Return necessary User Data */
 async function getUserDBData(){
     users_data = {
         verifiedCount: 0,
@@ -84,6 +87,7 @@ async function getUserDBData(){
     return users_data;
 }
 
+/* Return necessary Supplier Data */
 async function getSupplierDBData(){
     suppliers_data = {
 
@@ -103,6 +107,7 @@ async function getSupplierDBData(){
     return suppliers_data;
 }
 
+/* Return necessary Admin Data */
 async function getAdminDBData(){
     admins_data = {
 
@@ -122,6 +127,7 @@ async function getAdminDBData(){
     return admins_data;
 }
 
+/* Return necessary Feedback Data */
 async function getFeedbackDBData(){
     feedbacks_data = {
         'positive' : 0,
@@ -155,6 +161,7 @@ async function getFeedbackDBData(){
     return feedbacks_data;
 }
 
+/* Return necessary Entry Data */
 async function getEntryDBData(){
     entries_data = {
         'count' : 0,
@@ -183,7 +190,7 @@ async function getEntryDBData(){
     return entries_data;
 }
 
-
+/* Return necessary Order Data */
 async function getOrderDBData(){
     orders_data = {
         'totalOrder' : 0,

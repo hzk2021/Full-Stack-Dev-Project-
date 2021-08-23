@@ -6,6 +6,7 @@ const Hash = require('hash.js');
 
 const regexPassword = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
+/* Render edit profile template */
 Router.get('/edit', AccountChecker.isLoggedIn, async function(req,res) {
     return res.render('profile/editprofile', {
         email_display: req.user.email,
@@ -16,6 +17,7 @@ Router.get('/edit', AccountChecker.isLoggedIn, async function(req,res) {
     })
 });
 
+/* Post request to edit profile */
 Router.post('/edit', AccountChecker.isLoggedIn, async function(req,res) {
     let errors = [];
     

@@ -6,6 +6,7 @@ const { Op, Model, where } = require('sequelize');
 const nricRegex = /^[STFG]\d{7}[A-Z]$/
 const sgPhoneRegex = /^[0-9]{8}$/
 
+/* Render create entry form template  */
 Router.get('/create', async function(req,res) {
     res.render('entry/createEntry', {
         success_msg: req.flash('success_msg'),
@@ -15,6 +16,7 @@ Router.get('/create', async function(req,res) {
     });
 });
 
+/* Post request to create a new entry */
 Router.post('/create', async function(req,res){
     let errors = [];
     
@@ -52,6 +54,7 @@ Router.post('/create', async function(req,res){
     }
 })
 
+/* Render show entries template */
 Router.get('/show', async function(req,res) {
     return res.render('entry/showEntries',{
         success_msg: req.flash('success_msg'),
@@ -61,7 +64,7 @@ Router.get('/show', async function(req,res) {
     });
 });
 
-
+/* Return the data requested by bootstrap-table to display it */
 Router.get('/list-data', async function(req, res) {
     console.log(req.query);
     const filterSearch = req.query.search;
@@ -130,6 +133,7 @@ Router.get('/list-data', async function(req, res) {
     })
 });
 
+/* Post request to change the exit time for a specific entry */
 Router.post('/exit/:entryid', async function(req,res){
     let errors = []
 
@@ -160,6 +164,7 @@ Router.post('/exit/:entryid', async function(req,res){
     }
 });
 
+/* Render update entry form template */
 Router.get('/update/:fname/:entryid/:nric/:phoneno/:temperature', async function(req,res){
     return res.render("entry/updateEntry", {
         "fName": req.params.fname,
@@ -171,6 +176,7 @@ Router.get('/update/:fname/:entryid/:nric/:phoneno/:temperature', async function
     })
 });
 
+/* Post request to update entry */
 Router.post('/update', async function(req,res){
     let errors = []
 
@@ -205,6 +211,7 @@ Router.post('/update', async function(req,res){
     }
 });
 
+/* Post request to delete a specific entry using its entryID  */
 Router.post('/delete/:entryid', async function (req, res){
     const entry_id = req.params.entryid;
     try {

@@ -5,7 +5,7 @@ const { Op, Model } = require('sequelize');
 const { uuid } = require('uuid');
 const { User } = require('../../models/User');
 
-
+/* Render view feedbacks template */
 Router.get('/list', async function(req,res) {
     return res.render('feedback/viewFeedbackAdmin',{
         success_msg: req.flash('success_msg'),
@@ -15,6 +15,7 @@ Router.get('/list', async function(req,res) {
     });
 });
 
+/* Return data in json requested by bootstrap-table */
 Router.get('/list-users-feedbacks', async function(req, res) {
     console.log(req.query);
     const filterSearch = req.query.search;
@@ -57,6 +58,7 @@ Router.get('/list-users-feedbacks', async function(req, res) {
     })
 });
 
+/* Render request to feedback template */
 Router.get('/respond/:feedbackid/', async function(req,res){
     return res.render("feedback/respondFeedback", {
         "feedbackID": req.params.feedbackid,
@@ -64,6 +66,7 @@ Router.get('/respond/:feedbackid/', async function(req,res){
     })
 });
 
+/* Post request to update the response */
 Router.post('/respond', async function(req,res){
     let errors = []
 

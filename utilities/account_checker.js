@@ -2,7 +2,7 @@ const Express = require('express');
 const { UserRole } = require('../models/User')
 
 
-/**
+/** Check if it's logged in
  * 
  * @param {Express.Request} req Express Request handle
  * @param {Express.Response} res Express Response handle
@@ -15,7 +15,7 @@ const isLoggedIn = function (req, res, next) {
 	}
 };
 
-/**
+/** Check if it's not logged in
  * 
  * @param {Express.Request} req Express Request handle
  * @param {Express.Response} res Express Response handle
@@ -28,7 +28,7 @@ const isNotLoggedIn = function (req, res, next) {
 	}
 };
 
-/**
+/** Check if the account role is admin if it's logged in
  * 
  * @param {Express.Request} req Express Request handle
  * @param {Express.Response} res Express Response handle
@@ -49,7 +49,7 @@ const isAdmin = function (req, res, next) {
 	}
 }
 
-/**
+/** Check if the account role is user if it's logged in
  * 
  * @param {Express.Request} req Express Request handle
  * @param {Express.Response} res Express Response handle
@@ -70,7 +70,7 @@ const isAdmin = function (req, res, next) {
 	}
 }
 
-/**
+/** Check if the account role is supplier if it's logged in
  * 
  * @param {Express.Request} req Express Request handle
  * @param {Express.Response} res Express Response handle

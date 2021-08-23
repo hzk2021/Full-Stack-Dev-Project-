@@ -9,6 +9,7 @@ const crypto = require('crypto');
 const { promisify } = require('util');
 const { Op } = require('sequelize');
 
+/* Render forgot password template */
 Router.get('/forgot', async function (req,res){
     return res.render('authentication/forgot', {
         success_msg: req.flash('success_msg'),
@@ -17,6 +18,7 @@ Router.get('/forgot', async function (req,res){
     });
 });
 
+/* Forgot password post request from form */
 Router.post('/forgot', async function (req,res,next) {
     const token = (await promisify(crypto.randomBytes)(20)).toString('hex');
     const user = await User.findOne({
@@ -50,6 +52,7 @@ Router.post('/forgot', async function (req,res,next) {
     
 });
 
+/* Render reset password template */
 Router.get('/reset/:token', async function (req,res){
     const user = await User.findOne({
         where: {
@@ -70,6 +73,7 @@ Router.get('/reset/:token', async function (req,res){
     })
 });
 
+/* Post request to reset password */
 Router.post('/reset/:token', async function(req,res){
     let errors = [];
     
@@ -240,6 +244,7 @@ async function register_process(req,res){
     }
 }
 
+/* Verify account route */
 Router.get('/verify/:uuid', isNotLoggedIn, async function(req,res){
     try {
         const user = await User.findByPk(req.params.uuid);
@@ -267,7 +272,9 @@ Router.get('/verify/:uuid', isNotLoggedIn, async function(req,res){
         }
 
     } catch (err){
-
+        console.error(`Failed to create a new user: ${req.body.email}`);
+        console.error(error);
+        return res.status(500).end();
     }
 });
 

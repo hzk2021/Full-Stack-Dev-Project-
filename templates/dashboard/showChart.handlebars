@@ -90,10 +90,13 @@ new Chartist.Pie('#chart1', data1, options, responsiveOptions);
 new Chartist.Pie('#chart2', data2, options, responsiveOptions);
 
 const datesFull = '{{orderDates}}';
-const dates = datesFull.split(',');
+let dates = datesFull.split(',');
 
 for (var i = 0; i < dates.length; i++){
     dates[i] = (new Date(dates[i])).toLocaleDateString();
+    if (dates[i] == "Invalid Date"){
+      dates[i] = (new Date(Date.now())).toLocaleDateString();
+    }
 }
 
 const revenueFull = '{{revenuePerDate}}'
